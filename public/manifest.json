@@ -1,0 +1,20 @@
+{
+  "name": "CMMS WEB",
+  "short_name": "CMMS WEB",
+  "display": "standalone",
+  "start_url": "/",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "favicon/FAVICON_.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon/FAVICON_.ico",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
