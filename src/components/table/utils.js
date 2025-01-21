@@ -38,6 +38,9 @@ function descendingComparator(a, b, orderBy) {
 
 
 export function getComparator(order = 'desc', orderBy) {
+  console.log("order_____",order);
+  console.log("orderBy_____",orderBy);
+  
   return order === 'desc'
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => ascendingComparator(a, b, orderBy);

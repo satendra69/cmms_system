@@ -223,7 +223,7 @@ textarea.TxtAra {
     Public Sans,
     sans-serif;
     font-weight: 500;
-    color: #000 !important;
+    /* color: #000 !important; */
 }
 textarea.TxtAraMaterial {
   border-radius: 8px;
@@ -1890,7 +1890,7 @@ tr.MuiTableRow-root.Mui-selected.MuiTableRow-hover {
   -webkit-text-fill-color: #000 !important;
 }
 .TxtAra.second {
-  font-size: 14px;
+  font-size: 13px;
   height: 118px !important;
   font-family: Public Sans, sans-serif;
   font-weight: 500;

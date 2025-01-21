@@ -69,7 +69,7 @@ export default function JwtLoginView() {
   const retrieveAPI = () => {
     APIServices.get_sitecode()
       .then((responseJson) => {
-     console.log(responseJson, "JSON DATA");
+   //  console.log(responseJson, "JSON DATA");
         if (responseJson.data.status === 'SUCCESS') {
           // console.log(responseJson.data.status);
 
@@ -144,7 +144,9 @@ export default function JwtLoginView() {
 
           localStorage.setItem('wkr_mst_wr_status', responseJson.data.data.wkr_mst_wr_status);
           localStorage.setItem('EmpLoginId', responseJson.data.data.mst_rowid);
-          localStorage.setItem('emp_mst_login_id', responseJson.data.data.emp_mst_login_id);
+         // localStorage.setItem('emp_mst_login_id', responseJson.data.data.emp_mst_login_id);
+          localStorage.setItem('emp_mst_login_id', responseJson.data.data.emp_mst_login_id.toLowerCase());
+
           localStorage.setItem('emp_mst_empl_id', responseJson.data.data.emp_mst_empl_id);
           localStorage.setItem('emp_mst_name', responseJson.data.data.emp_mst_name);
 

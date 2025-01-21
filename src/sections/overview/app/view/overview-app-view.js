@@ -259,6 +259,16 @@ export default function OverviewAppView() {
           },
         });
         Swal.close();
+      } 
+      else if(firstItem.cf_query_list_table === "emp_mst" || firstItem.cf_query_list_table === "emp_det"){
+        navigate(`/dashboard/people/employ-list`, {
+          state: {
+            GaugeDashbordData: newArrayFltr,
+            GaugeDashbordDataSort: newArraySort,
+            DropListId: cfRowID,
+          },
+        });
+        Swal.close();
       }
       
     } else if (newArrayPrm && newArrayPrm.length > 0) {

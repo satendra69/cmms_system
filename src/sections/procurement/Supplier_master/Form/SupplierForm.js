@@ -770,7 +770,7 @@ const formatDropDownValue = (value,rowData)=>{
       const response = await httpCommon.get(
         "/get_sup_mst_ship_bil_drp.php?site_cd=" + site_ID,
       );
-      console.log("response",response)
+    //  console.log("response",response)
 
       if (response.data) {
         const bill = response.data.result.bill
@@ -5342,7 +5342,14 @@ if(ship){
                                             style={{ width: "35px", height: "35px", cursor:"pointer", }}
                                             className="fntxlsx"
                                           />
-                                        ) : item.file_name.toLowerCase().endsWith(".txt") ? (
+                                        ) : item.file_name.toLowerCase().endsWith(".xls") ? (
+                                          <FontAwesomeIcon
+                                            icon={faFileExcel} 
+                                            onClick={() => openXlsxInNewTab(item.attachment)}
+                                            style={{ width: "35px", height: "35px", cursor:"pointer", }}
+                                            className="fntxlsx"
+                                          />
+                                        ): item.file_name.toLowerCase().endsWith(".txt") ? (
                                           <FontAwesomeIcon
                                             icon={faFileAlt} 
                                             onClick={() => openLogInNewTab(item.attachment)}
@@ -5382,16 +5389,19 @@ if(ship){
                                        </td>
                                        <td>
                                          <button
-                                           type="button"
-                                          
-                                           onClick={() => {
-                                          //  setIsFormFiled(true);
-                                            handleDeleteReferenceApi(item.RowID)
-                                          }}
-                                           className="btn multiplsimg"
-                                         >
-                                          <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
-                                         </button>
+                                            type="button"
+                                            onClick={() => {
+                                             
+                                              handleDeleteReferenceApi(item.RowID)
+                                            }}
+                                           
+                                            className="btn multiplsimg"
+                                          >
+                                            <Iconify
+                                              icon="fluent:delete-48-filled"
+                                              style={{ fontSize: "24px" }}
+                                            />
+                                          </button>
                                        </td>
                                      </tr>
                                    ))}
@@ -5434,7 +5444,10 @@ if(ship){
                                              handleDeleteImg(index);
                                            }}
                                          >
-                                           <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
+                                           <Iconify
+                                              icon="fluent:delete-48-filled"
+                                              style={{ fontSize: "24px" }}
+                                            />
                                          </button>
                                        </td>
                                      </tr>

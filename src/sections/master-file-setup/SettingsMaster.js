@@ -182,7 +182,7 @@ function SettingsMaster() {
   // Setting Label
   const getDefaultFromLebel = async () => {
     try {
-      const response = await httpCommon.get("/getDefaultFromLebal.php");
+      const response = await httpCommon.get("/get_default_from_lebal.php");
       // console.log("response____getLabel",response);
       if (response.data.status === "SUCCESS") {
         console.log("responseLabel", response);

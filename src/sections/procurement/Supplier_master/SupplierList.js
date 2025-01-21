@@ -555,7 +555,7 @@ export default function SupplierList() {
           combinedData,
         );
        
-        console.log("response___prompt__",response);
+        // console.log("response___prompt__",response);
         if (response.data.status == "SUCCESS") {
           Swal.close();
           Swal.fire({
@@ -830,7 +830,7 @@ const handleOptionChangeInternal = (event) => {
     }
   
     if (selectDropRowID != "" && selectDropRowID != null) {
-      console.log("console_____getb__");
+    
       getb();
     } else if (TableSearchData != "" && TableSearchData != null) {
       
@@ -1731,7 +1731,7 @@ if(!foundPromptOne){
               admin: emp_owner,
             }
           );
-        console.log("response____all__data",response);
+      //  console.log("response____all__data",response);
       if (response.data &&
         response.data.result &&
         response.data.result.length > 0) {
@@ -1961,7 +1961,7 @@ useEffect(()=>{
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Query Name cannot be empty!',
+            text: `Query name can't be empty!`,
             customClass: {
               container: "swalcontainercustom",
             },
@@ -2044,7 +2044,7 @@ useEffect(()=>{
         },
       );
 
-      console.log("response___retriveList",response);
+    //  console.log("response___retriveList",response);
   let promat = rowsQrt[0].prompt;
 
     if(promat == 1){
@@ -2341,7 +2341,7 @@ const SaveWorkOrderQryList = async () => {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },

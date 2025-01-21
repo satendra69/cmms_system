@@ -572,7 +572,7 @@ export default function WorkRequestList() {
       const response = await httpCommon.post(
         `/get_workreq_option_list_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`
       );
-     console.log("getDb____",response);
+   //  console.log("getDb____",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -1139,7 +1139,7 @@ export default function WorkRequestList() {
           admin: emp_owner,
         }
       );
-       console.log("popup__retrive___",response);
+      // console.log("popup__retrive___",response);
        
       if (
         response.data.data &&
@@ -1468,7 +1468,7 @@ export default function WorkRequestList() {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1593,7 +1593,7 @@ export default function WorkRequestList() {
               "&siteId=" +
               site_ID
           );
-          console.log("response.data.defaultQuery.DefaultQuery",response.data.defaultQuery.DefaultQuery);
+         // console.log("response.data.defaultQuery.DefaultQuery",response.data.defaultQuery.DefaultQuery);
           if (
             response.data.defaultQuery &&
             response.data.defaultQuery.DefaultQuery &&
@@ -1847,7 +1847,7 @@ export default function WorkRequestList() {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -2902,7 +2902,7 @@ useEffect(() => {
   }
   
   if (selectDropRowID !== "" && selectDropRowID !== null) {
-    console.log("firstquery____");
+  //  console.log("firstquery____");
     getb();
   }else if(TableSearchData !="" && TableSearchData != null){
     handelSearchButton();
@@ -2922,7 +2922,7 @@ const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 const [isOptionSelected, setIsOptionSelected] = useState(TitleAstReg !== "" || selectedOption);
 
 const handleDropdownOpen = () => {
-  console.log("Handal click open");
+ 
   setIsDropdownOpen(true);
 };
 

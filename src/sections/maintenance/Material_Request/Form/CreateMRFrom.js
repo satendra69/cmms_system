@@ -1589,7 +1589,7 @@ const findCustomizerequiredLabel = (columnName) => {
         "/insert_new_mr_data.php",
         JSON.stringify(json_Mr_Insert)
       );
-      console.log("json_Asset Data_responce__", response);
+    //  console.log("json_Asset Data_responce__", response);
      if (response.data.status === "SUCCESS") {
    
       let GetRowId = response.data.ROW_ID;

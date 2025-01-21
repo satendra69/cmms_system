@@ -265,7 +265,6 @@ const [Status, setStatus] = useState([]);
 const [selected_Status, setSelected_Status] = useState([]);
 
 
-
 const [PlanPriority, setPlanPriority] = useState([]);
 const [selected_PlanPriority, setSelected_PlanPriority] = useState([]);
 
@@ -386,10 +385,7 @@ const [isPopupOpening, setIsPopupOpening] = useState(false);
 
 const [Asset_CriFactor, setAsset_CriFactor] = useState([]); 
 
- 
-
   const [Asset_Type, setAsset_Type] = useState([]); 
-
 
   const [Asset_Code, setAsset_Code] = useState([]); 
 
@@ -404,18 +400,14 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
 
   const [CustomerCode, setCustomerCode] = useState("");
 
-
   const [selected_Material_Account, setSelected_Material_Account] = useState(
     []
   );
   
   const [selected_Depreciation_Method, setSelectedDepreciationMethod] = useState([]);
 
- 
   const [isAssetShortDescEmpty,setIsAssetShortDescEmpty] = useState(false);
  
-
-
   const [Plan_Priority, setPlan_Priority] = useState([]);
  
   const [selected_Plan_Priority, setSelected_Plan_Priority] = useState([]);
@@ -2007,7 +1999,7 @@ const getDueDateAndDesc =(DueValue) =>{
         container: "swalcontainercustom",
       },
     });
-    Swal.showLoading();
+   // Swal.showLoading();
    // console.log("enter_____save");
     let get_date = Moment().utcOffset("+08:00").format("yyyy-MM-DD HH:mm:ss");
 
@@ -7895,7 +7887,12 @@ const handleCheckboxChangeFlag = (event) => {
 
               {/* Asset Parent Flag model popup */}
               <BootstrapDialog
-                onClose={handleCloseModal}
+                
+                onClose={(event, reason) => {
+                  if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    handleCloseModal(event, reason);
+                  }
+                }}
                 aria-labelledby="customized-dialog-title"
                 open={modalOpenAsset}
                 maxWidth="lg"
@@ -7915,10 +7912,11 @@ const handleCheckboxChangeFlag = (event) => {
                     position: "absolute",
                     right: 8,
                     top: 8,
-                    color: (theme) => theme.palette.grey[500],
+                     padding:"0px !important",
+                     margin:"5px !important"
                   }}
                 >
-                  <Iconify icon="material-symbols:close" />
+                   <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                 </IconButton>
                 <DialogContent dividers>
                   <div className="TblSelect">
@@ -8023,7 +8021,12 @@ const handleCheckboxChangeFlag = (event) => {
 
               {/* Frequency Code Flag model popup */}
               <BootstrapDialog
-                onClose={handleCloseClickFrequency}
+                
+                onClose={(event, reason) => {
+                  if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                    handleCloseClickFrequency(event, reason);
+                  }
+                }}
                 aria-labelledby="customized-dialog-title"
                 open={modalOpenFrequency}
                 maxWidth="md"
@@ -8044,10 +8047,11 @@ const handleCheckboxChangeFlag = (event) => {
                     position: "absolute",
                     right: 8,
                     top: 8,
-                    color: (theme) => theme.palette.grey[500],
+                    padding:"0px !important",
+                    margin:"5px !important"
                   }}
                 >
-                  <Iconify icon="material-symbols:close" />
+                  <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                 </IconButton>
                 <DialogContent dividers>
                   <div className="TblSelect">

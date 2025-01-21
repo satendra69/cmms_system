@@ -1759,7 +1759,7 @@ const RetriveDataAllData = async () =>{
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Query Name cannot be empty!',
+        text: `Query name can't be empty!`,
         customClass: {
           container: "swalcontainercustom",
         },
@@ -2385,7 +2385,7 @@ const RetriveDataAllData = async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },

@@ -485,7 +485,7 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
   };
 
   const getb = useCallback(async () => {
-    console.log("currentPage",currentPage)
+   
     setIsLoading(true);
     try {
      
@@ -493,8 +493,6 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
         `/get_maintence_mr_list_selectoption_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`
       );
       
-      console.log("Response_db",response)
-     
       if (
         response.data.data &&
         response.data.data.result &&
@@ -1362,7 +1360,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1486,7 +1484,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
                 "&siteId=" +
                 site_ID
             );
-             console.log("response.data.defaultQuery.DefaultQuery",response.data.defaultQuery.DefaultQuery);
+           //  console.log("response.data.defaultQuery.DefaultQuery",response.data.defaultQuery.DefaultQuery);
             if (
               response.data.defaultQuery &&
               response.data.defaultQuery.DefaultQuery &&
@@ -1740,7 +1738,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1750,7 +1748,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
     // fetch data using dropdon
   const handleClickOption = async (selectedOption) => {
     setselectedOptionValue(selectedOption);
-    console.log("selectedOption",selectedOption)
+   // console.log("selectedOption",selectedOption)
     let cf_query_title, RowID;
 
     const hyphenCount = selectedOption.split("-").length - 1;
@@ -2019,72 +2017,6 @@ const handlelogicalValueChangeQtr2 = (index, newValue) => {
 // Search Button Click funcation
 const handelSearchButton = async () => {
   const inputValueGet = inputRef.current.value;
-  console.log("inputValueGet_____",inputValueGet);
-  
-  // if (inputValueGet !== "" && inputValueGet !== null) {
-  //   Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
-  //   Swal.showLoading();
-  //  console.log("call_again___");
-  //   try {
-  //     const response = await httpCommon.get(
-  //       `/get_search_maintence_mr_module.php?site_cd=${site_ID}&searchTerm=${inputValueGet}&page=${currentPage}`
-  //     );
-  //      console.log("responseSerach_____",response);
-  //     if (response.data.data.result.length > 0) {
-  //       setTableSearchData(response.data.data.result);
-  //       setTotalRow(response.data.data.result.length);
-
-  //       const filteredData = response.data.data.result.filter((item) => {
-  //         const searchString = inputValueGet.toLowerCase();
-  //         const col1 = (item.col1 || "").toLowerCase();
-  //         const col2 = (item.col2 || "").toLowerCase();
-  //         const col3 = (item.col3 || "").toLowerCase();
-  //         const col4 = (item.col4 || "").toLowerCase();
-  //         const col5 = (item.col5 || "").toLowerCase();
-  //         const col6 = (item.col6 || "").toLowerCase();
-  //         const col7 = (item.col7 || "").toLowerCase();
-  //         const col8 = (item.col8 || "").toLowerCase();
-  //         const col9 = (item.col9 || "").toLowerCase();
-  //         const col10 = (item.col10 || "").toLowerCase();
-  //         const col11 = (item.col11 || "").toLowerCase();
-  //         const col12 = (item.col12 || "").toLowerCase();
-  //         const col58 = (item.col58 || "").toLowerCase();
-          
-  //         return (
-  //           col1.includes(searchString) ||
-  //           col2.includes(searchString) ||
-  //           col3.includes(searchString) ||
-  //           col4.includes(searchString) ||
-  //           col5.includes(searchString) ||
-  //           col6.includes(searchString) ||
-  //           col7.includes(searchString) ||
-  //           col8.includes(searchString) ||
-  //           col9.includes(searchString) ||
-  //           col10.includes(searchString) ||
-  //           col11.includes(searchString) ||
-  //           col12.includes(searchString) ||
-  //           col58.includes(searchString)
-  //         );
-  //       });
-  //       setTableData(filteredData);
-  //   //    setTableData(filteredData);
-  //    //   setCurrentPage(1);
-  //       Swal.close();
-  //     } else {
-  //       Swal.close();
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Oops...",
-  //         text: "No Record Found!",
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-
-  // }
-
-
 
   const filteredData = tableData.filter((item) => {
     const searchString = inputValueGet.toLowerCase();

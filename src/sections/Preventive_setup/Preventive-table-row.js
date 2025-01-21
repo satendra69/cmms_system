@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from "@mui/material/Tooltip";
 
 
 // hooks
@@ -106,6 +107,13 @@ export default function PreventiveTableRow({
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${day}-${month}-${year}`;
   };
+
+  const maxCharactersToShow = 30;
+  const truncatedShortDescription =
+  prm_mst_desc && prm_mst_desc.length > maxCharactersToShow
+      ? `${prm_mst_desc.substring(0, maxCharactersToShow)}...`
+      : prm_mst_desc;
+
     const [isChecked, setIsChecked] = useState(false);
 
     useEffect(() => {
@@ -287,7 +295,10 @@ export default function PreventiveTableRow({
         </TableCell>
         <TableCell>{prm_mst_curr_wo}</TableCell>
         <TableCell>{prm_mst_flt_code}</TableCell>
-        <TableCell>{prm_mst_desc}</TableCell>
+        <Tooltip title={prm_mst_desc} placement="top" arrow >
+             <span style={{fontSize:"13px"}}>{truncatedShortDescription}</span>
+        </Tooltip>
+  
         <TableCell>{prm_mst_meter_id}</TableCell>
         <TableCell>{prm_mst_lpm_usg}</TableCell>
         <TableCell>{prm_mst_lpm_uom}</TableCell>

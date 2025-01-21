@@ -192,6 +192,7 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
 
   const [Short_Description, setShort_Description] = useState("");
   const [Long_Description, setLong_Description] = useState("");
+  const [Safty_Requirement, setSafty_Requirement] = useState("");
   const [Note1, setNote1] = useState("");
 
   const [Area_ID, setArea_ID] = useState("");
@@ -223,7 +224,7 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
 
   const [Permanent_ID, setPermanent_ID] = useState("0");
 
-  const [SafetyRequirement, setSafetyRequirement] = useState("");
+ 
   const [BarcodeCount, setBarcodeCount] = useState("0");
 
   const [ManufactureCode, setManufactureCode] = useState([]);
@@ -323,6 +324,8 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
   const [isAssetStatusEmpty, setIsAssetStatusEmpty] = useState(false);
   const [isAssetCriticalFactorEmpty, setIsAssetCriticalFactorEmpty] = useState(false);
   const [isAssetShortDescEmpty,setIsAssetShortDescEmpty] = useState(false);
+  const [isAssetLongDescEmpty,setIsAssetLongDescEmpty] = useState(false);
+  const [isAssetSaftyReqEmpty,setIsAssetSaftyReqEmpty] = useState(false);
   const [isAssetTypeEmpty, setIsAssetTypeEmpty] =useState(false);
   const [isAssetCodeEmpty,setIsAssetCodeEmpty] = useState(false);
   const [isAssetGroupCodeEmpty,setIsAssetGroupCodeEmpty]= useState(false);
@@ -535,6 +538,7 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
         }
 
         setShort_Description(response.data.data["0"].ast_mst_asset_shortdesc);
+        setSafty_Requirement(response.data.data["0"].ast_mst_safety_rqmts);
         setNote1(response.data.data["0"].ast_det_note1);
 
         if((response.data.data["0"].ast_mst_cri_factor === "" || response.data.data["0"].ast_mst_cri_factor === null) && 
@@ -625,7 +629,7 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
         setSerialNumber(response.data.data["0"].ast_det_serial);
         setPermanent_ID(response.data.data["0"].ast_mst_parent_flag);
         setPermanentIDFlag(response.data.data["0"].ast_mst_parent_id);
-        setSafetyRequirement(response.data.data["0"].ast_mst_safety_rqmts);
+  
         setBarcodeCount(response.data.data["0"].ast_mst_print_count);
         setManufactureCode(response.data.data["0"].ast_det_mfg_cd);
         setAssetCost(formatNumber(response.data.data["0"].ast_det_asset_cost));
@@ -1820,7 +1824,6 @@ if (
     date_of_10 = Moment(UDFDate_10)
       .format("yyyy-MM-DD HH:mm:ss")
       .trim();
-
   }
 
   // select UDFDate_11 
@@ -1831,7 +1834,6 @@ if (
     date_of_11 = Moment(UDFDate_11)
       .format("yyyy-MM-DD HH:mm:ss")
       .trim();
- 
   }
 
   // select UDFDate_12 
@@ -1842,7 +1844,6 @@ if (
     date_of_12 = Moment(UDFDate_12)
       .format("yyyy-MM-DD HH:mm:ss")
       .trim();
-   
   }
 
   // select UDFDate_13 
@@ -1853,7 +1854,6 @@ if (
     date_of_13 = Moment(UDFDate_13)
       .format("yyyy-MM-DD HH:mm:ss")
       .trim();
-   
   }
 
   // select UDFDate_14 
@@ -1901,7 +1901,7 @@ if (
       ast_mst_parent_flag: setPermanentIDFlag?.trim() || '',
      // ast_mst_parent_id: Permanent_ID.toString()?.trim() || '',
       ast_mst_parent_id: Permanent_ID ? Permanent_ID.toString().trim() : '',
-      ast_mst_safety_rqmts: SafetyRequirement?.trim() || '',
+      ast_mst_safety_rqmts: Safty_Requirement?.trim() || '',
       ast_mst_print_count: BarcodeCount?.trim() || '',
       ast_det_mfg_cd: setmanufature?.trim() || '',
       ast_det_modelno: setmodelAsset?.trim() || '',
@@ -2586,7 +2586,7 @@ if (
      // ast_mst_parent_id: Permanent_ID.toString().trim(),
      ast_mst_parent_id: Permanent_ID ? Permanent_ID.toString().trim() : '',
 
-      ast_mst_safety_rqmts: SafetyRequirement ? SafetyRequirement.trim() : SafetyRequirement,
+      ast_mst_safety_rqmts: Safty_Requirement ? Safty_Requirement.trim() : Safty_Requirement,
       ast_mst_print_count: BarcodeCount ? BarcodeCount.trim() : BarcodeCount,
     
       ast_det_mfg_cd: SelectManufacture ? SelectManufacture.trim() : SelectManufacture,
@@ -4127,12 +4127,33 @@ if (
                                                         
                                                       </Box>
                                                      
-                                                      <Stack spacing={1}>
+                                                      <Stack flexGrow={1} spacing={1} sx={{ pb: 1.5 }}>
                                                           <Typography variant="subtitle2" className="Requiredlabel">
                                                             {findCustomizeLabel("ast_mst_asset_shortdesc") ||
                                                               "Short Descriptions"}
                                                           </Typography>
-                                                          <TextareaAutosize
+                                                          <TextField
+                                                          id="outlined-basic-custome-filed"
+                                                          size="small"
+                                                          variant="outlined"
+                                                          value={Short_Description}
+                                                          autoComplete="off"
+                                                          onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            if (value.length <= 80) {
+                                                              setShort_Description(value);
+                                                            }
+                                                            setIsAssetShortDescEmpty(false);
+                                                            setIsFormFiled(true);
+                                                            }}
+                                                          className={`Extrasize ${
+                                                            isAssetShortDescEmpty
+                                                              ? "errorEmpty"
+                                                              : ""
+                                                          }`}
+                                                          fullWidth
+                                                        />
+                                                          {/* <TextareaAutosize
                                                             aria-label="empty textarea"
                                                           // minRows={6.5}
                                                             value={Short_Description}
@@ -4151,8 +4172,37 @@ if (
                                                                 ? "errorEmpty second"
                                                                 : "TxtAra second"
                                                             }`}
-                                                          />
+                                                          /> */}
                                                         </Stack>
+                                                        <Stack flexGrow={1} spacing={1} sx={{ pb: 1.5 }}>
+                                                          <Typography variant="subtitle2" className={findCustomizerequiredLabel("ast_mst_asset_longdesc")}>
+                                                            {findCustomizeLabel("ast_mst_asset_longdesc") ||
+                                                              "Work Group"}
+                                                          </Typography>
+                                                          <TextField
+                                                          id="outlined-basic-custome-filed"
+                                                          size="small"
+                                                          variant="outlined"
+                                                          value={Long_Description}
+                                                          autoComplete="off"
+                                                          onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            if (value.length <= 225) {
+                                                              setLong_Description(value);
+                                                            }
+                                                            setIsAssetLongDescEmpty(false);
+                                                            setIsFormFiled(true);
+                                                            }}
+                                                          className={`Extrasize ${
+                                                            isAssetLongDescEmpty
+                                                              ? "errorEmpty"
+                                                              : ""
+                                                          }`}
+                                                          fullWidth
+                                                        />
+                                                          
+                                                        </Stack>
+                                                        
                                                         
                                                       </Grid>
                                                       <Grid item xs={12} md={6}>
@@ -4274,7 +4324,7 @@ if (
                                                             />
                                                         
                                                           </Stack>
-                                                          <Stack spacing={1} sx={{ pb: 1.5 }}>
+                                                          <Stack>
                                                             <Typography variant="subtitle2" className="Requiredlabel">
                                                               {findCustomizeLabel("ast_mst_cost_center") || "Cost Center"}
                                                             </Typography>
@@ -4311,6 +4361,34 @@ if (
 
                                                         </Box>
                                                       </Grid>
+                                                </Grid>
+                                                <Grid>
+                                                <Stack flexGrow={1} spacing={1} sx={{ pb: 1.5 }}>
+                                                          <Typography variant="subtitle2">
+                                                            {findCustomizeLabel("ast_mst_asset_safety_rqmts") ||
+                                                              "Safety Requirement:"}
+                                                          </Typography>
+                                                          <TextareaAutosize
+                                                            aria-label="empty textarea"
+                                                          // minRows={6.5}
+                                                            value={Safty_Requirement}
+                                                            onChange={(e) => {
+                                                              const value = e.target.value;
+                                                              if (value.length <= 2000) {
+                                                                setSafty_Requirement(value);
+                                                              }
+                                                              setIsAssetSaftyReqEmpty(false);
+                                                              setIsFormFiled(true);
+                                                              }}
+                                                              style={{ resize: 'none', width: '100%' }}
+                                                          //  className="TxtAra"
+                                                            className={`Extrasize ${
+                                                              isAssetSaftyReqEmpty
+                                                                ? "errorEmpty second"
+                                                                : "TxtAra second"
+                                                            }`}
+                                                          />
+                                                        </Stack>
                                                 </Grid>
                                                 </Box>
                                             
@@ -7219,6 +7297,13 @@ if (
                                             className="fntlog"
                                           />
                                         ) : item.file_name.toLowerCase().endsWith(".xlsx") ? (
+                                          <FontAwesomeIcon
+                                            icon={faFileExcel} 
+                                            onClick={() => openXlsxInNewTab(item.attachment)}
+                                            style={{ width: "35px", height: "35px", cursor:"pointer", }}
+                                            className="fntxlsx"
+                                          />
+                                        ) : item.file_name.toLowerCase().endsWith(".xls") ? (
                                           <FontAwesomeIcon
                                             icon={faFileExcel} 
                                             onClick={() => openXlsxInNewTab(item.attachment)}

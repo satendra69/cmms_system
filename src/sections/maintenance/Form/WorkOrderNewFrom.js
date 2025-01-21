@@ -180,6 +180,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 export default function WorkOrderText({ currentUser, onPageChange }) {
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_name = localStorage.getItem("emp_mst_name");
+  let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
   const location = useLocation();
   //const searchParams = new URLSearchParams(location.search);
 
@@ -3447,7 +3448,7 @@ if (missingFields.length > 0) {
       ? Moment(CompletionDate2).format("YYYY-MM-DD HH:mm:ss.SSS")
       : "";
     let CompleteStatus;
-    console.log("selected_Status2_____",selected_Status2);
+   // console.log("selected_Status2_____",selected_Status2);
     if (selected_Status2.label === "" || selected_Status2.label === null) {
       CompleteStatus = "";
     } else {
@@ -3482,7 +3483,7 @@ if (missingFields.length > 0) {
     var json_workorder = {
       site_cd: site_ID,
       wko_mst_status: CompleteStatus.trim(),
-      audit_user: emp_mst_name.trim(),
+      audit_user: emp_mst_login_id.trim(),
       wko_det_cmpl_date: formattedDate,
       wko_det_corr_action: CorrectiveActionTemp.trim(),
       wko_sts_wo_no: WorkOrderNo,
@@ -3588,7 +3589,7 @@ if (missingFields.length > 0) {
     var json_workorder = {
       site_cd: site_ID,
       wko_mst_status: CloseStatus.trim(),
-      audit_user: emp_mst_name.trim(),
+      audit_user: emp_mst_login_id.trim(),
       wko_det_close_date: formattedDate,
       wko_det_corr_action: CorrectiveActionTemp.trim(),
       wko_sts_wo_no: WorkOrderNo,
@@ -3649,6 +3650,9 @@ if (missingFields.length > 0) {
 
   const formatDuration = (duration) => {
     // const seconds = Math.floor(duration % 60);
+    if (duration == null) {
+      return "";
+    }
     const minutes = Math.floor(duration % 60);
     const hours = Math.floor((duration % 1440) / 60);
     const days = Math.floor(duration / 1440);
@@ -3657,7 +3661,7 @@ if (missingFields.length > 0) {
       return `${days}d: ${hours}h: ${minutes}m`;
     } else if (hours > 0) {
       return `${hours}h: ${minutes}m`;
-    } else if (minutes > 0) {
+    } else if (minutes >= 0) {
       return `${minutes}m`;
     } else {
       return "";
@@ -3714,7 +3718,7 @@ if (missingFields.length > 0) {
           `/get_workordermaster_statusaudit.php?site_cd=${site_ID}&RowID=${RowID}`
         );
       }
-       //console.log("responseJson___status",responseJson);
+       console.log("responseJson___status",responseJson);
       if (responseJson.data.status === "SUCCESS") {
         // console.log('get_workordermaster_statusaudit', responseJson.data.data)
 
@@ -7766,6 +7770,13 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                                   className="fntlog"
                                                 />
                                               ) : item.file_name.toLowerCase().endsWith(".xlsx") ? (
+                                                <FontAwesomeIcon
+                                                  icon={faFileExcel} 
+                                                  onClick={() => openXlsxInNewTab(item.attachment)}
+                                                  style={{ width: "35px", height: "35px", cursor:"pointer" }}
+                                                  className="fntxlsx"
+                                                />
+                                              ) : item.file_name.toLowerCase().endsWith(".xls") ? (
                                                 <FontAwesomeIcon
                                                   icon={faFileExcel} 
                                                   onClick={() => openXlsxInNewTab(item.attachment)}

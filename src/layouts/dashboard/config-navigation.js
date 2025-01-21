@@ -1,11 +1,9 @@
-import { Component, useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 // routes
-import { paths } from "src/routes/paths";
+//import { paths } from "src/routes/paths";
 // locales
 import { useLocales } from "src/locales";
 import httpCommon from "src/http-common";
-// components
-import SvgColor from "src/components/svg-color";
 
 // icon menu import
 
@@ -121,12 +119,10 @@ export function useNavData() {
 
   const [menuItems, setMenuItems] = useState([]);
 
-  const [activeMenu, setActiveMenu] = useState(null);
-
   useEffect(() => {
     const fetchSideBarMenuList = async () => {
       try {
-        const url = `/getSideBarMenuList.php?site_cd=${site_ID}&emp_mst_empl_id=${empLoginId}`;
+        const url = `/get_side_bar_menu_list.php?site_cd=${site_ID}&emp_mst_empl_id=${empLoginId}`;
         const response = await httpCommon.get(url);
     //   console.log("response____menu", response);
         if (response.data.data.length > 0) {

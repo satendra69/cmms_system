@@ -403,42 +403,6 @@ export default function EmployeForm({ currentUser }) {
   const handleClosedd2 = () => setShowdd2(false);
   const [Button_save, setButton_save] = useState("");
 
-  const [WorkRequestNo, setWorkRequestNo] = useState("");
-  const [WorkRequestNo_disabled, setWorkRequestNo_disabled] = useState(false);
-  const [ApprovalStatus, setApprovalStatus] = useState("");
-  const [ApprovalStatus_disabled, setApprovalStatus_disabled] = useState(false);
-  const [Charge_Cost_Center, setCharge_Cost_Center] = useState([]);
-  const [selected_Charge_Cost_Center, setSelected_Charge_Cost_Center] =
-    useState([]);
-  const [Asset_No, setAsset_No] = useState([]);
-  const [selected_Asset_No, setSelected_Asset_No] = useState([]);
-  const [Asset_Location, setAsset_Location] = useState([]);
-  const [selected_Asset_Location, setSelected_Asset_Location] = useState([]);
-  const [OriginalPriority, setOriginalPriority] = useState([]);
-  const [selected_OriginalPriority, setSelected_OriginalPriority] = useState(
-    []
-  );
-
-  const [Level, setLevel] = useState([]);
-  const [selected_Level, setSelected_Level] = useState([]);
-  const [OriginationDate, setOriginationDate] = useState(new Date());
-  const [WorkType, setWorkType] = useState([]);
-  const [selected_WorkType, setSelected_WorkType] = useState([]);
-  const [DueDate, setDueDate] = useState(new Date());
-  const [WorkClass, setWorkClass] = useState([]);
-  const [selected_WorkClass, setSelected_WorkClass] = useState([]);
-  const [Work_Group, setWork_Group] = useState([]);
-  const [selected_Work_Group, setSelected_Work_Group] = useState([]);
-  const [Work_Area, setWork_Area] = useState([]);
-  const [selected_Work_Area, setSelected_Work_Area] = useState([]);
-  const [ProjectID, setProjectID] = useState([]);
-  const [selected_ProjectID, setSelected_ProjectID] = useState([]);
-  const [Phone, setPhone] = useState("");
-  const [Originator, setOriginator] = useState([]);
-  const [selected_Originator, setSelected_Originator] = useState([]);
-  const [FaultCode, setFaultCode] = useState([]);
-  const [selected_FaultCode, setSelected_FaultCode] = useState([]);
-  const [Description, setDescription] = useState("");
   const [UDFNote1, setUDFNote1] = useState("");
   const [UDFNote2, setUDFNote2] = useState("");
   const [UDFText_1, setUDFText_1] = useState("");
@@ -484,14 +448,6 @@ export default function EmployeForm({ currentUser }) {
   const [UDFDate_9, setUDFDate_9] = useState("");
   const [UDFDate_10, setUDFDate_10] = useState("");
 
-  const [ApprovedBy, setApprovedBy] = useState("");
-  const [ApprovedDate, setApprovedDate] = useState(new Date());
-  const [WorkOrderNo, setWorkOrderNo] = useState("");
-  const [WorkStatus, setWorkStatus] = useState("");
-
-  const [RejectedBy, setRejectedBy] = useState("");
-  const [RejectedDate, setRejectedDate] = useState(new Date());
-  const [RejectedDescription, setRejectedDescription] = useState("");
 
   const [Tabvalue, setTabValue] = useState(0);
 
@@ -507,8 +463,6 @@ export default function EmployeForm({ currentUser }) {
 
   const ParentFlag_handleClose = () => setParentFlag_Show(false);
   const ParentFlag_handleShow = () => setParentFlag_Show(true);
-
-  const [AutoNumring, setAutoNumring] = useState("");
 
   // autocomplete state
   const [Status, setStatus] = useState([]);
@@ -2715,7 +2669,7 @@ export default function EmployeForm({ currentUser }) {
                     },
                   }
                 );
-
+                console.log("emp__ref___",response);
                 if (response.data.status == "SUCCESS") {
                   Swal.close();
                   Swal.fire({
@@ -5668,7 +5622,7 @@ export default function EmployeForm({ currentUser }) {
                                 fontWeight: "bold",
                               }}
                             >
-                              Reference
+                              Reference 
                             </div>
                           </div>
                         </div>
@@ -5744,6 +5698,13 @@ export default function EmployeForm({ currentUser }) {
                                       className="fntlog"
                                     />
                                   ) : item.file_name.toLowerCase().endsWith(".xlsx") ? (
+                                    <FontAwesomeIcon
+                                      icon={faFileExcel} 
+                                      onClick={() => openXlsxInNewTab(item.attachment)}
+                                      style={{ width: "35px", height: "35px", cursor:"pointer", }}
+                                      className="fntxlsx"
+                                    />
+                                  ): item.file_name.toLowerCase().endsWith(".xls") ? (
                                     <FontAwesomeIcon
                                       icon={faFileExcel} 
                                       onClick={() => openXlsxInNewTab(item.attachment)}
@@ -6106,15 +6067,7 @@ export default function EmployeForm({ currentUser }) {
                             className="form-control form-control-lg"
                             id="formFileMultiple"
                           />
-                          {/* <Button
-                                         onClick={handleButtonClick}
-                                         type="submit"
-                                        // className="btn Refbtl"
-                                        className="tabAddButton"
-                                         
-                                       >
-                                         + Add Attachment
-                                       </Button> */}
+                      
                         </div>
                       </form>
                     </div>

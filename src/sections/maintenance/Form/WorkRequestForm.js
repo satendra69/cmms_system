@@ -494,7 +494,7 @@ export default function WorkRequestForm({ currentUser }) {
         "/get_workrequest_select.php?RowID=" + RowID
       );
     
-       console.log("SELECT WKR: ", responseJson);
+      // console.log("SELECT WKR: ", responseJson);
       if (responseJson.data.status === "SUCCESS") {
         // **************************************** check read data ******************************************
 
@@ -1206,7 +1206,7 @@ export default function WorkRequestForm({ currentUser }) {
             "&floor=" +
             ""
         );
-        console.log("api responce___",response);
+        //console.log("api responce___",response);
         if (response.data.status === "SUCCESS") {
          
           setSelected_Charge_Cost_Center({
@@ -2280,7 +2280,7 @@ export default function WorkRequestForm({ currentUser }) {
       RowID: RowID,
     };
 
-    console.log("json_workrequest_update",json_updateworkrequest);
+  //  console.log("json_workrequest_update",json_updateworkrequest);
 
     for (let i = 0; i < WorkReqMandatoryFiled.length; i++) {
       const item = WorkReqMandatoryFiled[i];
@@ -2493,7 +2493,7 @@ export default function WorkRequestForm({ currentUser }) {
      const responseJson = await httpCommon.get(
        `/get_work_request_approve_status.php?site_cd=${site_ID}&RowID=${RowID}`
      );
-      console.log("responseJson___audit",responseJson);
+      // console.log("responseJson___audit",responseJson);
      if (responseJson.data.status === "SUCCESS") {
        // console.log('get_workordermaster_statusaudit', responseJson.data.data)
 
@@ -5188,7 +5188,21 @@ function CustomTextField({ rightIcons, ...props }) {
                                           style={{ width: "35px", height: "35px", cursor:"pointer" }}
                                           className="fntxlsx"
                                         />
-                                      ) : (
+                                      ): item.file_name.toLowerCase().endsWith(".xls") ? (
+                                        <FontAwesomeIcon
+                                          icon={faFileExcel} 
+                                          onClick={() => openXlsxInNewTab(item.attachment)}
+                                          style={{ width: "35px", height: "35px", cursor:"pointer" }}
+                                          className="fntxlsx"
+                                        />
+                                      ): item.file_name.toLowerCase().endsWith(".xls") ? (
+                                        <FontAwesomeIcon
+                                          icon={faFileExcel} 
+                                          onClick={() => openXlsxInNewTab(item.attachment)}
+                                          style={{ width: "35px", height: "35px", cursor:"pointer" }}
+                                          className="fntxlsx"
+                                        />
+                                      )  : (
                                         <img
                                           key={index}
                                           src={item.attachment ? `${httpCommon.defaults.baseURL}${item.attachment}` :""}

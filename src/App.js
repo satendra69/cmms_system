@@ -43,6 +43,9 @@ import { SettingsProvider, SettingsDrawer } from 'src/components/settings';
 import { CheckoutProvider } from 'src/sections/checkout/context';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
+
+import { SwalCloseProvider }  from 'src/sections/ContextApi/SwalCloseContext';
+
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/firebase';
@@ -54,6 +57,7 @@ export default function App() {
 
   return (
     <AuthProvider>
+      <SwalCloseProvider>
       <LocalizationProvider>
         <SettingsProvider
           defaultSettings={{
@@ -80,6 +84,7 @@ export default function App() {
           </ThemeProvider>
         </SettingsProvider>
       </LocalizationProvider>
+      </SwalCloseProvider>
     </AuthProvider>
   );
 }

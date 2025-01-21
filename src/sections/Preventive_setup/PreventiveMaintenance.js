@@ -21,7 +21,7 @@ import { Checkbox } from '@mui/material';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ThreeCircles } from 'react-loader-spinner';
 // routes
-import { paths } from 'src/routes/paths';
+
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 import FormControl from '@mui/material/FormControl';
@@ -49,7 +49,6 @@ import {
   getComparator,
   emptyRows,
   TableNoData,
-  TableSkeleton,
   TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
@@ -100,7 +99,6 @@ export default function PreventiveMaintenance() {
   const site_ID = localStorage.getItem('site_ID');
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
-  const themLayOut = localStorage.getItem("themeLayout");
   const [isLoading, setIsLoading] = useState(true);
   const popover = usePopover();
   const router = useRouter();
@@ -460,7 +458,7 @@ export default function PreventiveMaintenance() {
       const response = await httpCommon.post(
         `/get_preventive_list_select_option_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`
       );
-     //  console.log("check___api__data__",response);
+      // console.log("check___api__data__",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -614,6 +612,24 @@ export default function PreventiveMaintenance() {
     [router,currentPage, selectedOption]
   );
 
+ const handleRowClickTable = useCallback(
+    
+    (id,row) => {
+      const Rowid = id;
+      const PMID = row.prm_mst_pm_no;
+      if (Rowid !== '' && PMID !== '') {
+        navigate(`/dashboard/PreventiveSetup/newpmform`, {
+          state: {
+            RowID:Rowid,
+            PM_no: PMID,
+            currentPage,
+            selectedOption,
+          },
+        });
+      }
+    },
+    [router,currentPage, selectedOption]
+  );
 
   const handleResetFilters = useCallback(() => {
     setInputValueSearch("");
@@ -716,7 +732,7 @@ export default function PreventiveMaintenance() {
   };
 
   const handleOptionChangeOprter = (index, operator) => {
-    setRowlikeset(operator);
+   // setRowlikeset(operator);
     const updatedRows = [...rows];
     updatedRows[index].operator = operator;
     setRows(updatedRows);
@@ -743,7 +759,7 @@ export default function PreventiveMaintenance() {
   };
 
   const handleIncludeChangeLogcil = (index, logical) => {
-    setRowAndset(logical.target.value);
+   // setRowAndset(logical.target.value);
     const updatedRows = [...rows];
     updatedRows[index].logical = logical.target.value;
     setLogicalEmptyError(false);
@@ -961,6 +977,9 @@ export default function PreventiveMaintenance() {
         response.data.status === "SUCCESS"
       ) {
       
+        setTableData(response.data.data.result);
+        setTotalRow(response.data.total_count);
+
         setSelectedOption(response.data.titleName);
         setselectDropRowID(response.data.SelectId);
         setExportExcelId(response.data.SelectId);
@@ -1194,7 +1213,7 @@ export default function PreventiveMaintenance() {
     const { name, value } = event.target;
     setFormDataSv((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value.toUpperCase(),
     }));
   };
 
@@ -1281,7 +1300,7 @@ export default function PreventiveMaintenance() {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1311,6 +1330,7 @@ export default function PreventiveMaintenance() {
         queryType: "S",
       },
     ]);
+
     const handleCloseWorkQryList = () => {
       setShowWordOrderQryList(false);
       FilterhandleClose();
@@ -1319,6 +1339,7 @@ export default function PreventiveMaintenance() {
       setRowsQrt([]);
       setRowsortQrt([]);
     };
+
     const RetriveDataQueryList = async () => {
       Swal.fire({
         title: "Please Wait !",
@@ -1364,7 +1385,13 @@ export default function PreventiveMaintenance() {
     };
 
     const DeletePMRegQryList = async () => {
-      const [cf_query_title, RowID] = selectedOptionValue.split("-");
+      const parts = selectedOptionValue.split("-").map(part => part.trim()); 
+      let cf_query_title = ""; 
+      let RowID = ""; 
+      if (parts.length > 1) {
+          cf_query_title = parts.slice(0, -1).join(" -"); 
+          RowID = `${parts[parts.length - 1]}`;
+      }
   
       if (selectedOptionValue && RowID !== "") {
         try {
@@ -1409,14 +1436,66 @@ export default function PreventiveMaintenance() {
           console.error("Error fetching data:", error);
         }
       } else {
-        console.log("empty");
+      //  console.log("empty");
       }
     };
+
     const SavePMQryList = async () => {
-      const [cf_query_title, RowID] = selectedOptionValue.split("-");
+      const parts = selectedOptionValue.split("-").map(part => part.trim());
+      let cf_query_title = ""; 
+      let RowID = ""; 
+      if (parts.length > 1) {
+          cf_query_title = parts.slice(0, -1).join(" -"); 
+          RowID = `${parts[parts.length - 1]}`;
+      }
+
       const isAnySelectedOptionShortEmpty = rowsortQrt.some(
         (row) => !row.selectedOptionShort
       );
+
+      let hasEmptyQrtOperator = false;
+      let hasEmptyQrtValuept = false;
+     
+      let fieldNameQrt = '';
+     // console.log("rowsQrt____first__",rowsQrt);
+      for (const row of rowsQrt) {
+        if (!row.selectedOption ) {
+          hasEmptyQrtOperator = true;
+        }
+        if (!row.valuept) {
+          hasEmptyQrtValuept = true;
+        }
+        
+        if (hasEmptyQrtOperator || hasEmptyQrtValuept ) {
+            if (hasEmptyQrtOperator && hasEmptyQrtValuept) {
+              fieldNameQrt = "Field Name, and Value";
+            }  else if (hasEmptyQrtOperator) {
+              fieldNameQrt = "Field Name";
+            } else if (hasEmptyQrtValuept) {
+              fieldNameQrt = "Value";
+            } 
+            break;  // Stop checking further rows if an error is found
+        }
+    }
+    if (fieldNameQrt !== '') {  // If any field was missing, show the error message
+     // Swal.close();
+      toast.error(`Please fill the required field: ${fieldNameQrt}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+          style: {
+              width: "400px", 
+          }
+      });
+      return false;
+  }
+
       if (isAnySelectedOptionShortEmpty && RowID != "") {
       } else {
         Swal.fire({
@@ -1444,30 +1523,48 @@ export default function PreventiveMaintenance() {
           );
           //  console.log("response__SaveBytncf__",response);
           if (response.data.status == "SUCCESS") {
-            setSelectedOption(cf_query_title);
-            setselectDropRowID(RowID);
-            setExportExcelId(RowID);
+            setIgnoreEffect(false); 
             Swal.close();
             Swal.fire({
               title: "Success!",
               text: "Your query update successfully.",
               icon: "success",
               confirmButtonText: "OK",
+              timer: 3000,
+              timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",
               },
-            }).then((result) => {
-              if (result.isConfirmed) {
-               
-                setIsChecked(false);
-                RetriveDataQueryList();
+              willClose: () => {
+                // Execute these actions when the modal closes
+                setIsChecked(null);
                 setRowsQrt([]);
                 setselectedOptionValue("");
                 setRowsortQrt([]);
                 setRowsort([]);
                 setRows([]);
-               
                 handleCloseWorkQryList();
+                FilterhandleClose();
+                setSelectedOption(cf_query_title);
+                setselectDropRowID(RowID);
+                setExportExcelId(RowID);
+              }
+            }).then((result) => {
+              if (result.isConfirmed) {
+               
+                setIsChecked(null);
+                //   RetriveDataQueryList();
+                   setRowsQrt([]);
+                   setselectedOptionValue("");
+                   setRowsortQrt([]);
+                   setRowsort([]);
+                   setRows([]);
+                 
+                   handleCloseWorkQryList();
+                   FilterhandleClose();
+                   setSelectedOption(cf_query_title);
+                   setselectDropRowID(RowID);
+                   setExportExcelId(RowID);
                 
               }
             });
@@ -1477,6 +1574,7 @@ export default function PreventiveMaintenance() {
         }
       }
     };
+
     const SaveAsPMTbl = () => {
       setShowSaveAs(true);
     };
@@ -1528,7 +1626,7 @@ export default function PreventiveMaintenance() {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1757,6 +1855,7 @@ const handleInputValueChangeQtr2 = (index, newValue) => {
       formDataSv: formDataSv,
       rowsQrtData: rowsQrt,
       rowsortQrtData: rowsortQrt,
+      defaultFlag: isChecked === null ? "notCheckeset" : isChecked ? "1" : "0", 
       SITE_CD: site_ID,
       OWNER_ID: emp_owner,
       availability: "G",
@@ -1773,7 +1872,7 @@ const handleInputValueChangeQtr2 = (index, newValue) => {
         setselectDropRowID(response.data.ROW_ID);
         setExportExcelId(response.data.ROW_ID);
         fetchFilterSubPopupSavedropdon();
-        RetriveDataQueryList();
+     //   RetriveDataQueryList();
         setRowsQrt([]);
         setselectedOptionValue("");
         setRowsortQrt([]);
@@ -2108,7 +2207,7 @@ const handleDropDownPromptSaveAsBtn = async () => {
 };
 
 const TABLE_HEAD = Headerdata && Headerdata.map((item, index) => {
-  const width = [100,110,120,125,160,130,130,150,130,110,150,180,120,180,120,300,120,130,120,300,150,160,150,180,160,140,140,140,180,160,180,190,160,120,120,120,130,120,160,140,155,,130,130,140][index]; 
+  const width = [100,110,140,125,160,130,130,150,130,110,150,180,120,180,120,300,120,130,120,300,150,160,150,180,160,140,140,140,180,160,180,190,160,120,120,120,130,120,160,140,155,,130,130,140][index]; 
   return {
     id: item.accessor,
     label: item.Header,
@@ -2118,7 +2217,6 @@ const TABLE_HEAD = Headerdata && Headerdata.map((item, index) => {
 if (TABLE_HEAD) {
   TABLE_HEAD.unshift({ id: '', label: '', width: 60 });
   TABLE_HEAD.unshift({ id: '', label: 'Action', width: 60 });
- // TABLE_HEAD.push({ id: 'create_date', label: 'Create Date', width: 140 });
 }
 const handelGenrate = () => {
  
@@ -2428,11 +2526,13 @@ const handleCheckboxChange = (row, isChecked) => {
                 <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                  
                   <TableHeadCustom
+
                     order={table.order}
                     orderBy={table.orderBy}
                     headLabel={TABLE_HEAD}
-                    rowCount={tableData?.length || 0}
-                    numSelected={table.selected?.length || 0}
+
+                    rowCount={tableData ? tableData.length : 0}
+                    numSelected={table.selected ? table.selected.length : 0}
                     onSort={table.onSort}
                     className="stickyheader"
                   />
@@ -2500,16 +2600,16 @@ const handleCheckboxChange = (row, isChecked) => {
                                     row={row}
                                     index={index}
                                     rowStats={ResponceStats}
-                                    selected={table.selected.includes(row.col61)}
+                                    selected={table.selected.includes(row.RowID)}
                                     isHighlighted={selectedRowIdbackState && selectedRowIdbackState === row.RowID} 
-                                    onSelectRow={() => table.onSelectRow(row.col61)}
-                                    onDeleteRow={() => handleDeleteRow(row.col61,row)}
+                                    onSelectRow={() => table.onSelectRow(row.RowID)}
+                                    onDeleteRow={() => handleDeleteRow(row.RowID,row)}
                                     onEditRow={() => handleEditRow(row)}
                                     onCheckboxChange={handleCheckboxChange}
-                                    shouldReset={GeneratSelectedRows.length === 0} // Pass the reset trigger
+                                    onClick={() => handleRowClickTable(row.RowID,row)}
+                                   // shouldReset={GeneratSelectedRows.length === 0} // Pass the reset trigger
                                    
-                                  //   onCompleteRow={() => handleCompleteRow(row.col71)}
-                                  //  onCloseRow={() => handleCloseRow(row.col71)}
+                              
                                   />
                                 ))}
                                
@@ -2542,11 +2642,7 @@ const handleCheckboxChange = (row, isChecked) => {
                 }}
                 currentPage={currentPage}
                 rowsPerPageOptions={[]} 
-                //  onRowsPerPageChange={table.onChangeRowsPerPage}
-                // onRowsPerPageChange={(rowsPerPage) => {
-                //   setRowperPage(rowsPerPage.target.value);
-                //   table.onChangeRowsPerPage(rowsPerPage);
-                // }}
+                
               />
           </Card>
           )}
@@ -2584,7 +2680,12 @@ const handleCheckboxChange = (row, isChecked) => {
       />
       {/* =============================== filter model  =================================  */}
       <BootstrapDialog
-        onClose={FilterhandleClose}
+       
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+            FilterhandleClose(event, reason);
+          }
+        }}
         aria-labelledby="customized-dialog-title"
         open={FilterShow}
         maxWidth="md"
@@ -2605,10 +2706,11 @@ const handleCheckboxChange = (row, isChecked) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            padding:"0px !important",
+            margin:"5px !important"
           }}
         >
-          <Iconify icon="material-symbols:close" />
+          <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
         </IconButton>
         <DialogContent dividers>
           <div className="queryBtn">
@@ -2700,7 +2802,7 @@ const handleCheckboxChange = (row, isChecked) => {
                           onChange={(event) =>
                             handleOptionChangeOprter(index, event.target.value)
                           }
-                          value={rowlikeset}
+                          value={row.operator || "like"}
                         >
                           {oprt.map((option, index) => (
                             <MenuItem key={index} value={option.value}>
@@ -2752,7 +2854,7 @@ const handleCheckboxChange = (row, isChecked) => {
                           onChange={(logical) =>
                             handleIncludeChangeLogcil(index, logical)
                           }
-                          value={rowAndset}
+                          value={row.logical || "And"}
                         >
                           {Logcl.map((option, index) => (
                             <MenuItem key={index} value={option.value}>
@@ -2898,7 +3000,12 @@ const handleCheckboxChange = (row, isChecked) => {
       </BootstrapDialog>
        {/* =============================== filter model Save Button  =================================  */}
        <BootstrapDialog
-        onClose={handleCloseSave}
+      
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+            handleCloseSave(event, reason);
+          }
+        }}
         aria-labelledby="customized-dialog-title"
         open={showSave}
         maxWidth="md"
@@ -2919,10 +3026,11 @@ const handleCheckboxChange = (row, isChecked) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            padding:"0px !important",
+            margin:"5px !important"
           }}
         >
-          <Iconify icon="material-symbols:close" />
+          <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
         </IconButton>
         <DialogContent dividers>
           <div className="astSubpopup">
@@ -3010,7 +3118,12 @@ const handleCheckboxChange = (row, isChecked) => {
       </BootstrapDialog>
       {/* =============================== filter model Query List Button  =================================  */}
       <BootstrapDialog
-        onClose={handleCloseWorkQryList}
+       
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+            handleCloseWorkQryList(event, reason);
+          }
+        }}
         aria-labelledby="customized-dialog-title"
         open={showWordOrderQryList}
         maxWidth="md"
@@ -3031,10 +3144,11 @@ const handleCheckboxChange = (row, isChecked) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            padding:"0px !important",
+            margin:"5px !important"
           }}
         >
-          <Iconify icon="material-symbols:close" />
+          <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
         </IconButton>
         <DialogContent dividers>
           <div className="queryBtn">
@@ -3423,7 +3537,12 @@ const handleCheckboxChange = (row, isChecked) => {
       </BootstrapDialog>
          {/* =============================== filter model Save As Button  =================================  */}
          <BootstrapDialog
-        onClose={handleCloseSaveAs}
+        
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+            handleCloseSaveAs(event, reason);
+          }
+        }}
         aria-labelledby="customized-dialog-title"
         open={showSaveAs}
         maxWidth="md"
@@ -3444,10 +3563,11 @@ const handleCheckboxChange = (row, isChecked) => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            padding:"0px !important",
+            margin:"5px !important"
           }}
         >
-          <Iconify icon="material-symbols:close" />
+           <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
         </IconButton>
         <DialogContent dividers>
           <div className="astSubpopup">

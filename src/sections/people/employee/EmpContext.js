@@ -16,9 +16,6 @@ export const EmpProvider = ({ children }) => {
   const [GlobalRef,setGlobalRef] = useState([])
 
 
-
-
-
   return (
     <PeopleContext.Provider value={{ call, setCall,savedOptions,setSavedQptions,rowsPromptGlobal,setRowsPromptGlobal,setRowsPromptSortGlobal,rowsPromptSortGlobal,defineQyeryRetrive,setDefineQueryRetrive,fixedTableData,setFixedTableData }}>
       {children}

@@ -1349,7 +1349,7 @@ console.log("response__",response)
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1681,7 +1681,7 @@ console.log("response__",response)
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -2884,8 +2884,7 @@ const handleClearButton = () => {
                               <>
                             
                             {dataFiltered
-                                //.filter((row, index) => index < RowPerPage)
-                               // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                               
                                 .map((row) => (
                                   <MTRTableRow
                                     key={row.id}
@@ -2971,6 +2970,7 @@ const handleClearButton = () => {
             FilterhandleClose(event, reason);
           }
         }}
+    
         aria-labelledby="customized-dialog-title"
         open={FilterShow}
         maxWidth="md"
@@ -2992,10 +2992,12 @@ const handleClearButton = () => {
             position: "absolute",
             right: 8,
             top: 8,
-            color: (theme) => theme.palette.grey[500],
+            padding:"0px !important",
+            margin:"5px !important"
+           
           }}
         >
-          <Iconify icon="material-symbols:close" />
+          <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
         </IconButton>
         <DialogContent dividers>
           <div className="queryBtn">

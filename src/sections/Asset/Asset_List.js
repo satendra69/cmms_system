@@ -148,7 +148,6 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
   const [assetFilterDpd, setAssetFilterDpd] = useState([]);
  
   const [selectedOptionValue, setselectedOptionValue] = useState();
-  
   const [showWordOrderQryList, setShowWordOrderQryList] = useState(false);
   const handleShowWorkOrderQryList = () => setShowWordOrderQryList(true);
   const [showSaveAs, setShowSaveAs] = useState(false);
@@ -473,13 +472,13 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
   const getb = useCallback(async () => {
     
     setIsLoading(true);
-    console.log("currentPage___getb",currentPage);
+
     try {
      
       const response = await httpCommon.post(
         `/get_asset_list_selectoption_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`
       );
-      console.log("response_____getb___",response);
+     // console.log("response_____getb___",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -520,7 +519,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
     comparator: getComparator(table.order, table.orderBy),
     filters,
   });
-
+   
   const dataInPage = dataFiltered.slice(
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
@@ -1037,7 +1036,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
           admin: emp_owner,
         }
       );
-      console.log("response_____Asset_filter__",response);
+     // console.log("response_____Asset_filter__",response);
     if (
       response.data.data &&
       response.data.data.result &&
@@ -1360,7 +1359,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -1740,7 +1739,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -2446,14 +2445,14 @@ const retriveDataCallback = useCallback(RetriveData, [DefineQueryBtn,currentPage
 const [isButtonClicked, setIsButtonClicked] = useState(false);
 
 useEffect(() => {
- console.log("ignoreEffect____",ignoreEffect);
+ //console.log("ignoreEffect____",ignoreEffect);
   if (ignoreEffect) {
     setIgnoreEffect(false); // Reset the flag
     return;
   }
 
   if (selectDropRowID !== "" && selectDropRowID !== null) {
-    console.log("console_____getb__");
+   // console.log("console_____getb__");
     getb();
   }else if(TableSearchData !="" && TableSearchData != null){
    // console.log("secondQuery____");
@@ -2478,7 +2477,7 @@ useEffect(() => {
 
 // Add Table Header Daynamic value pass
 const TABLE_HEAD = Headerdata && Headerdata.map((item, index) => {
-  const width = [115, 170, 120, 125, 100, 160,125,130,220,250,120,145,80,145,125,120,180,180,130,155,170,180,160,170,170,160,170,170,160,160,180,160,160,170,195,140,100,100,100,140,155,100,100,125,125,150,150,150,150,150,150,150,150,150,150,150,150,150,150,130][index]; 
+  const width = [115, 170, 120, 125, 100, 160,125,130,220,250,120,145,80,145,125,120,180,220,130,155,170,180,160,170,170,160,170,170,160,160,180,160,160,170,195,140,170,170,170,140,155,100,100,125,125,150,150,150,150,150,150,150,150,150,150,230,150,150,150,130][index]; 
   return {
     id: item.accessor,
     label: item.Header,
@@ -2548,10 +2547,8 @@ const handleClearButton = () => {
                   state: { select: "New_Asset" },
                 }}
               >
-             
                 New
               </Button>
-              
             }
             sx={{ mb: { xs: 3, md: 5 } }}
           />
@@ -3712,7 +3709,12 @@ const handleClearButton = () => {
       </BootstrapDialog>
          {/* =============================== filter model Save As Button  =================================  */}
       <BootstrapDialog
-        onClose={handleCloseSaveAs}
+       
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+            handleCloseSaveAs(event, reason);
+          }
+        }}
         aria-labelledby="customized-dialog-title"
         open={showSaveAs}
         maxWidth="md"

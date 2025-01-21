@@ -1,9 +1,6 @@
 import {
   Autocomplete,
   Button,
-  Card,
-  Grid,
-  InputAdornment,
   TextField,
   Typography,
 } from "@mui/material";
@@ -15,10 +12,16 @@ import { Stack, display } from "@mui/system";
 import MasterDialog from "./MasterDialog";
 import httpCommon from "src/http-common";
 import Swal from "sweetalert2";
-import { responsiveProperty } from "@mui/material/styles/cssUtils";
 import { useNavigate } from "react-router";
 
+import { useSwalCloseContext } from "../ContextApi/SwalCloseContext";
+
 function DefaultTabMaster() {
+
+  const { swalCloseTime, updateSwalCloseTime } = useSwalCloseContext();
+
+  console.log("swalCloseTime____",swalCloseTime);
+  
   const [Tabvalue, setTabValue] = useState(0);
   let site_ID = localStorage.getItem("site_ID");
   const [modalDefault, setModalDefault] = useState(false);
@@ -48,6 +51,7 @@ function DefaultTabMaster() {
     WOAssetNo: "",
     POCurrencyCode: "",
     DashBoardRefresh: "",
+    SucClosePopup:"",
     PMLeadDay: "",
     WOGracePeriod: "",
     CostRate: "",
@@ -58,8 +62,6 @@ function DefaultTabMaster() {
   });
   const [refetch, setRefetch] = useState(false);
 
-
-  console.log("days",data.Days)
   // Fetchin form data
 
   useEffect(() => {
@@ -68,7 +70,7 @@ function DefaultTabMaster() {
         const response = await httpCommon.get(
           `/DefaultSettingFormData.php?site_cd=${site_ID}`
         );
-        console.log("responseS", response);
+      
         if (response.data.status === "SUCCESS") {
           setDefaultFormData(response.data.data.DeafultSettings[0]);
           const selectedOption = MrApprovalOptions.find(
@@ -160,7 +162,11 @@ function DefaultTabMaster() {
               newData.DashBoardRefresh =
                 response.data.data.DeafultSettings[0].dft_mst_dsh_refresh;
             }
-
+            if (response.data.data.DeafultSettings[0].dft_mst_clo_popup) {
+              newData.SucClosePopup =
+                response.data.data.DeafultSettings[0].dft_mst_clo_popup;
+            }
+           
             if (response.data.data.DeafultSettings[0].dft_mst_prm_led) {
               newData.PMLeadDay =
                 response.data.data.DeafultSettings[0].dft_mst_prm_led;
@@ -199,74 +205,7 @@ function DefaultTabMaster() {
             return newData;
           });
 
-          // setData((pre) => ({
-          //   ...pre,
-          //   LaborAccount:
-          //     response.data.data.DeafultSettings[0].dft_mst_lab_act +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].lab_act_desc,
-
-          //   MaterialAccount:
-          //     response.data.data.DeafultSettings[0].dft_mst_mat_act +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].mat_act_desc,
-          //   ContractAccount:
-          //     response.data.data.DeafultSettings[0].dft_mst_con_act +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].con_act_desc,
-          //   WRWorkPriority:
-          //     response.data.data.DeafultSettings[0].dft_mst_wkr_pri +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].wkr_pri_desc,
-          //   WOWorkPriority:
-          //     response.data.data.DeafultSettings[0].dft_mst_wko_pri +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].wko_pri_desc,
-          //   PMWorkPriority:
-          //     response.data.data.DeafultSettings[0].dft_mst_prm_pri +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].prm_pri_desc,
-          //   AssetStatus:
-          //     response.data.data.DeafultSettings[0].dft_mst_ast_sts +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].ast_sts_desc,
-          //   WOWorkStatus:
-          //     response.data.data.DeafultSettings[0].dft_mst_wko_sts +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].wrk_sts_desc,
-          //   MRStatus:
-          //     response.data.data.DeafultSettings[0].dft_mst_mtr_sts +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].mtr_sts_description,
-          //   PRStatus:
-          //     response.data.data.DeafultSettings[0].dft_mst_pur_sts +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].pur_sts_description,
-          //   POStatus:
-          //     response.data.data.DeafultSettings[0].dft_mst_puo_sts +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].puo_sts_description,
-          //   WRAssetNo:
-          //     response.data.data.DeafultSettings[0].dft_mst_wkr_asset_no,
-          //   WROriginator:
-          //     response.data.data.DeafultSettings[0].dft_mst_wkr_originator +
-          //     " : " +
-          //     response.data.data.DeafultSettings[0].emp_mst_name,
-          //   WOAssetNo:
-          //     response.data.data.DeafultSettings[0].dft_mst_wko_asset_no,
-          //   POCurrencyCode:
-          //     response.data.data.DeafultSettings[0].dft_mst_po_curr_code,
-          //   DashBoardRefresh:
-          //     response.data.data.DeafultSettings[0].dft_mst_dsh_refresh,
-          //   PMLeadDay: response.data.data.DeafultSettings[0].dft_mst_prm_led,
-          //   WOGracePeriod:
-          //     response.data.data.DeafultSettings[0].dft_mst_grace_period,
-          //   CostRate:
-          //     response.data.data.DeafultSettings[0].dft_mst_eoq_carry_cost_rate,
-          //   ProcessCost:
-          //     response.data.data.DeafultSettings[0].dft_mst_eoq_po_process_cost,
-          //   RowID: response.data.data.DeafultSettings[0].RowID,
-          // }));
+          
         }
       } catch (error) {
         console.log("error", error);
@@ -284,10 +223,10 @@ function DefaultTabMaster() {
 
   const getDefaultFromLebel = async () => {
     try {
-      const response = await httpCommon.get("/getDefaultFromLebal.php");
+      const response = await httpCommon.get("/get_default_from_lebal.php");
       // console.log("response____getLabel",response);
       if (response.data.status === "SUCCESS") {
-        console.log("responseLabel", response);
+       
         setDefaultLabel(response.data.data.dft_mst);
       }
     } catch (error) {
@@ -340,33 +279,12 @@ function DefaultTabMaster() {
     }
     return "";
   };
-  function CustomTextField({ rightIcons, ...props }) {
-    return (
-      <TextField
-        {...props}
-        InputProps={{
-          endAdornment: rightIcons && (
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              {rightIcons.map((icon, index) => (
-                <IconButton key={index} onClick={icon.props.onClick}>
-                  {icon}
-                </IconButton>
-              ))}
-            </div>
-          ),
-        }}
-      />
-    );
-  }
 
-  const handleChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
   const handleTextChange = (e) => {
     let inputValue = e.target.value;
 
     // DashBoardRefresh
-    if(e.target.name === "DashBoardRefresh" || e.target.name === "PMLeadDay" || e.target.name === "WOGracePeriod" || e.target.name === "CostRate" || e.target.name === "ProcessCost"){
+    if(e.target.name === "DashBoardRefresh" || e.target.name === "PMLeadDay" || e.target.name === "WOGracePeriod" || e.target.name === "CostRate" || e.target.name === "ProcessCost" || e.target.name === "SucClosePopup"){
     if(inputValue > 4){
       inputValue = inputValue.slice(0,4)
     }
@@ -430,6 +348,7 @@ function DefaultTabMaster() {
       WOAssetNo: data.WOAssetNo,
       POCurrencyCode: data.POCurrencyCode,
       DashBoardRefresh: data.DashBoardRefresh,
+      SucClosePopup : data.SucClosePopup,
       PMLeadDay: data.PMLeadDay,
       WOGracePeriod: data.WOGracePeriod,
       CostRate: data.CostRate,
@@ -477,6 +396,7 @@ function DefaultTabMaster() {
       dft_mst_grace_period: newData.WOGracePeriod,
       dft_mst_eoq_carry_cost_rate: newData.CostRate,
       dft_mst_eoq_po_process_cost: newData.ProcessCost,
+      dft_mst_clo_popup: newData.SucClosePopup,
       RowID: newData.RowID,
     };
 
@@ -514,18 +434,20 @@ function DefaultTabMaster() {
           dft_mst_grace_period: newData.WOGracePeriod,
           dft_mst_eoq_carry_cost_rate: newData.CostRate,
           dft_mst_eoq_po_process_cost: newData.ProcessCost,
+          dft_mst_clo_popup : newData.SucClosePopup,
           dft_mst_ww_disp_day:data.Days,
           RowID: newData.RowID,
         }
       );
-      console.log("response", response);
+    
       if (response.data.status === "SUCCESS") {
+        updateSwalCloseTime(newData.SucClosePopup);
         Swal.fire({
           icon: "success",
           title: "Success!",
           text: "Default Settings Updated Successfully.",
           confirmButtonText: "OK",
-          timer: 2000,
+          timer: swalCloseTime || 2000,
         });
         setRefetch(true);
       }
@@ -1547,6 +1469,32 @@ function DefaultTabMaster() {
           </div>
         </Stack>
 
+
+         {/*  Dashboard Refresh Interval (second)*/}
+         <Stack spacing={1} sx={{ pb: 1.5 }}>
+          <Typography
+            variant="subtitle2"
+            // className={findCustomizerequiredLabel("ast_mst_parent_id")}
+          >
+            {findCustomizeLabel("dft_mst_clo_popup") || "Default Success Close Popup (second):"}
+          </Typography>
+          <div
+          // ref={assetNoAutocompleteRef}
+          >
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              size="small"
+              name="SucClosePopup"
+              placeholder="3"
+              type="number"
+              value={data ? data.SucClosePopup : ""}
+              onChange={handleTextChange}
+              fullWidth
+              inputProps={{style:{textAlign:"right"}}}
+            />
+          </div>
+        </Stack>
         {/* dft_mst_ww_send_ntf */}
 
         {/* <Stack spacing={1} sx={{ pb: 1.5 }}>

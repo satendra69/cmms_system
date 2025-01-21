@@ -20,6 +20,7 @@ import Iconify from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import httpCommon from 'src/http-common';
+import { fontSize } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -188,7 +189,7 @@ const getStatusAll = async () => {
 
   }, []);
 
-  const maxCharactersToShow = 35;
+  const maxCharactersToShow = 30;
   const truncatedShortDescription =
   col9 && col9.length > maxCharactersToShow
       ? `${col9.substring(0, maxCharactersToShow)}...`
@@ -198,7 +199,18 @@ const getStatusAll = async () => {
     col10 && col10.length > maxCharactersToShow
         ? `${col10.substring(0, maxCharactersToShow)}...`
         : col10;  
-    
+
+    const truncatedRemark =
+    col18 && col18.length > maxCharactersToShow
+        ? `${col18.substring(0, maxCharactersToShow)}...`
+        : col18; 
+
+    const truncatedNote1 =  col56 && col56.length > maxCharactersToShow
+    ? `${col56.substring(0, maxCharactersToShow)}...`
+    : col56; 
+    const truncatedNote2 =  col57 && col57.length > maxCharactersToShow
+    ? `${col57.substring(0, maxCharactersToShow)}...`
+    : col57; 
 
  const formatNumber = (number) => {
     if (number == null) {
@@ -328,7 +340,9 @@ const getStatusAll = async () => {
         </TableCell>
         <TableCell>{col16}</TableCell>
         <TableCell>{col17}</TableCell>
-        <TableCell>{col18}</TableCell>
+        <Tooltip title={col18} placement="top" arrow >
+              <span style={{fontSize:"13px"}}>{truncatedRemark}</span>
+        </Tooltip>
         <TableCell>{formatNumber(col19)}</TableCell>
         <TableCell>{col20}</TableCell>
         <TableCell>{col21}</TableCell>
@@ -366,7 +380,10 @@ const getStatusAll = async () => {
         <TableCell>{formatDate2(col53)}</TableCell>
         <TableCell>{formatDate2(col54)}</TableCell>
         <TableCell>{formatDate2(col55)}</TableCell>
-        <TableCell>{col56}</TableCell>
+        
+        <Tooltip title={col56} placement="top" arrow >
+              <span style={{fontSize:"13px"}}>{truncatedNote1}</span>
+        </Tooltip>
         <TableCell>{col57}</TableCell>
         <TableCell>{col58}</TableCell>
         <TableCell> {formatDate(col59)}</TableCell>

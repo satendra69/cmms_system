@@ -719,7 +719,7 @@ const [LogcValueQl,setLogcValueQl] = useState("And")
   
 // Get Api data useEffect first time 
 const fetchData = useCallback(async () => {
-  console.log("fetch___data___",selectedOption);
+  //console.log("fetch___data___",selectedOption);
   setIsLoading(true);
   try {
     
@@ -949,7 +949,7 @@ const getb = useCallback(async (page) => {
       `/get_emp_table_data_List.php?site_cd=${site_ID}&ItemID=${ItemID}&page=${CurrentPageValue}&EmpId=${emp_owner}`,
     );
 
-   console.log("response____getb",response);
+  // console.log("response____getb",response);
     if (
       response.data.data &&
       response.data.data.result &&
@@ -1237,17 +1237,16 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
     }
   };
 
-  const getbCallback = useCallback(getb, [selectDropRowID]);
-  const fetchDataCallback = useCallback(fetchData, [site_ID, currentPage]);
+
   useEffect(() => {
-    console.log("first____effect__",ignoreEffect);
+   
     if (ignoreEffect) {
-      console.log("second____effect__");
+     
       setIgnoreEffect(false); // Reset the flag
       return;
     }
     if (selectDropRowID !== "" && selectDropRowID !== null) {
-      console.log("thired____effect__",selectDropRowID);
+     
 
       getb();
     } else if (TableSearchData != "" && TableSearchData != null) {
@@ -1272,7 +1271,6 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage,
   );
-
 
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
@@ -2090,7 +2088,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Query Name cannot be empty!',
+          text: `Query name can't be empty!`,
           customClass: {
             container: "swalcontainercustom",
           },
@@ -2381,7 +2379,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Query Name cannot be empty!',
+        text: `Query name can't be empty!`,
         customClass: {
           container: "swalcontainercustom",
         },
