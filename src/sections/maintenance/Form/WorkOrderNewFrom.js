@@ -93,6 +93,7 @@ import WorkOrderMaterial from "../component_module/Planning/WorkOrderMaterial";
 import WorkorderSpecial from "../component_module/Planning/WorkOrderSpecial";
 import WorkOrderOutsource from "../component_module/Planning/WorkOrderOutsource";
 import WorkOrderMisc from "../component_module/Planning/WorkOrderMisc";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 
 //const MySwal = withReactContent(Swal);
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -182,6 +183,9 @@ export default function WorkOrderText({ currentUser, onPageChange }) {
   let emp_mst_name = localStorage.getItem("emp_mst_name");
   let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
   const location = useLocation();
+
+  const {swalCloseTime} = useSwalCloseContext();
+
   //const searchParams = new URLSearchParams(location.search);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -268,6 +272,7 @@ export default function WorkOrderText({ currentUser, onPageChange }) {
 
   const [Work_Area, setWork_Area] = useState([]);
   const [Originator, setOriginator] = useState([]);
+  const [inputValueOriginator, setInputValueOriginator] = useState("");
   const [WorkOrderNo, setWorkOrderNo] = useState("");
   //const [selected_Status, setSelected_Status] = useState([]);
   const [selected_Status, setSelected_Status] = useState();
@@ -519,7 +524,7 @@ export default function WorkOrderText({ currentUser, onPageChange }) {
           "/get_workordermaster_select.php?RowID=" + RowID
         );
       }
-       console.log("responseJson___today___111", responseJson);
+      // console.log("responseJson___today___111", responseJson);
       if (responseJson.data.status === "SUCCESS") {
         // *** Set All data to state
         const formatNumber = (number) => {
@@ -2491,7 +2496,9 @@ setSelected_Assign_To({
       wko_mst_chg_costcenter: setCharge_Cost_Center.trim(),
       wko_mst_due_date: date_of_due,
       wko_mst_work_area: setWork_Area.trim(),
-      wko_mst_originator: setOriginator.trim(),
+    //  wko_mst_originator: setOriginator.trim(), 
+      wko_mst_originator: setOriginator?.trim() || inputValueOriginator?.trim() || "",
+
       wko_mst_asset_level: setAsset_Level.trim(),
       wko_mst_phone: Phone ? Phone.trim() :"",
       wko_mst_asset_location: setAsset_Location.trim(),
@@ -2634,7 +2641,7 @@ setSelected_Assign_To({
                 },
                 title: response.data.status,
                 text: response.data.message,
-                timer: 3000, 
+                timer: swalCloseTime, 
                 timerProgressBar: true, 
                 willClose: () => {
                   if(WorkOrderSubModuleBtn){
@@ -3187,7 +3194,9 @@ setSelected_Assign_To({
       wko_mst_chg_costcenter: Charge_Cost_Center[0].trim(),
       wko_mst_due_date: date_of_due,
       wko_mst_work_area: setWork_Area.trim(),
-      wko_mst_originator: OriginatorUP.trim(),
+   //   wko_mst_originator: OriginatorUP.trim(),
+      wko_mst_originator: OriginatorUP?.trim() || inputValueOriginator?.trim() || "",
+
       wko_mst_asset_level: Asset_Level.trim(),
       wko_mst_phone: Phone,
       wko_mst_asset_location: setAsset_Location.trim(),
@@ -3339,7 +3348,7 @@ if (missingFields.length > 0) {
                 },
                 title: response.data.status,
                 text: `Work Oder ` + WorkOrderNo + ` Updated Successfully`,
-                timer: 3000, // Auto-close after 3 seconds
+                timer: swalCloseTime, // Auto-close after 3 seconds
                 timerProgressBar: true, // Optional: Shows a progress bar
                 willClose: () => {
                   // Navigate to the desired page when the modal closes
@@ -3379,7 +3388,7 @@ if (missingFields.length > 0) {
             },
             title: response.data.status,
             text: response.data.message,
-            timer: 3000, 
+            timer: swalCloseTime, 
             timerProgressBar: true, 
             willClose: () => {
               // Navigate to the desired page when the modal closes
@@ -8565,6 +8574,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                           display="grid"
                          
                         >
+                         
                            <Box>
                               <Grid container spacing={2}>
                                 <Grid item xs={12} md={6}>
@@ -8575,9 +8585,15 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                   </Typography>
                                   <Autocomplete
                                     options={Originator}
-                                    value={selected_Originator?.label ?? ""}
+                                    freeSolo
+                                    value={selected_Originator?.label || inputValueOriginator || ""}
                                     onChange={(event, value) => {
                                       setSelected_Originator(value || null);
+                                      setInputValueOriginator("");
+                                      setIsFormFiled(true);
+                                    }}
+                                    onInputChange={(event, newInputValue) => {
+                                      setInputValueOriginator(newInputValue.toUpperCase()); 
                                       setIsFormFiled(true);
                                     }}
                                   disabled={statusKey === "CLO"}
@@ -8595,6 +8611,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                     )}
                                   />
                                 </Stack>
+                               
                                 <Stack spacing={1} sx={{ pb: 1.5 }}>
                                     <Typography
                                       variant="subtitle2"

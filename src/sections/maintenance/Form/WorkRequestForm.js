@@ -67,6 +67,7 @@ import OriginalPriorityModel from "../model/OriginalPriorityModel";
 import APIServices from "src/services/APIServices";
 import List1 from "../WorkRequestModule/List1";
 import List2 from "../WorkRequestModule/List2";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -109,6 +110,8 @@ const StepContainer = styled("div")`
 export default function WorkRequestForm({ currentUser }) {
   let site_ID = localStorage.getItem("site_ID");
   const location = useLocation();
+
+  const { swalCloseTime } = useSwalCloseContext();
 
   const state = location.state || {};
   const { select,RowID, WorkReqNo, currentPage, selectedOption,selectDropRowID,AssetId,TabBtnName} = state || {};
@@ -170,6 +173,8 @@ export default function WorkRequestForm({ currentUser }) {
   const [Phone, setPhone] = useState("");
   const [Originator, setOriginator] = useState([]);
   const [selected_Originator, setSelected_Originator] = useState([]);
+  const [inputValueOriginator, setInputValueOriginator] = useState("");
+
   const [FaultCode, setFaultCode] = useState([]);
   const [selected_FaultCode, setSelected_FaultCode] = useState([]);
   const [Description, setDescription] = useState("");
@@ -494,7 +499,7 @@ export default function WorkRequestForm({ currentUser }) {
         "/get_workrequest_select.php?RowID=" + RowID
       );
     
-      // console.log("SELECT WKR: ", responseJson);
+       console.log("SELECT WKR: ", responseJson);
       if (responseJson.data.status === "SUCCESS") {
         // **************************************** check read data ******************************************
 
@@ -1675,7 +1680,8 @@ export default function WorkRequestForm({ currentUser }) {
       site_cd: site_ID,
       wkr_mst_wr_no: WorkRequestNo.trim(),
       wkr_mst_wr_status: ApprovalStatus.trim(),
-      wkr_mst_originator: setOriginator.trim(),
+      //wkr_mst_originator: setOriginator.trim(),
+      wkr_mst_originator: setOriginator?.trim() || inputValueOriginator?.trim() || "",
       wkr_mst_orig_priority: setOriginalPriority,
       wkr_mst_phone: Phone.trim(),
       wkr_mst_org_date: date_of_origination,
@@ -1829,7 +1835,7 @@ export default function WorkRequestForm({ currentUser }) {
          },
          title: response.data.status,
          text: response.data.message,
-         timer: 3000, 
+         timer: swalCloseTime, 
          timerProgressBar: true, 
          willClose: () => {
            if(WRSubModuleBtn){
@@ -2204,7 +2210,8 @@ export default function WorkRequestForm({ currentUser }) {
       site_cd: site_ID,
       wkr_mst_wr_no: WorkRequestNo?.trim() ?? "",
       wkr_mst_wr_status: ApprovalStatus?.trim() ?? "",
-      wkr_mst_originator: setOriginator.trim(),
+      
+      wkr_mst_originator: setOriginator?.trim() || inputValueOriginator?.trim() || "",
       wkr_mst_orig_priority: setOriginalPriority.trim(),
       wkr_mst_phone: Phone?.trim() ?? "",
       wkr_mst_org_date: date_of_origination,
@@ -2336,7 +2343,7 @@ export default function WorkRequestForm({ currentUser }) {
                 icon: "success",
                 title: response.data.status,
                 text: `Work Request ` + WorkRequestNo + `Updated Successfully`,
-                timer: 3000, // Auto-close after 3 seconds
+                timer: swalCloseTime, // Auto-close after 3 seconds
                 timerProgressBar: true, // Optional: Shows a progress bar
                 willClose: () => {
                   // Navigate to the desired page when the modal closes
@@ -2374,7 +2381,7 @@ export default function WorkRequestForm({ currentUser }) {
             icon: "success",
             title: response.data.status,
             text: response.data.message,
-            timer: 3000, 
+            timer: swalCloseTime, 
             timerProgressBar: true, 
             willClose: () => {
               // Navigate to the desired page when the modal closes
@@ -3440,10 +3447,17 @@ function CustomTextField({ rightIcons, ...props }) {
                               
                                 <Autocomplete
                                   options={Originator}
-                                  value={selected_Originator ? selected_Originator.label : ''}
+                                  freeSolo
+                                 
+                                  value={selected_Originator?.label || inputValueOriginator || ""}
                                   onChange={(event, value) => {
-                                    setSelected_Originator(value);
+                                    setSelected_Originator(value || null);
+                                    setInputValueOriginator("");
                                     setErrorField(null); 
+                                    setIsFormFiled(true);
+                                  }}
+                                  onInputChange={(event, newInputValue) => {
+                                    setInputValueOriginator(newInputValue.toUpperCase()); 
                                     setIsFormFiled(true);
                                   }}
                                   disabled={ApprovalStatus === "A" || ApprovalStatus === "D"}

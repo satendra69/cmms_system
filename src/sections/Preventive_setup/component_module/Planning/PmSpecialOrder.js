@@ -1117,10 +1117,11 @@ const handleDelete = async (data, index, event) => {
                 position: "absolute",
                 right: 8,
                 top: 8,
-                color: (theme) => theme.palette.grey[500],
+                padding:"0px !important",
+                margin:"5px !important"
               }}
             >
-              <Iconify icon="material-symbols:close" />
+              <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
             </IconButton>
             <DialogContent dividers>
               <div

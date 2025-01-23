@@ -16,7 +16,7 @@ import {
 import Iconify from "src/components/iconify";
 import httpCommon from "src/http-common";
 
-import { ConfigProvider, DatePicker as AntDatePicker } from "antd";
+import {  DatePicker as AntDatePicker } from "antd";
 import { Icon } from "@iconify/react";
 import dayjs from "dayjs";
 import { width } from "@mui/system";
@@ -38,8 +38,7 @@ export default function ListOneDialogUpdate({
   state
 
 }) {
-  let site_ID = localStorage.getItem("site_ID");
-  let loginUser = localStorage.getItem("emp_mst_login_id");
+
   const [textField, setTextField] = React.useState("");
   const [DefaultModal, setDefaultModal] = React.useState(false);
   const [groupLabel, setGroupLabel] = React.useState([]);
@@ -121,7 +120,7 @@ export default function ListOneDialogUpdate({
     }))
   };
 
-
+console.log("MaintenceResult_____",MaintenceResult);
 
   React.useEffect(()=>{
     // const filterResult=MaintenceResult.find((item)=>item.RowID == rowData.RowID)
@@ -189,26 +188,9 @@ export default function ListOneDialogUpdate({
     
     },[rowData])
 
-
-
-
-
-
-
   // DroupDown States SuperVisor Id
-  const [sIdDrp, setSIdDrp] = React.useState([]);
-  const [selected_sId, setSelected_sId] = React.useState("");
 
-  
-  const handleEditClick = (e) => {
-    setTextField(e);
-  };
-  const handleCloseDefault = (e, result) => {
-    if (result !== "backdropClick") {
-      setTextField("");
-      setDefaultModal(false);
-    }
-  };
+  const [selected_sId, setSelected_sId] = React.useState("");
 
   React.useEffect(() => {
     if (textField) {
@@ -260,59 +242,101 @@ export default function ListOneDialogUpdate({
   };
 
 
-const handleSubmitForm = async () => {
+// const handleSubmitForm = async () => {
   
+//   const missingField = handleRequiredField(data);
+
+//   if (!missingField) {
+//     // Use selected_sId directly, assuming it's a unique identifier
+//     const trimed_sId = selected_sId;
+
+//     // Check if there is an existing record with the same condition
+//     const existingRecordIndex = MaintenceResult.findIndex(item =>
+//       item.sup_ls1_varchar1 === rowData.sup_ls1_varchar1
+//     );
+
+//     setMaintenceResult(prev => {
+//       const updatedResults = [...prev]; // Clone previous state
+    
+//       const existingRecordIndex = updatedResults.findIndex(
+//         record => record.id === data.id // Ensure this logic matches how you identify existing records
+//       );
+    
+//       const formattedData = {
+//         ...data,
+//         sup_ls1_datetime1: data.sup_ls1_datetime1 ? dayjs(data.sup_ls1_datetime1).format('YYYY-MM-DD') : null,
+//         sup_ls1_datetime2: data.sup_ls1_datetime2 ? dayjs(data.sup_ls1_datetime2).format('YYYY-MM-DD') : null,
+//         sup_ls1_datetime3: data.sup_ls1_datetime3 ? dayjs(data.sup_ls1_datetime3).format('YYYY-MM-DD') : null,
+//       };
+    
+//       if (existingRecordIndex !== -1) {
+//         // Update the existing record with the new formatted data
+//         updatedResults[existingRecordIndex] = {
+//           ...updatedResults[existingRecordIndex], // Spread current record data
+//           ...formattedData, // Ensure this contains only the fields to update
+//         };
+//       } else {
+//         // If no existing record, create a new one with a unique id
+//         const newRecord = {
+//           ...formattedData,
+//           id: new Date().getTime(), // Generate a unique ID
+//         };
+//         updatedResults.push(newRecord); // Add the new record to the array
+//       }
+    
+//       return updatedResults;
+//     });
+
+//     handleClose(); // Close the modal/dialog
+//   }
+// };
+
+const handleSubmitForm = async () => {
   const missingField = handleRequiredField(data);
 
   if (!missingField) {
-    // Use selected_sId directly, assuming it's a unique identifier
-    const trimed_sId = selected_sId;
-
-    // Check if there is an existing record with the same condition
-    const existingRecordIndex = MaintenceResult.findIndex(item =>
-      item.sup_ls1_varchar1 === rowData.sup_ls1_varchar1
-    );
-
- 
-
-    setMaintenceResult(prev => {
-      const updatedResults = [...prev]; // Clone previous state
-    
+    setMaintenceResult((prev) => {
+      const updatedResults = [...prev]; // Clone the previous state
+      
+      // Find the record by ID (ensure `rowData` has an `id`)
       const existingRecordIndex = updatedResults.findIndex(
-        record => record.id === data.id // Ensure this logic matches how you identify existing records
+        (record) => record.id === rowData.id
       );
-    
+
+      // Format the data before updating or adding
       const formattedData = {
         ...data,
-        sup_ls1_datetime1: data.sup_ls1_datetime1 ? dayjs(data.sup_ls1_datetime1).format('YYYY-MM-DD') : null,
-        sup_ls1_datetime2: data.sup_ls1_datetime2 ? dayjs(data.sup_ls1_datetime2).format('YYYY-MM-DD') : null,
-        sup_ls1_datetime3: data.sup_ls1_datetime3 ? dayjs(data.sup_ls1_datetime3).format('YYYY-MM-DD') : null,
+        sup_ls1_datetime1: data.sup_ls1_datetime1
+          ? dayjs(data.sup_ls1_datetime1).format('YYYY-MM-DD')
+          : null,
+        sup_ls1_datetime2: data.sup_ls1_datetime2
+          ? dayjs(data.sup_ls1_datetime2).format('YYYY-MM-DD')
+          : null,
+        sup_ls1_datetime3: data.sup_ls1_datetime3
+          ? dayjs(data.sup_ls1_datetime3).format('YYYY-MM-DD')
+          : null,
       };
-    
+
       if (existingRecordIndex !== -1) {
-        // Update the existing record with the new formatted data
+        // Update the existing record
         updatedResults[existingRecordIndex] = {
-          ...updatedResults[existingRecordIndex], // Spread current record data
-          ...formattedData, // Ensure this contains only the fields to update
+          ...updatedResults[existingRecordIndex], // Keep existing data
+          ...formattedData, // Merge updated fields
         };
       } else {
-        // If no existing record, create a new one with a unique id
-        const newRecord = {
+        // If no matching record, add a new one
+        updatedResults.push({
           ...formattedData,
           id: new Date().getTime(), // Generate a unique ID
-        };
-        updatedResults.push(newRecord); // Add the new record to the array
+        });
       }
-    
+
       return updatedResults;
     });
 
     handleClose(); // Close the modal/dialog
   }
 };
-
-
-
 
 
   // customize label
@@ -351,6 +375,8 @@ const handleSubmitForm = async () => {
 
 
   // HANDLE taSK NEW
+
+  console.log("update___data",data);
 
   const handleText=(e)=>{
     let value =  e.target.value;
@@ -398,7 +424,7 @@ const handleSubmitForm = async () => {
           ...pre,
           [e.target.name]:value
       }))
-      setError("")
+      setError("");
   }
 
   return (
@@ -425,7 +451,7 @@ const handleSubmitForm = async () => {
               icon="material-symbols:order-approve-outline"
               style={{ marginRight: "4px", height: "22px", width: "22px" }}
             />
-            Add List 1
+            Update List 1
           </div>
 
           <div style={{ cursor: "pointer" }} onClick={handleClose}>

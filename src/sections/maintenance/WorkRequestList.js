@@ -83,6 +83,7 @@ import { Avatar, Badge } from '@mui/material'
 import WorkReqTableRow from './workrequest-table-row';
 import WorkReqTableFiltersResult from './WorkReqTableFiltersResult';
 import ExportWorkReqlistToExcel from "./ExportFIle/ExportWorkReqlistToExcel";
+import { useSwalCloseContext } from '../ContextApi/SwalCloseContext';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -155,6 +156,9 @@ export default function WorkRequestList() {
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
   const themLayOut = localStorage.getItem("themeLayout");
+
+  const { swalCloseTime } = useSwalCloseContext();
+  
   const location = useLocation();
 
   const [DashbordDataGauge, setDashbordDataGauge] = useState(
@@ -1758,7 +1762,7 @@ export default function WorkRequestList() {
               text: "Your Query Update Successfully.",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",

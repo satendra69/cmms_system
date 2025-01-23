@@ -79,14 +79,14 @@ export default function AccountPopover({ onRowClick }) {
       const response = await httpCommon.get(
         "/UserProfileFetch.php?RowID=" + UserId
       );
-   //  console.log("response__img11", response);
+    //console.log("response__img11", response);
       
       if (response && response.data && response.data.data && Array.isArray(response.data.data.UserProfileDt)) {
         if (response.data.data.UserProfileDt.length > 0) {
           setDbImg(response.data.data.UserProfileDt);
         }
       } else {
-        console.log("Unexpected response structure:", response);
+        //console.log("Unexpected response structure:", response);
       }
     } catch (error) {
       console.error("Error fetching data:", error);

@@ -66,28 +66,30 @@ export default function List2Dialog({
       } else if (decimalPart && decimalPart.length >= 4) {
         decimalPart = decimalPart.slice(0, 4);
       }else{
-        let integerPart2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        if (integerPart2.length > 11) {
-          integerPart2 = integerPart2.slice(0, 12) + '.' + integerPart2.slice(12, 16);
-        }
-        let decimalPart2 = parts[1] ? parts[1].slice(0, 4) : '';
-        const formattedValue2 = decimalPart2 ? `${integerPart2}.${decimalPart2}` : integerPart2;
-        setterFunction(formattedValue2);
+      // Format integer part with commas
+        let formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        let formattedDecimalPart = decimalPart ? decimalPart.slice(0, 4) : '';
+        const formattedValue = formattedDecimalPart
+          ? `${formattedIntegerPart}.${formattedDecimalPart}`
+          : formattedIntegerPart;
+
+        // Update only the specific field in the state
         setData((pre) => ({
           ...pre,
-          [e.target.name]: formattedValue2,
-        }))
-      //  setErrorField(null); // Clear any error state
-         return; 
+          [e.target.name]: formattedValue,
+        }));
+        return; // Exit function after setting state
       }
-    const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
-    setterFunction(formattedValue); // Set the state for the respective UDFNumber state
-   // setErrorField(null);
-    setData((pre) => ({
-      ...pre,
-      [e.target.name]: formattedValue,
-    }))
+
+      const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
+
+      // Update only the specific field in the state
+      setData((pre) => ({
+        ...pre,
+        [e.target.name]: formattedValue,
+      }));
   };
+
 
   React.useEffect(() => {
     if (deleted) {

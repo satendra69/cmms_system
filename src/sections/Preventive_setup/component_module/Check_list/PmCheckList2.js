@@ -6,6 +6,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Checkbox, 
   Paper,
   Button,
 } from "@mui/material";
@@ -26,7 +27,7 @@ import { styled } from "@mui/material/styles";
 
 import Iconify from "src/components/iconify";
 
-import PmLaborCraftPopupData from "./PmLaborCraftPopupData"
+//import PmLaborCraftPopupData from "./PmLaborCraftPopupData"
 
 import { Menu, MenuItem } from "@mui/material";
 
@@ -42,7 +43,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     },
   }));
 
-const PmLabor = ({ data }) => {
+const PmCheckList2 = ({ data }) => {
   
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
@@ -88,7 +89,7 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
   const [MaterialMandatoryFiled, setMaterialMandatoryFiled] = useState([]);
 
   // First Api
-  const get_pm_labor_data = async (site_ID, RowID) => {
+  const get_pm_checklist_data = async (site_ID, RowID) => {
     Swal.fire({
       title: "Please Wait!",
       allowOutsideClick: false,
@@ -99,11 +100,11 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
     Swal.showLoading();
     try {
       const response = await httpCommon.get(
-        `/get_pm_labor_data.php?site_cd=${site_ID}&RowID=${RowID}`
+        `/get_pm_check_list_data.php?site_cd=${site_ID}&RowID=${RowID}`
       );
-     
+      // console.log("response____chkList__",response);
       if (response.data.status === "SUCCESS") {
-        setHeader(response.data.data.header);
+       // setHeader(response.data.data.header);
         setResult(response.data.data.result);
         Swal.close();
       } else {
@@ -135,15 +136,94 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
          <TableCell key="action" style={cellStyle}>
           Action
         </TableCell>
-        {Object.keys(Header).map((attr) => (
-          <TableCell key={attr} style={cellStyle}>
-            {attr}
-          </TableCell>
-        ))}
+        <TableCell key="action" style={cellStyle}>
+          No
+        </TableCell>
+        <TableCell key="action" style={cellStyle}>
+          PM Group / Asset No
+        </TableCell>
+        <TableCell key="action" style={cellStyle}>
+          Check List
+        </TableCell>
+        <TableCell key="action" style={cellStyle}>
+          Description
+        </TableCell>
+        <TableCell key="action" style={cellStyle}>
+          Carry to Work Order
+        </TableCell>
+       
       </>
     );
   };
   
+  //Body
+  const renderTableRows = () => {
+    return Result.map((result, index) => (
+      <TableRow key={index} 
+      style={{ cursor: "pointer", transition: "background-color 0.3s" }}
+      onMouseEnter={(event) => event.currentTarget.style.backgroundColor = "#f0f0f0"}
+      onMouseLeave={(event) => event.currentTarget.style.backgroundColor = "transparent"}
+      >
+       <TableCell style={{ padding: "5px", textAlign: "center" }}>
+            <IconButton 
+                    onClick={(event) => {
+                        event.stopPropagation(); 
+                        handleMenuClick(event, index);
+                    }}
+                >
+                   <Iconify icon="eva:more-vertical-fill" />
+                </IconButton>
+               
+          <Menu
+            anchorEl={anchorEl}
+            open={menuRowIndex === index}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem key={index}
+            onClick={(event) => {
+              event.stopPropagation(); 
+              handleEdit(result, event);
+            }}
+
+            > <Iconify icon="solar:pen-bold" width="15px" height="15px" marginRight="5px"/> Edit</MenuItem>
+            <MenuItem 
+            onClick={(event) => {
+              event.stopPropagation(); 
+               handleDelete(result, index, event);
+            }}
+            > <Iconify icon="solar:trash-bin-trash-bold" width="15px" height="20px" marginRight="5px"/> Delete</MenuItem>
+          </Menu>
+        </TableCell>
+      <TableCell style={{ padding: "5px", textAlign: "center" }}>{index + 1}</TableCell>
+        <TableCell style={{ padding: "5px", textAlign: "center" }}>
+          {result.prm_job_grp_asset}
+        </TableCell>
+        <TableCell style={{ padding: "5px", textAlign: "center" }}>
+          {result.prm_job_job_cd}
+        </TableCell>
+        
+        <TableCell style={{ padding: "5px", textAlign: "center" }}>
+          {result.job_mst_desc}
+        </TableCell>
+        <TableCell style={{ padding: "5px", textAlign: "center" }}>
+            <Checkbox
+            checked={result.prm_job_carry === "1"} 
+             
+            />
+        </TableCell>
+        
+      </TableRow>
+    ));
+  };
+
   const formatNumber = (number) => {
     if (number == null) {
       return '';
@@ -158,9 +238,9 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
   // Get All Filed label Name
 const getPmLaborFormLebel = async () => {
   try {
-    const response = await httpCommon.get("/get_pm_labor_form_label.php");
+    const response = await httpCommon.get("/get_pm_checklist_form_label.php");
     if (response.data.status === "SUCCESS") {
-        setPrmls1Label(response.data.data.prm_ls1);
+        setPrmls1Label(response.data.data.prm_job);
     }
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -168,7 +248,7 @@ const getPmLaborFormLebel = async () => {
 };
 const getPmLaborMandatoryfiled = async () => {
   try {
-    const response = await httpCommon.get("/get_pm_labor_from_mandatory_filed.php");
+    const response = await httpCommon.get("/get_pm_checklist_from_mandatory_filed.php");
     if (response.data && response.data.data && response.data.data.MandatoryField) {
 
       if (response.data.data.MandatoryField.length > 0) {
@@ -244,7 +324,7 @@ const handleDelete = async (data, index, event) => {
                icon: "success"
              }).then(() => {
                // Call get_Mr_Line_Data after the "OK" button is clicked
-               get_pm_labor_data(site_ID, RowID);
+               get_pm_checklist_data(site_ID, RowID);
              });
            } else if (response.data.status === "ERROR") {
              Swal.fire({
@@ -267,80 +347,7 @@ const handleDelete = async (data, index, event) => {
    
     
    }; 
-  //Body
-  const renderTableRows = () => {
-    return Result.map((result, index) => (
-      <TableRow key={index} 
-      style={{ cursor: "pointer", transition: "background-color 0.3s" }}
-      onMouseEnter={(event) => event.currentTarget.style.backgroundColor = "#f0f0f0"}
-      onMouseLeave={(event) => event.currentTarget.style.backgroundColor = "transparent"}
-      >
-            <TableCell style={{ padding: "5px", textAlign: "center" }}>
-            <IconButton 
-                    onClick={(event) => {
-                        event.stopPropagation(); 
-                        handleMenuClick(event, index);
-                    }}
-                >
-                   <Iconify icon="eva:more-vertical-fill" />
-                </IconButton>
-               
-          <Menu
-            anchorEl={anchorEl}
-            open={menuRowIndex === index}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-          >
-            <MenuItem key={index}
-            onClick={(event) => {
-              event.stopPropagation(); 
-              handleEdit(result, event);
-            }}
-
-            > <Iconify icon="solar:pen-bold" width="15px" height="15px" marginRight="5px"/> Edit</MenuItem>
-            <MenuItem 
-            onClick={(event) => {
-              event.stopPropagation(); 
-               handleDelete(result, index, event);
-            }}
-            > <Iconify icon="solar:trash-bin-trash-bold" width="15px" height="20px" marginRight="5px"/> Delete</MenuItem>
-          </Menu>
-        </TableCell>
-      
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {result.prm_ls1_assetno}
-        </TableCell>
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {result.prm_ls1_craft}
-        </TableCell>
-        
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {result.prm_ls1_crewsize}
-        </TableCell>
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {result.prm_ls1_chg_costcenter}
-        </TableCell>
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {result.prm_ls1_chg_account}
-        </TableCell>
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {formatNumber(result.prm_ls1_est_hrs)}
-          
-        </TableCell>
-        <TableCell style={{ padding: "5px", textAlign: "center" }}>
-          {formatNumber(result.prm_ls1_lumpsum)}
-          
-        </TableCell>
-      </TableRow>
-    ));
-  };
+  
 
   const resetData = () => {
    // setSelected_StockNo("");
@@ -384,44 +391,16 @@ const handleDelete = async (data, index, event) => {
       prm_ls1_lumpsum:"",
       selectChargeCostCenter: "",
       selectChargeAccount: "",
+
+      prm_job_grp_asset:AssetNo,
+      prm_job_job_cd:"",
+      job_mst_desc:"",
+      prm_job_carry:""
       
     },
   ]);
   // Add New button funcation
-  const addInputField = (event) => {
-    event.preventDefault();
-    let isValid = true;
-    inputFields.forEach((inputFields) => {
-      if (inputFields.prm_ls1_crft.trim() === "") {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Craft is Required!",
-          customClass: {
-            container: "swalcontainercustom",
-          },
-        });
-        isValid = false;
-      } 
-    });
-    if (isValid) {
-      setInputFields([
-        ...inputFields,
-        {
-          site_ID: site_ID,
-          mst_RowID: RowID,
-          emp_mst_login_id: emp_mst_login_id,
-          prm_ls1_assetno: AssetNo,
-          prm_ls1_crft:"",
-          prm_ls1_crewSize:"1",
-          prm_ls1_est_hrs:"",
-          prm_ls1_lumpsum:"",
-          selectChargeCostCenter: "",
-          selectChargeAccount: "",
-        },
-      ]);
-    }
-  };
+  
   const removeInputFields = (index) => {
     const rows = [...inputFields];
     if (index !== undefined) {
@@ -702,7 +681,7 @@ const handleDelete = async (data, index, event) => {
             confirmButtonText: "OK",
           }).then((result) => {
             setResult([...Result, inputFields]);
-            get_pm_labor_data(site_ID, RowID);
+            get_pm_checklist_data(site_ID, RowID);
             // console.log("inputFields_after",inputFields);
 
             if (result.isConfirmed) {
@@ -753,6 +732,11 @@ const handleDelete = async (data, index, event) => {
         prm_ls1_lumpsum:"",
         selectChargeCostCenter: "",
         selectChargeAccount: "",
+
+        prm_job_grp_asset:AssetNo,
+        prm_job_job_cd:"",
+        job_mst_desc:"",
+        prm_job_carry:""
         
       },
   
@@ -761,7 +745,7 @@ const handleDelete = async (data, index, event) => {
   };
 
   useEffect(() => {
-    get_pm_labor_data(site_ID, RowID);
+    get_pm_checklist_data(site_ID, RowID);
     getPmLaborFormLebel();
     getPmLaborMandatoryfiled();
     // get_workorder_status(site_ID, "All", location.state.select);
@@ -894,7 +878,7 @@ const handleDelete = async (data, index, event) => {
             icon: "success",
             confirmButtonText: "OK",
           }).then((result) => {
-            get_pm_labor_data(site_ID, RowID);
+            get_pm_checklist_data(site_ID, RowID);
             // console.log("inputFields_after",inputFields);
 
             if (result.isConfirmed) {
@@ -921,25 +905,19 @@ const handleDelete = async (data, index, event) => {
           >
             <div style={{ marginRight: "0px" }}>
              
-              <Iconify icon="hugeicons:labor" style={{ width: "35px", height: "35px" }} />
+             <Iconify
+                icon="icon-park-outline:list"
+                style={{ marginRight: '4px' }}
+            />
             </div>
             <div
               className="template-demo"
               style={{ display: "flex", flexDirection: "column" }}
             >
-              <div style={{ marginRight: "10px", fontWeight: "bold" }}>
-                Labor 
+              <div style={{ marginRight: "10px", fontWeight: "bold", marginTop:"-5px" }}>
+                Checklist 
               </div>
-              {/* <div>
-               Total Quantity {" "}
-                <span style={{ color: "blue" }}>
-                  {formattedtotalQty}
-                </span>{" "},
-                Total Material Cost{" "}
-                <span style={{ color: "#19d895" }}>
-                  ${formattedTotalCost}
-                </span>
-              </div> */}
+           
             </div>
             <div
                 style={{
@@ -994,8 +972,11 @@ const handleDelete = async (data, index, event) => {
               id="customized-dialog-title"
               className="dailogTitWork"
             >
-              <Iconify icon="hugeicons:labor" style={{ width: "30px", height: "30px" ,marginRight: "2px"}} />
-              Labor
+              <Iconify
+                icon="icon-park-outline:list"
+                style={{ marginRight: '4px' }}
+            />
+              Add Checklist
             </DialogTitle>
             <IconButton
               aria-label="close"
@@ -1004,7 +985,8 @@ const handleDelete = async (data, index, event) => {
                 position: "absolute",
                 right: 8,
                 top: 8,
-                color: (theme) => theme.palette.grey[500],
+                padding:"0px !important",
+                margin:"5px !important"
               }}
             >
                <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
@@ -1029,6 +1011,11 @@ const handleDelete = async (data, index, event) => {
                         selectChargeAccount,
                         prm_ls1_est_hrs,
                         prm_ls1_lumpsum,
+
+                        prm_job_grp_asset,
+                        prm_job_job_cd,
+                        job_mst_desc,
+                        prm_job_carry
                         
                       } = data;
                       return (
@@ -1043,19 +1030,10 @@ const handleDelete = async (data, index, event) => {
                                   fontSize: 16,
                                 }}
                               >
-                                Line {index + 1}
+                              
                               </Typography>
                             </Grid>
-                            <Grid item xs={6} sx={{ textAlign: "right" }}>
-                              {inputFields.length !== 1 && (
-                                <Button
-                                  className="workmarerial_dlt"
-                                  onClick={() => removeInputFields(index)}
-                                >
-                                  <FontAwesomeIcon icon={faCircleXmark} />
-                                </Button>
-                              )}
-                            </Grid>
+                           
                           </Grid>
                           <Grid
                             container
@@ -1069,8 +1047,8 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_assetno") || "Requiredlabel"}> {findCustomizeLabel("prm_ls1_assetno") ||
-                                    "Asset No:"}</label>
+                              <label className={findCustomizerequiredLabel("prm_job_grp_asset") }> {findCustomizeLabel("prm_job_grp_asset") ||
+                                    "PM Group/Asset No:"}</label>
                             </Grid>
                             <Grid item xs={12} md={8}>
                               <TextField
@@ -1079,7 +1057,7 @@ const handleDelete = async (data, index, event) => {
                                 type="text"
                                 className="Extrasize"
                                 fullWidth
-                                value={prm_ls1_assetno}
+                                value={prm_job_grp_asset}
                                 disabled
                              
                               />
@@ -1092,8 +1070,7 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_craft") || "Requiredlabel"}> {findCustomizeLabel("prm_ls1_craft") ||
-                                    "Craft:"}</label>
+                              <label> Checklist:</label>
                             </Grid>
                             <Grid item xs={12} md={8}>
 
@@ -1103,7 +1080,7 @@ const handleDelete = async (data, index, event) => {
                                 size="small"
                                 fullWidth
                                 value={
-                                  data.prm_ls1_crft != "" ? data.prm_ls1_crft : ""
+                                  data.prm_job_job_cd != "" ? data.prm_job_job_cd : ""
                                 }
                                 
                                  placeholder="Select..."
@@ -1179,21 +1156,9 @@ const handleDelete = async (data, index, event) => {
                                     
                                   }}
                                 >
-                                  <PmLaborCraftPopupData
-                                    onRowClick={(
-                                      rowData,
-                                      RowDescp,
-                                      secondRowData
-                                    ) =>
-                                      handleRowPopupData(
-                                        index,
-                                        rowData,
-                                        RowDescp,
-                                        secondRowData
-                                      )
-                                    }
-                                  />
+                                  
                                 </div>
+                                fgfgf
                                     </DialogContent>
                                     <DialogActions
                                 style={{
@@ -1235,7 +1200,7 @@ const handleDelete = async (data, index, event) => {
                                   </Button>
                                 </div>
                               </DialogActions>
-                                  </BootstrapDialog>
+                            </BootstrapDialog>
                           
                            
                             <Grid
@@ -1245,8 +1210,7 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                               
-                              <label className={findCustomizerequiredLabel("prm_ls1_crewsize")}> {findCustomizeLabel("prm_ls1_crewsize") ||
-                                    "Crew Size:"}</label>
+                              <label> Description: </label>
                             </Grid>
                             <Grid item xs={12} md={8}>
                               <TextField
@@ -1255,25 +1219,9 @@ const handleDelete = async (data, index, event) => {
                                 type="text"
                                 className="Extrasize"
                                 fullWidth
-                                placeholder="1"
-                              
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange_4_limit(event, (formattedValue) => {
-                                      handleChange(index, "prm_ls1_crewSize", formattedValue);
-                                    });
-                                  }
-                                }}
-
-                                value={prm_ls1_crewSize}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
+                                disabled
+                                value={ data.job_mst_desc != "" ? data.job_mst_desc : "" }
+                                
                                 InputProps={{
                                   inputProps: { style: { textAlign: 'right' } }
                                 }}
@@ -1285,155 +1233,13 @@ const handleDelete = async (data, index, event) => {
                               md={4}
                               style={{ padding: "10px" }}
                             >
-                              <label className={findCustomizerequiredLabel("prm_ls1_chg_costcenter")}> {findCustomizeLabel("prm_ls1_chg_costcenter") ||
-                                    "Charge Cost Center:"}</label>
+                              <label> Carry to work order:</label>
                             </Grid>
 
                             <Grid item xs={12} md={8}>
-                              <Autocomplete
-                                options={ChargeCostCenter}
-                                value={data.selectChargeCostCenter}
-                                onChange={(event, newValue) =>
-                                  handleChange(
-                                    index,
-                                    "selectChargeCostCenter",
-                                    newValue
-                                  )
-                                }
-                                onOpen={handleClickChargeCostCenter}
-                                renderInput={(params) => (
-                                  <div>
-                                    <TextField
-                                      {...params}
-                                      size="small"
-                                      placeholder="Select..."
-                                      variant="outlined"
-                                      className="Extrasize"
-                                    />
-                                  </div>
-                                )}
-                              />
+                            <Checkbox />
                             </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
-                             
-                              <label className={findCustomizerequiredLabel("prm_ls1_chg_account")}> {findCustomizeLabel("prm_ls1_chg_account") ||
-                                    "Charge Account:"}</label>
-                            </Grid>
-                            <Grid item xs={12} md={8}>
-                              <Autocomplete
-                                options={ChargeAccount}
-                                value={data.selectChargeAccount}
-                                onChange={(event, newValue) =>
-                                  handleChange(
-                                    index,
-                                    "selectChargeAccount",
-                                    newValue
-                                  )
-                                }
-                                onOpen={handleClickChargeAccount}
-                                renderInput={(params) => (
-                                  <div>
-                                    <TextField
-                                      {...params}
-                                      size="small"
-                                      placeholder="Select..."
-                                      variant="outlined"
-                                      className="Extrasize"
-                                    />
-                                  </div>
-                                )}
-                              />
-                            </Grid>
-
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
-                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_est_hrs")}> {findCustomizeLabel("prm_ls1_est_hrs") ||
-                                    "Estimate Hours:"}</label>
-                            </Grid>
-                            <Grid item xs={12} md={8}>
-                              <TextField
-                                variant="outlined"
-                                size="small"
-                                type="text"
-                                className="Extrasize"
-                                fullWidth
-                                placeholder="0.00"
-                               
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange(event, (formattedValue) => {
-                                      handleChange(index, "prm_ls1_est_hrs", formattedValue);
-                                    });
-                                  }
-                                }}
-
-                                value={prm_ls1_est_hrs}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
-                              />
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
                             
-                              <label className={findCustomizerequiredLabel("prm_ls1_lumpsum")}>
-                                 {findCustomizeLabel("prm_ls1_lumpsum") ||
-                                    "Lump Sum Amount:"}</label>
-                            </Grid>
-                            <Grid item xs={12} md={8}>
-                              <TextField
-                                variant="outlined"
-                                size="small"
-                                type="text"
-                                className="Extrasize"
-                                fullWidth
-                                placeholder="0.00"
-                               
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange(event, (formattedValue) => {
-                                      handleChange(index, "prm_ls1_lumpsum", formattedValue);
-                                    });
-                                  }
-                                }}
-
-                                value={prm_ls1_lumpsum}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
-                              />
-                            </Grid>
-                           
                           </Grid>
                         </div>
                       );
@@ -1651,20 +1457,7 @@ const handleDelete = async (data, index, event) => {
                                     marginTop: "15px",
                                   }}
                                 >
-                                  <PmLaborCraftPopupData
-                                    onRowClick={(
-                                      rowData,
-                                      RowDescp,
-                                      secondRowData
-                                    ) =>
-                                        handleRowPopupDataEdit(
-                                        EditPrmls1MstRowId,
-                                        rowData,
-                                        RowDescp,
-                                        secondRowData
-                                      )
-                                    }
-                                  />
+                                 
                                 </div>
                               </DialogContent>
                               <DialogActions
@@ -1962,4 +1755,4 @@ const handleDelete = async (data, index, event) => {
   );
 };
 
-export default PmLabor;
+export default PmCheckList2;

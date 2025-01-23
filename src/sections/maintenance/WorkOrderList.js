@@ -67,6 +67,7 @@ import WorkOrderTableRow from "./workorder-table-row";
 import WorkOrderTableFiltersResult from "./WorkOrderTableFiltersResult";
 import WorkOrderCalendarView from "./WorkOrderCalendarView";
 import ExportWorkOrderlistToExcel from "./ExportFIle/ExportWorkOrderlistToExcel";
+import { useSwalCloseContext } from "../ContextApi/SwalCloseContext";
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -139,6 +140,9 @@ export default function WorkOrderList({ onValueChange }) {
   const site_ID = localStorage.getItem("site_ID");
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
+
+  const { swalCloseTime }  = useSwalCloseContext();
+  ;
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const [maxHeight, setMaxHeight] = useState("400px"); // Default maxHeight
@@ -332,7 +336,7 @@ export default function WorkOrderList({ onValueChange }) {
           emp_ID:emp_owner,
         }
       );
-      console.log("response____workOrder_gauge",response);
+     // console.log("response____workOrder_gauge",response);
       if (response.data.status === "SUCCESS") {
         if (response.data.data.result.length > 0) {
         //  setTableData(response.data.data.result);
@@ -538,7 +542,7 @@ export default function WorkOrderList({ onValueChange }) {
               "&RowID=" +
               GetRowID
           );
-          console.log("response____dropdown___",response);
+         // console.log("response____dropdown___",response);
           if (response.data.data && response.data.data.list_typeF && response.data.data.list_typeF.length > 0) {
             const newRows = response.data.data.list_typeF.map((item) => ({
               selectedOption: item.cf_query_list_column,
@@ -611,7 +615,7 @@ export default function WorkOrderList({ onValueChange }) {
         { signal } // Pass the signal to the request
       );
       // console.log("enter___getb..",currentPage);
-        console.log("response___getb",response);
+      //  console.log("response___getb",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -711,12 +715,9 @@ export default function WorkOrderList({ onValueChange }) {
       return;
     }
     
-    console.log("Enter here");
     if (firstEffectComplete) {
       if (selectDropRowID !== "" && selectDropRowID !== null) {
-       // fetchData();
-       //console.log("Enter with selectDropDown id");
-     //  {console.log("currentPage____with select id",currentPage)}
+       
        fetchDataSequentially();
        
       }
@@ -741,7 +742,6 @@ export default function WorkOrderList({ onValueChange }) {
     }
     
   }, [firstEffectComplete, site_ID, currentPage, selectDropRowID, fetchData, fetchDataSequentially]);
-
 
   useEffect(() => {
     fetchFilterDropdown();
@@ -775,7 +775,6 @@ export default function WorkOrderList({ onValueChange }) {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-
 
   const denseHeight = table.dense ? 60 : 80;
 
@@ -836,9 +835,22 @@ export default function WorkOrderList({ onValueChange }) {
               Swal.fire({
                 title: "Deleted!",
                 text: "Work Order Record Deleted Successfully",
-                icon: "success"
+                icon: "success",
+                timerProgressBar: true, 
+                confirmButtonText: "OK",
+                timer: swalCloseTime,
+                allowOutsideClick: false,
+                willClose: () => {
+                  // Called when the Swal closes automatically (due to the timer)
+                  getb();
+                },
+              }).then((result) => {
+                if (result.isConfirmed) {
+                
+                  getb();
+                }
               });
-              getb();
+              
             } else if (response.data.status == "ERROR") {
               Swal.fire({
                 title: "Oops!",
@@ -2283,7 +2295,7 @@ const RetriveDataAllData = async () =>{
             text: "Your query update successfully.",
             icon: "success",
             confirmButtonText: "OK",
-            timer: 3000,
+            timer: swalCloseTime,
             timerProgressBar: true, 
             customClass: {
               container: "swalcontainercustom",
@@ -2775,8 +2787,6 @@ if (TABLE_HEAD) {
   TABLE_HEAD.unshift({ id: '', label: 'Action', width: 60 });
 }
 
-//console.log("tableData____",tableData)
-
   return (
     <>
       <Helmet>
@@ -2888,17 +2898,17 @@ if (TABLE_HEAD) {
                   >
                     {assetFilterDpd.map((item) => (
                       <MenuItem key={item.RowID} value={item.cf_query_title}>
-                        <Iconify
-                          icon="icon-park:history-query"
-                          style={{
-                            display: "inline-flex",
-                            verticalAlign: "middle",
-                            marginRight: "6px",
-                            marginTop: "-5px",
-                            width: "16px",
-                            height: "16px",
-                          }}
-                        />
+                       <Iconify
+                            icon="mdi:sql-query"
+                            style={{
+                              display: "inline-flex",
+                              verticalAlign: "middle",
+                              marginRight: "6px",
+                              marginTop: "-5px",
+                              width: "16px",
+                              height: "16px",
+                            }}
+                          />
                         <span style={{ verticalAlign: "middle" }}>
                           {item.cf_query_title}
                         </span>

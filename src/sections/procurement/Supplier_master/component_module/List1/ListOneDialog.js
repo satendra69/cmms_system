@@ -34,8 +34,6 @@ export default function ListOneDialog({
   deleted,
   setDeleted,
 }) {
-  let site_ID = localStorage.getItem("site_ID");
-  let loginUser = localStorage.getItem("emp_mst_login_id");
 
   const [groupLabel, setGroupLabel] = React.useState([]);
 
@@ -54,6 +52,7 @@ export default function ListOneDialog({
 
   });
 
+  
   
   React.useEffect(() => {
     if (deleted) {
@@ -79,27 +78,28 @@ export default function ListOneDialog({
       } else if (decimalPart && decimalPart.length >= 4) {
         decimalPart = decimalPart.slice(0, 4);
       }else{
-        let integerPart2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        if (integerPart2.length > 11) {
-          integerPart2 = integerPart2.slice(0, 12) + '.' + integerPart2.slice(12, 16);
-        }
-        let decimalPart2 = parts[1] ? parts[1].slice(0, 4) : '';
-        const formattedValue2 = decimalPart2 ? `${integerPart2}.${decimalPart2}` : integerPart2;
-        setterFunction(formattedValue2);
+      // Format integer part with commas
+        let formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        let formattedDecimalPart = decimalPart ? decimalPart.slice(0, 4) : '';
+        const formattedValue = formattedDecimalPart
+          ? `${formattedIntegerPart}.${formattedDecimalPart}`
+          : formattedIntegerPart;
+
+        // Update only the specific field in the state
         setData((pre) => ({
           ...pre,
-          [e.target.name]: formattedValue2,
-        }))
-     //   setErrorField(null); // Clear any error state
-         return; 
+          [e.target.name]: formattedValue,
+        }));
+        return; // Exit function after setting state
       }
-    const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
-    setterFunction(formattedValue); // Set the state for the respective UDFNumber state
-   // setErrorField(null);
-    setData((pre) => ({
-      ...pre,
-      [e.target.name]: formattedValue,
-    }))
+
+      const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
+
+      // Update only the specific field in the state
+      setData((pre) => ({
+        ...pre,
+        [e.target.name]: formattedValue,
+      }));
   };
 
 
@@ -149,30 +149,45 @@ export default function ListOneDialog({
    
         const missingField = handleRequiredField(data);
         if (!missingField) {
-       
-        
-          if(data && typeof data === 'object' && !Array.isArray(data) ){
-          setMaintenceResult((prev) => [
-            ...prev,
-            {
+          if (data && typeof data === 'object' && !Array.isArray(data)) {
+            const updatedData = {
               ...data,
-              id:uuidv4(),
-              sup_ls1_datetime1:data && data.sup_ls1_datetime1?moment(data.sup_ls1_datetime1).format("yyyy-MM-DD"):"",
-              sup_ls1_datetime2:data && data.sup_ls1_datetime2?moment(data.sup_ls1_datetime2).format("yyyy-MM-DD"):"",
-              sup_ls1_datetime3:data && data.sup_ls1_datetime3?moment(data.sup_ls1_datetime3).format("yyyy-MM-DD"):"",
-              sup_ls1_numeric1: data && data.sup_ls1_numeric1 && !isNaN(parseInt(data.sup_ls1_numeric1.replace(/,/g, ""))) 
-              ? parseInt(data.sup_ls1_numeric1.replace(/,/g, "")) 
-              : "",
-          sup_ls1_numeric2: data && data.sup_ls1_numeric2 && !isNaN(parseInt(data.sup_ls1_numeric2.replace(/,/g, ""))) 
-              ? parseInt(data.sup_ls1_numeric2.replace(/,/g, "")) 
-              : "",
-            },
-          ]);
-        }
-          setData([]);
-          handleClose();
-
-
+              id: uuidv4(), // Generate a unique ID
+              sup_ls1_datetime1: data.sup_ls1_datetime1
+                ? moment(data.sup_ls1_datetime1).format("yyyy-MM-DD")
+                : "",
+              sup_ls1_datetime2: data.sup_ls1_datetime2
+                ? moment(data.sup_ls1_datetime2).format("yyyy-MM-DD")
+                : "",
+              sup_ls1_datetime3: data.sup_ls1_datetime3
+                ? moment(data.sup_ls1_datetime3).format("yyyy-MM-DD")
+                : "",
+              sup_ls1_numeric1: data.sup_ls1_numeric1
+                ? parseInt(data.sup_ls1_numeric1.replace(/,/g, ""), 10) || ""
+                : "",
+              sup_ls1_numeric2: data.sup_ls1_numeric2
+                ? parseInt(data.sup_ls1_numeric2.replace(/,/g, ""), 10) || ""
+                : "",
+            };
+      
+            // Append updatedData to maintenceResult
+            setMaintenceResult((prev) => [...prev, updatedData]);
+      
+            // Reset the data state only after adding the modified object
+            setData({
+              sup_ls1_varchar1: "",
+              sup_ls1_varchar2: "",
+              sup_ls1_varchar3: "",
+              sup_ls1_datetime1: "",
+              sup_ls1_datetime2: "",
+              sup_ls1_datetime3: "",
+              sup_ls1_numeric1: "",
+              sup_ls1_numeric2: "",
+            });
+      
+            // Close the modal or perform other actions
+            handleClose();
+          }
         }
     
   };

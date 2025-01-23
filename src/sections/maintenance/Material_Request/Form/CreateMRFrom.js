@@ -80,6 +80,7 @@ import MrWorkOrderList from "../MrWorkOrderList";
 
 import MR_Line from "../Mr_module/MR_Line";
 import Mr_ApprovalList from "../Mr_module/Mr_ApprovalList"
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -124,6 +125,7 @@ export default function CreateMRFrom({ currentUser, onPageChange }) {
   let emp_mst_name = localStorage.getItem("emp_mst_name");
   const location = useLocation();
   let Emp_logonId = localStorage.getItem("emp_mst_empl_id");
+  const {swalCloseTime} = useSwalCloseContext();
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
@@ -822,7 +824,6 @@ export default function CreateMRFrom({ currentUser, onPageChange }) {
       console.error("Error fetching data:", error);
     }
   };
-
 
   const openSaveImg = () => {
     setShowdd2(true);
@@ -1640,7 +1641,7 @@ const findCustomizerequiredLabel = (columnName) => {
          },
          title: response.data.status,
          text: response.data.message,
-         timer: 3000, 
+         timer: swalCloseTime, 
          timerProgressBar: true, 
          willClose: () => {
            
@@ -2095,7 +2096,7 @@ const findCustomizerequiredLabel = (columnName) => {
                   },
                   title: response.data.status,
                   text: response.data.message,
-                  timer: 3000, 
+                  timer: swalCloseTime, 
                   timerProgressBar: true, 
                   willClose: () => {
                     // Navigate to the desired page when the modal closes
@@ -2139,7 +2140,7 @@ const findCustomizerequiredLabel = (columnName) => {
             },
             title: response.data.status,
             text: response.data.message,
-            timer: 3000, 
+            timer: swalCloseTime, 
             timerProgressBar: true, 
             willClose: () => {
               // Navigate to the desired page when the modal closes

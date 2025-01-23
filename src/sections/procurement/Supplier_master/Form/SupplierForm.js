@@ -79,6 +79,7 @@ import ShipTo from "../component_module/ShipTo/ShipTo";
 import BillTo from "../component_module/ShipTo/BillTo";
 import List2 from "../component_module/List2";
 import ListOne from "../component_module/List1/ListOne";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 import moment from "moment";
 
 import numeral from "numeral";
@@ -97,6 +98,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export default function ProForm({ currentUser }) {
   let site_ID = localStorage.getItem("site_ID");
   const { call, setCall, setFullList,setRefresh,setSavedQptions } = useContext(ProContext);
+  const {swalCloseTime} = useSwalCloseContext();
   const location = useLocation();
   const { baseURL } = httpCommon.defaults;
   const [isOpenWork, setIsOpenWork] = useState(true);
@@ -531,7 +533,7 @@ fetchTaxCodeBuyer();
   const [currencyDrp, setCurrencyCode] = useState([{}]);
   const [currency,setCurrency] = useState([])
 
-  const [selectedUserGrp, setSelectedUserGrp] = useState("");
+
   const [selectedCurrency, setSelectedCurrency] = useState("");
 
 
@@ -539,8 +541,6 @@ fetchTaxCodeBuyer();
     setSnackbarOpen(false);
   };
 
-
-  const [selectedMstatus, setselectedMstatus] = useState([]);
   const [tableData, setTableData] = useState([]);
 
  
@@ -1831,7 +1831,7 @@ if(ship){
               icon: "success",
               title: "SUCCESS",
               text: `Created ${textFields.sup_mst_supplier_cd} Successfully`,
-              timer: 2000,
+              timer: swalCloseTime,
             }).then(() => {
               setSavedQptions(selectedOption)
               navigate(`/dashboard/Procurement/supplier`, {
@@ -2129,6 +2129,9 @@ if(ship){
                     },
                     title: response.data.status,
                     text: response.data.message,
+                    timer: swalCloseTime,
+                    timerProgressBar: true,
+                    confirmButtonText: "OK",
                   }).then(() => {
                     navigate(`/dashboard/Procurement/supplier`, {
                       state: {
@@ -2227,7 +2230,8 @@ if(ship){
               icon: "success",
               title: response.data.status,
               text: `Updated ${textFields.sup_mst_supplier_cd} Successfully`,
-              timer: 2000,
+              timer: swalCloseTime,
+              timerProgressBar: true, 
             }).then(() => {
              // setSavedQptions(selectedOption)
               navigate(`/dashboard/Procurement/supplier`, {

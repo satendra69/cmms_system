@@ -7,7 +7,6 @@ import {
 import { useSettingsContext } from "src/components/settings";
 import Iconify from "src/components/iconify";
 import React, { useEffect, useState } from "react";
-import IconButton from "@mui/material/IconButton";
 import { Stack, display } from "@mui/system";
 import MasterDialog from "./MasterDialog";
 import httpCommon from "src/http-common";
@@ -18,19 +17,16 @@ import { useSwalCloseContext } from "../ContextApi/SwalCloseContext";
 
 function DefaultTabMaster() {
 
-  const { swalCloseTime, updateSwalCloseTime } = useSwalCloseContext();
+  const { updateSwalCloseTime } = useSwalCloseContext();
 
-  console.log("swalCloseTime____",swalCloseTime);
-  
-  const [Tabvalue, setTabValue] = useState(0);
   let site_ID = localStorage.getItem("site_ID");
   const [modalDefault, setModalDefault] = useState(false);
   const [DefaultMandatoryFiled, setDefaultMandatoryFiled] = useState([]);
   const settings = useSettingsContext();
-  const [isAssetNoEmpty, setIsAssetNoEmpty] = useState(false);
+
   const [errorField, setErrorField] = useState(null);
   const [DefaultLabel, setDefaultLabel] = useState([]);
-  const [WrPriority, setWrPriority] = useState([]);
+
   const [defaultFormData, setDefaultFormData] = useState({});
   const navigate = useNavigate();
 
@@ -60,6 +56,7 @@ function DefaultTabMaster() {
     dft_mst_ww_send_ntf:"",
     RowID: "",
   });
+
   const [refetch, setRefetch] = useState(false);
 
   // Fetchin form data
@@ -70,7 +67,7 @@ function DefaultTabMaster() {
         const response = await httpCommon.get(
           `/DefaultSettingFormData.php?site_cd=${site_ID}`
         );
-      
+   //   console.log("response____get___",response);
         if (response.data.status === "SUCCESS") {
           setDefaultFormData(response.data.data.DeafultSettings[0]);
           const selectedOption = MrApprovalOptions.find(
@@ -218,7 +215,7 @@ function DefaultTabMaster() {
     { label: "ROUTE", value: "1" },
     { label: "Limit", value: "2" },
   ]);
-  const [selectedMrApprovalOption, setSelectedMrApprovalOption] = useState([]);
+
   // get Asset FromLabel
 
   const getDefaultFromLebel = async () => {
@@ -318,12 +315,14 @@ function DefaultTabMaster() {
     setModalDefault(!DefaultModal);
     setTextField(e);
   };
+
   const handleClose = (e, result) => {
     if (result !== "backdropClick") {
       setTextField("");
       setDefaultModal(false);
     }
   };
+
   useEffect(() => {
     if (textField) {
       setDefaultModal(true);
@@ -439,15 +438,18 @@ function DefaultTabMaster() {
           RowID: newData.RowID,
         }
       );
-    
+   // console.log("update responce____",response);
       if (response.data.status === "SUCCESS") {
-        updateSwalCloseTime(newData.SucClosePopup);
+        const timerInMilliseconds = newData.SucClosePopup ? newData.SucClosePopup * 1000 : 3000;
+        updateSwalCloseTime(timerInMilliseconds);
+       
         Swal.fire({
           icon: "success",
           title: "Success!",
+          timerProgressBar: true, 
           text: "Default Settings Updated Successfully.",
           confirmButtonText: "OK",
-          timer: swalCloseTime || 2000,
+          timer: timerInMilliseconds,
         });
         setRefetch(true);
       }
@@ -460,12 +462,7 @@ function DefaultTabMaster() {
     <>
       <div
         className="buttonsTop"
-        // style={{
-        //   marginLeft: "auto",
-        //   display: "flex",
-        //   justifyContent: "end",
-        //   marginTop: "-40px",
-        // }}
+       
       >
         <Button
           variant="contained"

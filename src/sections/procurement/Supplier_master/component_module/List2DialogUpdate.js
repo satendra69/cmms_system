@@ -189,57 +189,53 @@ export default function List2DialogUpdate({
 
   // customize label
   
-  
   const handleSubmitForm = async () => {
-  
     const missingField = handleRequiredField(data);
   
     if (!missingField) {
-      
-  
-      // Check if there is an existing record with the same condition
-      const existingRecordIndex = MaintenceResult.findIndex(item =>
-        item.sup_ls2_varchar1 === rowData.sup_ls2_varchar1
-      );
-  
-   
-  
-      setMaintenceResult(prev => {
-        const updatedResults = [...prev]; // Clone previous state
-      
+      setMaintenceResult((prev) => {
+        const updatedResults = [...prev]; // Clone the previous state
+        
+        // Find the record by ID (ensure `rowData` has an `id`)
         const existingRecordIndex = updatedResults.findIndex(
-          record => record.id === data.id // Ensure this logic matches how you identify existing records
+          (record) => record.id === rowData.id
         );
-      
+  
+        // Format the data before updating or adding
         const formattedData = {
           ...data,
-          sup_ls2_datetime1: data.sup_ls2_datetime1 ? dayjs(data.sup_ls2_datetime1).format('YYYY-MM-DD') : null,
-          sup_ls2_datetime2: data.sup_ls2_datetime2 ? dayjs(data.sup_ls2_datetime2).format('YYYY-MM-DD') : null,
-          sup_ls2_datetime3: data.sup_ls2_datetime3 ? dayjs(data.sup_ls2_datetime3).format('YYYY-MM-DD') : null,
+          sup_ls2_datetime1: data.sup_ls2_datetime1
+            ? dayjs(data.sup_ls2_datetime1).format('YYYY-MM-DD')
+            : null,
+            sup_ls2_datetime2: data.sup_ls2_datetime2
+            ? dayjs(data.sup_ls2_datetime2).format('YYYY-MM-DD')
+            : null,
+            sup_ls2_datetime3: data.sup_ls2_datetime3
+            ? dayjs(data.sup_ls2_datetime3).format('YYYY-MM-DD')
+            : null,
         };
-      
+  
         if (existingRecordIndex !== -1) {
-          // Update the existing record with the new formatted data
+          // Update the existing record
           updatedResults[existingRecordIndex] = {
-            ...updatedResults[existingRecordIndex], // Spread current record data
-            ...formattedData, // Ensure this contains only the fields to update
+            ...updatedResults[existingRecordIndex], // Keep existing data
+            ...formattedData, // Merge updated fields
           };
         } else {
-          // If no existing record, create a new one with a unique id
-          const newRecord = {
+          // If no matching record, add a new one
+          updatedResults.push({
             ...formattedData,
             id: new Date().getTime(), // Generate a unique ID
-          };
-          updatedResults.push(newRecord); // Add the new record to the array
+          });
         }
-      
+  
         return updatedResults;
       });
   
       handleClose(); // Close the modal/dialog
     }
   };
-  
+
   const findCustomizeLabel = (columnName) => {
     const matchingColumn = groupLabel.find(
       (item) => item.column_name === columnName,

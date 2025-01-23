@@ -2170,6 +2170,12 @@ margin-bottom: 8px;
     textarea.Extrasize.TxtAra {
       height: 115px !important;
   }
+  textarea.Extrasize.TxtAra.third {
+    height: 100px !important;
+}
+.ant-picker.ant-picker-outlined{
+  width: 100%;
+}
   .cutomeBtnDropMainCls{
     min-width: 90px !important;
     max-width: 90px;

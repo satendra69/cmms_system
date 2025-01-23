@@ -69,6 +69,7 @@ import { styled } from "@mui/material/styles";
 import AssetTableRow from './asset-table-row';
 import AssetTableFiltersResult from './AssetTableFiltersResult';
 import ExportAssetlistToExcel from "./ExportFIle/ExportAssetlistToExcel";
+import { useSwalCloseContext } from '../ContextApi/SwalCloseContext';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -91,6 +92,7 @@ export default function Asset_List() {
   const site_ID = localStorage.getItem('site_ID');
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
+  const {swalCloseTime} = useSwalCloseContext();
 
   const location = useLocation();
 
@@ -569,7 +571,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
               text: "Asset Record Delete Successfully",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               });
               //fetchData();
@@ -1644,7 +1646,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
               text: "Your Query Update Successfully.",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",

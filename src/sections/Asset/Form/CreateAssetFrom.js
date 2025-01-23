@@ -86,6 +86,7 @@ import AssetSpares from "../Asset_module/AssetSpares";
 import AssetUsage from "../Asset_module/AssetUsage";
 import MrHistory from "../Asset_module/MrHistory";
 import AssetSpecification from "../Asset_module/AssetSpecification";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 
 //import logo from "../../../assets/img/work-time.png";
 
@@ -133,7 +134,8 @@ export default function CreateAssetFrom({ currentUser, onPageChange }) {
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_name = localStorage.getItem("emp_mst_name");
   const location = useLocation();
-
+  const {swalCloseTime} = useSwalCloseContext();
+  
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('error');
@@ -2081,7 +2083,7 @@ if (
           },
           title: response.data.status,
           text: response.data.message,
-          timer: 3000, 
+          timer: swalCloseTime, 
           timerProgressBar: true, 
           willClose: () => {
             if(AssetSubModuleBtn){
@@ -2746,7 +2748,7 @@ if (
             }
             );
 
-            console.log("upload_mltipal____",response);
+           // console.log("upload_mltipal____",response);
             if (response.data.status == "SUCCESS") {
               Swal.close();
               Swal.fire({
@@ -2756,7 +2758,7 @@ if (
                 },
                 title: response.data.status,
                 text: `Asset ` + AssetNo +` Updated Successfully`,
-                timer: 3000, // Auto-close after 3 seconds
+                timer: swalCloseTime, // Auto-close after 3 seconds
                 timerProgressBar: true, // Optional: Shows a progress bar
                 willClose: () => {
                   // Navigate to the desired page when the modal closes
@@ -2801,7 +2803,7 @@ if (
             },
             title: response.data.status,
             text: response.data.message,
-            timer: 3000, 
+            timer: swalCloseTime, 
             timerProgressBar: true, 
             willClose: () => {
               // Navigate to the desired page when the modal closes

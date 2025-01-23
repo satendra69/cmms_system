@@ -36,6 +36,7 @@ import Iconify from "src/components/iconify";
 
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -54,6 +55,7 @@ const WorkOrderDownTime = ({ onRowClick, data, onDataFromSecondComponent }) => {
   const { Asset_No } = data;
   const { WorkOrderNo } = data;
   const { OrigiDate } = data;
+  const {swalCloseTime} = useSwalCloseContext();
 
   const [FormStatus, setFormStatus] = useState(data.formStatus);
 
@@ -1246,7 +1248,7 @@ function convertToMinutes(timeString) {
            },
            title: response.data.status,
            text: response.data.message,
-           timer: 3000, 
+           timer: swalCloseTime, 
           timerProgressBar: true, 
           willClose: () => {
             

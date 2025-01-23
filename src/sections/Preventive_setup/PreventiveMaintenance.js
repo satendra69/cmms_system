@@ -36,6 +36,7 @@ import Snackbar from '@mui/material/Snackbar';
 import LinearProgress from '@mui/material/LinearProgress';
 import Alert from '@mui/material/Alert';
 
+
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 
@@ -78,6 +79,7 @@ import PreventivemaintenanceTableFiltersResult from './PreventiveMaintenanceTabl
 
 import ExportPreventivelistToExcel from "../Preventive_setup/ExportFIle/ExportPreventivelistToExcel";
 import PreventiveMaintenanceCalendarView from "./PreventiveMaintenanceCalendarView";
+import { useSwalCloseContext } from '../ContextApi/SwalCloseContext';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -99,6 +101,8 @@ export default function PreventiveMaintenance() {
   const site_ID = localStorage.getItem('site_ID');
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
+  const {swalCloseTime} = useSwalCloseContext();
+
   const [isLoading, setIsLoading] = useState(true);
   const popover = usePopover();
   const router = useRouter();
@@ -1530,7 +1534,7 @@ export default function PreventiveMaintenance() {
               text: "Your query update successfully.",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",
@@ -1638,13 +1642,13 @@ export default function PreventiveMaintenance() {
       setselectedOptionValue(selectedOption);
   
       let cf_query_title, RowID;
-  
       const hyphenCount = selectedOption.split("-").length - 1;
-  
+
       if(hyphenCount === 1){
          [cf_query_title, RowID] = selectedOption.split("-")
       }else{
         const parts = selectedOption.split("-");
+
         cf_query_title = parts[0].trim();
         RowID = parts[parts.length - 1].trim();
       }
@@ -3192,7 +3196,7 @@ const handleCheckboxChange = (row, isChecked) => {
                         
                         value={selectedOptionValue}
                         className="custom-default-select"
-                        // onChange={handleClickOption}
+                      
                         onChange={(event) =>
                           handleClickOption(event.target.value)
                         }
@@ -3228,7 +3232,7 @@ const handleCheckboxChange = (row, isChecked) => {
                         ))}
                       </Select>
                       <td>
-                       
+                       {console.log("isChecked___",isChecked)}
                       <input
                           class="form-check-input"
                           type="checkbox"

@@ -78,11 +78,13 @@ import { faFileWord } from "@fortawesome/free-solid-svg-icons";
 import GetAssetList from "../PopupModel/GetAssetList";
 
 
+
 import { color } from "framer-motion";
 import { event } from "jquery";
 import FrequencyCodeList from "../PopupModel/FrequencyCodeList";
 import AllPlanningModule from "../component_module/Planning/AllPlanningModule"
-
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
+import PmCheckList2 from "../component_module/Check_list/PmCheckList2"
 
 //import WorkOrderSpecialOrder from "../component_module/Planning/WorkOrderSpecialOrder";
 const MySwal = withReactContent(Swal);
@@ -172,6 +174,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 export default function CreateNewPmform ({ currentUser, onPageChange }) {
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_name = localStorage.getItem("emp_mst_name");
+  const {swalCloseTime} = useSwalCloseContext();
 
   const location = useLocation();
   
@@ -2541,7 +2544,7 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
           },
           title: response.data.status,
           text: response.data.message,
-          timer: 3000, // Auto-close after 3 seconds
+          timer: swalCloseTime, // Auto-close after 3 seconds
           timerProgressBar: true, // Optional: Shows a progress bar
           willClose: () => {
             // Navigate to the desired page when the modal closes
@@ -3157,6 +3160,18 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
             },
             title: response.data.status,
             text: response.data.message,
+            timer: swalCloseTime, // Auto-close after 3 seconds
+            timerProgressBar: true, // Optional: Shows a progress bar
+            willClose: () => {
+              // Navigate to the desired page when the modal closes
+              navigate(`/dashboard/PreventiveSetup`, {
+                state: {
+                  currentPage,
+                  selectedOption,
+                  selectedRowIdBack:RowID,
+                },
+              });
+            },
           }).then(() => {
             if (response.data.status === "SUCCESS") {
              // navigate(`/dashboard/work/order`);
@@ -4627,7 +4642,12 @@ const handleCheckboxChangeFlag = (event) => {
                                                       <br />
                                                     </div>
                                                     <BootstrapDialog
-                                                      onClose={handleClosedd2}
+                                                     
+                                                      onClose={(event, reason) => {
+                                                        if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                                                          handleClosedd2(event, reason);
+                                                        }
+                                                      }}
                                                       aria-labelledby="customized-dialog-title"
                                                       open={showdd2}
                                                     >
@@ -4638,11 +4658,11 @@ const handleCheckboxChangeFlag = (event) => {
                                                           position: "absolute",
                                                           right: 8,
                                                           top: 8,
-                                                          color: (theme) =>
-                                                            theme.palette.grey[500],
+                                                          padding:"0px !important",
+                                                          margin:"5px !important"
                                                         }}
                                                       >
-                                                        X
+                                                       <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                                       </IconButton>
                                                       <DialogContent
                                                         dividers
@@ -4886,7 +4906,11 @@ const handleCheckboxChangeFlag = (event) => {
                                                           <br />
                                                         </div>
                                                         <BootstrapDialog
-                                                          onClose={handleClosedd2}
+                                                          onClose={(event, reason) => {
+                                                            if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') {
+                                                              handleClosedd2(event, reason);
+                                                            }
+                                                          }}
                                                           aria-labelledby="customized-dialog-title"
                                                           open={showdd2}
                                                         >
@@ -4897,11 +4921,11 @@ const handleCheckboxChangeFlag = (event) => {
                                                               position: "absolute",
                                                               right: 8,
                                                               top: 8,
-                                                              color: (theme) =>
-                                                                theme.palette.grey[500],
+                                                              padding:"0px !important",
+                                                               margin:"5px !important"
                                                             }}
                                                           >
-                                                            X
+                                                            <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                                           </IconButton>
                                                           <DialogContent
                                                             dividers
@@ -7291,7 +7315,14 @@ const handleCheckboxChangeFlag = (event) => {
                   <Grid xs={12} md={12} className="mainDivClass otherTbs" sx={{ padding:"0px" }} >
                     <Card sx={{ p: 3 }} >
                     <Grid className="InnerDiv" style={{marginTop:"16px"}} >
-                   
+                   <PmCheckList2 
+                    data={{
+                      RowID: RowID,
+                      Asset_No: Asset_No,
+                     // formStatus: "NEW", 
+                      //statusKey:statusKey,
+                    }}
+                  />
                       </Grid>
                     </Card>
                   </Grid>
@@ -7416,6 +7447,13 @@ const handleCheckboxChangeFlag = (event) => {
                                             className="fntlog"
                                           />
                                         ) : item.file_name.toLowerCase().endsWith(".xlsx") ? (
+                                          <FontAwesomeIcon
+                                            icon={faFileExcel} 
+                                            onClick={() => openXlsxInNewTab(item.attachment)}
+                                            style={{ width: "35px", height: "35px", cursor:"pointer", }}
+                                            className="fntxlsx"
+                                          />
+                                        ): item.file_name.toLowerCase().endsWith(".xls") ? (
                                           <FontAwesomeIcon
                                             icon={faFileExcel} 
                                             onClick={() => openXlsxInNewTab(item.attachment)}
@@ -7707,13 +7745,11 @@ const handleCheckboxChangeFlag = (event) => {
                                        position: "absolute",
                                        right: 8,
                                        top: 8,
-                                       color: (theme) => theme.palette.grey[500],
+                                       padding:"0px !important",
+                                       margin:"5px !important"
                                      }}
                                    >
-                                     <Iconify
-                                       icon="carbon:close-outline"
-                                       style={{ marginRight: "4px" }}
-                                     />
+                                        <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                    </IconButton>
                                    <DialogContent dividers>
                                      <Typography gutterBottom>
@@ -7739,10 +7775,11 @@ const handleCheckboxChangeFlag = (event) => {
                                        position: "absolute",
                                        right: 8,
                                        top: 8,
-                                       color: (theme) => theme.palette.grey[500],
+                                        padding:"0px !important",
+                                        margin:"5px !important"
                                      }}
                                    >
-                                     <Iconify icon="carbon:close-outline" />
+                                     <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                    </IconButton>
                                    <DialogContent dividers>
                                      <Typography gutterBottom>

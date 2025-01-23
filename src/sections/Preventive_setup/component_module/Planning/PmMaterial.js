@@ -400,41 +400,7 @@ const handleDelete = async (data, index, event) => {
       
     },
   ]);
-  // Add New button funcation
-//   const addInputField = (event) => {
-//     event.preventDefault();
-//     let isValid = true;
-//     inputFields.forEach((inputFields) => {
-//       if (inputFields.prm_ls1_crft.trim() === "") {
-//         Swal.fire({
-//           icon: "error",
-//           title: "Oops...",
-//           text: "Craft is Required!",
-//           customClass: {
-//             container: "swalcontainercustom",
-//           },
-//         });
-//         isValid = false;
-//       } 
-//     });
-//     if (isValid) {
-//       setInputFields([
-//         ...inputFields,
-//         {
-//           site_ID: site_ID,
-//           mst_RowID: RowID,
-//           emp_mst_login_id: emp_mst_login_id,
-//           prm_ls1_assetno: AssetNo,
-//           prm_ls1_crft:"",
-//           prm_ls1_crewSize:"1",
-//           prm_ls1_est_hrs:"",
-//           prm_ls1_lumpsum:"",
-//           selectChargeCostCenter: "",
-//           selectChargeAccount: "",
-//         },
-//       ]);
-//     }
-//   };
+  
   const removeInputFields = (index) => {
     const rows = [...inputFields];
     if (index !== undefined) {
@@ -571,7 +537,7 @@ const handleDelete = async (data, index, event) => {
               "&itm_mst_stockno=" +
               rowData
           );
-          console.log("response____get__update",response);
+        //  console.log("response____get__update",response);
           if (response.data.status === "SUCCESS") {
           
             const list = [...inputFields];
@@ -1117,10 +1083,11 @@ const handleClickStockLocation = async() =>{
                 position: "absolute",
                 right: 8,
                 top: 8,
-                color: (theme) => theme.palette.grey[500],
+                padding:"0px !important",
+                margin:"5px !important"
               }}
             >
-              <Iconify icon="material-symbols:close" />
+              <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
             </IconButton>
             <DialogContent dividers>
               <div

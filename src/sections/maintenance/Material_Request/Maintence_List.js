@@ -69,6 +69,8 @@ import MrTableRow from './mr-table-row';
 import AssetTableFiltersResult from './AssetTableFiltersResult';
 
 import ExportMtrlistToExcel from './ExportFIle/ExportMtrlistToExcel';
+import { useSwalCloseContext } from 'src/sections/ContextApi/SwalCloseContext';
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -92,6 +94,7 @@ export default function Maintence_List() {
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
   const location = useLocation();
+  const {swalCloseTime}  = useSwalCloseContext();
   const [DashbordDataGauge, setDashbordDataGauge] = useState(
     location.state?.GaugeDashbordData
   );
@@ -585,7 +588,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
               text: "Material Request Record Delete Successfully",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               });
               //fetchData();
@@ -1645,7 +1648,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
               text: "Your Query Update Successfully.",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",
@@ -2087,7 +2090,7 @@ const handleExportClick = () => {
     customClass: {
       container: "swalcontainercustom",
     },
-    timer: 1000,
+    timer: swalCloseTime,
   });
   Swal.showLoading();
 };

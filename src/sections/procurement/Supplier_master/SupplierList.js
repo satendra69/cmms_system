@@ -18,7 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Stack from "@mui/material/Stack";
 import CustomPopover, { usePopover } from "src/components/custom-popover";
-import Moment from "moment";
+
 // routes
 import { useRouter } from "src/routes/hooks";
 
@@ -70,6 +70,7 @@ import WorkReqTableFiltersResult from "./WorkReqTableFiltersResult";
 import ExportToExcel from "./component_module/ExportToExcel";
 
 import SupplierPromt from "./component_module/SupplierPromt/SupplierPromt";
+import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { ThreeCircles } from "react-loader-spinner";
 import TemplateDialog from "./Form/Template/TemplateDialog";
@@ -101,6 +102,7 @@ export default function SupplierList() {
   const site_ID = localStorage.getItem("site_ID");
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
+  const {swalCloseTime} = useSwalCloseContext();
   
   const [isLoading, setIsLoading] = useState(false);
   const popover = usePopover();
@@ -108,7 +110,7 @@ export default function SupplierList() {
   const navigate = useNavigate();
   const [DefineQueryBtn, setDefineQueryBtn] = useState("");
   const table = useTable();
-  const [RowPerPage, setRowperPage] = useState(100);
+ 
   const [showPromtRetiveBtn, setShowPromtRetiveBtn] = useState(false);
   const [selectTempDropRowID, setselectTempDropRowID] = useState("");
   const [isBoxChecked,setIsBoxChecked] = useState(false);
@@ -2100,7 +2102,7 @@ useEffect(()=>{
           confirmButtonColor: "#3085d6",
           cancelButtonColor: "#d33",
           confirmButtonText: "Yes, delete it!",
-          timer: 2000,
+          timer: swalCloseTime,
         }).then(async (result) => {
           if (result.isConfirmed) {
             const response = await httpCommon.get(
@@ -2225,7 +2227,7 @@ const SaveWorkOrderQryList = async () => {
               text: "Your Query Update Successfully.",
               icon: "success",
               confirmButtonText: "OK",
-              timer: 3000,
+              timer: swalCloseTime,
               timerProgressBar: true, 
               customClass: {
                 container: "swalcontainercustom",
@@ -2793,7 +2795,7 @@ else if(tableData.length === 0){
       customClass: {
         container: "swalcontainercustom",
       },
-      timer: 1000,
+      timer: swalCloseTime,
     });
     Swal.showLoading();
   };
