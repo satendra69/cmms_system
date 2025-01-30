@@ -91,6 +91,10 @@ export default function WorkReqTableRow({
       return ""; 
     }
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return ""; // Handle invalid date formats
+    }
+   
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); 
     const year = date.getFullYear();
@@ -224,6 +228,7 @@ export default function WorkReqTableRow({
         <TableCell>{col18}</TableCell>
         <TableCell>{col19}</TableCell>
         <TableCell>{col20}</TableCell>
+        
        
         <TableCell> {formatDate(col21)}</TableCell>
        

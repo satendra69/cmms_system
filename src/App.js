@@ -44,7 +44,8 @@ import { CheckoutProvider } from 'src/sections/checkout/context';
 // auth
 import { AuthProvider, AuthConsumer } from 'src/auth/context/jwt';
 
-import { SwalCloseProvider }  from 'src/sections/ContextApi/SwalCloseContext';
+import  CombinedProvider  from 'src/sections/ContextApi/ContextProvider';
+
 
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/auth0';
 // import { AuthProvider, AuthConsumer } from 'src/auth/context/amplify';
@@ -57,7 +58,8 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <SwalCloseProvider>
+      <CombinedProvider>
+      
       <LocalizationProvider>
         <SettingsProvider
           defaultSettings={{
@@ -84,7 +86,8 @@ export default function App() {
           </ThemeProvider>
         </SettingsProvider>
       </LocalizationProvider>
-      </SwalCloseProvider>
+     
+      </CombinedProvider>
     </AuthProvider>
   );
 }

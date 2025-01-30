@@ -12,6 +12,7 @@ export default function TablePaginationCustom({
   onChangeDense,
   rowsPerPageOptions = [5, 10, 25, 100],
   sx,
+  currentPage,
   ...other
 }) {
   

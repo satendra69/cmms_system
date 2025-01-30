@@ -22,7 +22,6 @@ build
 .env.development.local
 .env.test.local
 .env.production.local
-src/http-common.js
 
 # misc
 .DS_Store

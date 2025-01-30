@@ -101,10 +101,14 @@ export default function AccountPopover({ onRowClick }) {
           "&emp_mst_empl_id=" +
           Emp_mst_empl_id
       );
-      //console.log("response__sts",response);
-      if (response.data.data.length > 0) {
-       //  console.log("response__img",response.data.data['0'].emp_mst_att_sts);
+    
+    
+      if (response.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+
+        // Access the first element safely
+    
         setUserStatus(response.data.data["0"].emp_mst_att_sts);
+    
       }
     } catch (error) {
       console.error("Error fetching data:", error);

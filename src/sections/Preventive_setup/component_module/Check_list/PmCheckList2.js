@@ -30,6 +30,7 @@ import Iconify from "src/components/iconify";
 //import PmLaborCraftPopupData from "./PmLaborCraftPopupData"
 
 import { Menu, MenuItem } from "@mui/material";
+import CheckList from "./Popup_model/CheckList"
 
 
 import httpCommon from "src/http-common";
@@ -68,6 +69,8 @@ const [EditPrmls1chgAccount,setEditPrmls1chgAccount] = useState([]);
 const [EditPrmls1lumpsum,setEditPrmls1lumpsum] = useState("");
 const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
 
+const [isCarryChecked, setIsCarryChecked] = useState(false);
+
   const handleShow = () => {
     setShow(true);
     setInputFields(updatedInputFields);
@@ -87,6 +90,7 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
   const [modalRowDt, setmodalRowDt] = useState("");
   const [prmLs1Label, setPrmls1Label] = useState([]);
   const [MaterialMandatoryFiled, setMaterialMandatoryFiled] = useState([]);
+  const [selectedCheckList, setSelectedCheckList] = useState ("");
 
   // First Api
   const get_pm_checklist_data = async (site_ID, RowID) => {
@@ -223,6 +227,10 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
       </TableRow>
     ));
   };
+
+
+
+
 
   const formatNumber = (number) => {
     if (number == null) {
@@ -395,7 +403,7 @@ const handleDelete = async (data, index, event) => {
       prm_job_grp_asset:AssetNo,
       prm_job_job_cd:"",
       job_mst_desc:"",
-      prm_job_carry:""
+      prm_job_carry:"0"
       
     },
   ]);
@@ -542,21 +550,7 @@ const handleDelete = async (data, index, event) => {
     }
   };
 
-  const PopupRowDataSelect = () => {
-    if (modalRowDt === "") {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Please select one option!",
-        customClass: {
-            container: "swalcontainercustom",
-          },
-      });
-    } else {
-      setModalOpenAsset(false);
 
-    }
-  };
   const handleCancelClick = ( index) => {
    
   const list = [...inputFields]; 
@@ -636,20 +630,14 @@ const handleDelete = async (data, index, event) => {
     }
   };
 
+
   // Submit Data in database
   const handleAddButtonClick = async (e) => {
     e.preventDefault();
     let isValid = true;
     inputFields.forEach((inputFields) => {
-      if (inputFields.prm_ls1_crft.trim() === "") {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Craft is Required!",
-          customClass: {
-            container: "swalcontainercustom",
-          },
-        });
+      if (inputFields.prm_job_job_cd.trim() === "") {
+        
         isValid = false;
       } 
     });
@@ -665,14 +653,14 @@ const handleDelete = async (data, index, event) => {
     // console.log("inputFields____post",inputFields);
       try {
         const response = await httpCommon.post(
-          "/insert_pm_labor_data.php",
+          "/insert_pm_check_list_data.php",
           inputFields
         );
       //  console.log("API Response:", response);
         if (response.data.status === "SUCCESS") {
           Swal.close();
           Swal.fire({
-            title: "Labor!",
+            title: "Checklist!",
             customClass: {
               container: "swalcontainercustom",
             },
@@ -696,6 +684,8 @@ const handleDelete = async (data, index, event) => {
         Swal.close();
         console.error("Error posting form data:", error);
       }
+    }else{
+        handleClose();
     }
   };
   //Sum calculation
@@ -736,12 +726,12 @@ const handleDelete = async (data, index, event) => {
         prm_job_grp_asset:AssetNo,
         prm_job_job_cd:"",
         job_mst_desc:"",
-        prm_job_carry:""
+        prm_job_carry:"0"
         
       },
   
     ]);
-    
+    setIsCarryChecked("")
   };
 
   useEffect(() => {
@@ -895,6 +885,67 @@ const handleDelete = async (data, index, event) => {
       }
     }
    }
+
+   const handleRowData2 = (dataa, firstData,secondData) => {
+   
+    const checklistname = dataa;
+    const checklistDesc = firstData;
+
+    setInputFields(prevInputFields => {
+        return prevInputFields.map((field, index) => {
+          
+            if (index === 0) {
+                return {
+                    ...field,
+                    prm_job_job_cd: checklistname, 
+                    job_mst_desc: checklistDesc 
+                };
+            }
+            return field; 
+        });
+    });
+    setmodalRowDt(checklistname);
+      // Handle secondData logic at the end
+      if (secondData === 1) {
+        setmodalRowDt(dataa);
+         handleCloseModal2();
+         setModalOpenAsset(false);
+      }
+    };
+
+    const PopupRowDataSelect = () => {
+        if (modalRowDt === "") {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Please select one checklist option!",
+            customClass: {
+                container: "swalcontainercustom",
+              },
+          });
+        } else {
+          setModalOpenAsset(false);
+    
+        }
+      };
+
+    const handleCheckboxChange = (event) => {
+        const checked = event.target.checked;
+        setIsCarryChecked(checked);
+        // Update inputFields based on checkbox status
+        setInputFields(prevInputFields => {
+            return prevInputFields.map((field, index) => {
+                if (index === 0) { // Assuming you want to update the first input field
+                    return {
+                        ...field,
+                        prm_job_carry: checked ? "1" : "0" // Set to "1" if checked, "0" if unchecked
+                    };
+                }
+                return field; // Return unchanged field for other indices
+            });
+        });
+    };
+    
   return (
     <>
       <div>
@@ -1119,13 +1170,13 @@ const handleDelete = async (data, index, event) => {
                                       }}
 
                                   >
-                                      <DialogTitle
-                                sx={{ m: 0, p: 2 }}
-                                id="customized-dialog-title"
-                                className="dailogTitWork"
-                              >
+                                    <DialogTitle
+                                        sx={{ m: 0, p: 2 }}
+                                        id="customized-dialog-title"
+                                        className="dailogTitWork"
+                                    >
                                
-                               Craft
+                               Checklist
                               </DialogTitle>
                               <IconButton
                                 aria-label="close"
@@ -1142,24 +1193,15 @@ const handleDelete = async (data, index, event) => {
                                    <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                               </IconButton>
                                     
-                                    <DialogContent
-                                      dividers
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        paddingTop:"0px"
-                                      }}
-                                    >
-                                     <div
-                                  style={{
-                                    width: "100%",
+                              <DialogContent dividers>
+                                <div className="TblSelect">
+                                    <CheckList
+                                    onRowClick={handleRowData2}
+                                    dataId = {RowID}
                                     
-                                  }}
-                                >
-                                  
+                                    />
                                 </div>
-                                fgfgf
-                                    </DialogContent>
+                                </DialogContent>
                                     <DialogActions
                                 style={{
                                   display: "flex",
@@ -1222,9 +1264,7 @@ const handleDelete = async (data, index, event) => {
                                 disabled
                                 value={ data.job_mst_desc != "" ? data.job_mst_desc : "" }
                                 
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
+                                
                               />
                             </Grid>
                             <Grid
@@ -1237,7 +1277,10 @@ const handleDelete = async (data, index, event) => {
                             </Grid>
 
                             <Grid item xs={12} md={8}>
-                            <Checkbox />
+                                <Checkbox 
+                                  checked={isCarryChecked}
+                                  onChange={handleCheckboxChange}
+                                />
                             </Grid>
                             
                           </Grid>

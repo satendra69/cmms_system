@@ -141,7 +141,7 @@ export default function OverviewAppView() {
           "&admin=" +
           emp_mst_loginID
       );
-      //  console.log("response____dash__",response);
+        console.log("response____dash__",response);
       if (response.data.status === "SUCCESS") {
         setDashbordData(response.data.data);
         setGetPRM_MST(response.data.PRM_MST);

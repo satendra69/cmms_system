@@ -47,10 +47,7 @@ import TextField from '@mui/material/TextField';
 import {
   useTable,
   getComparator,
-  emptyRows,
   TableNoData,
-  TableSkeleton,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
@@ -61,7 +58,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import httpCommon from 'src/http-common';
 import Swal from 'sweetalert2';
-import OutlinedInput from '@mui/material/OutlinedInput';
+
 import { Icon } from '@iconify/react';
 import { ThreeCircles } from 'react-loader-spinner';
 
@@ -83,7 +80,7 @@ import { Avatar, Badge } from '@mui/material'
 import WorkReqTableRow from './workrequest-table-row';
 import WorkReqTableFiltersResult from './WorkReqTableFiltersResult';
 import ExportWorkReqlistToExcel from "./ExportFIle/ExportWorkReqlistToExcel";
-import { useSwalCloseContext } from '../ContextApi/SwalCloseContext';
+import { useSwalCloseContext } from "../ContextApi/WorkOrder/SwalCloseContext";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -194,6 +191,7 @@ export default function WorkRequestList() {
   const confirm = useBoolean();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTriggered, setSearchTriggered] = useState(false);
   const inputRef = useRef(null);
   const numberOfColumns = "29";
   const [FilterShow, setFilterShow] = useState(false);
@@ -262,11 +260,6 @@ export default function WorkRequestList() {
   const [showPromtRetiveBtn, setShowPromtRetiveBtn] = useState(false);
   const [showPromt, setShowPromt] = useState(false);
 
-  const [rowlikeset, setRowlikeset] = useState("like");
-  const [rowAndset, setRowAndset] = useState("And");
-  const [rowQtrlikeset, setRowQtrlikeset] = useState("like");
-  const [rowQtrAndset, setRowQtrAndset] = useState("And");
-
   const [rowsDropdownPrompt, setRowsDropdownPrompt] = useState([
     {
       selectedOption: "",
@@ -287,6 +280,7 @@ export default function WorkRequestList() {
  const [ignoreEffect, setIgnoreEffect] = useState(false);
  const [inputValueSearch, setInputValueSearch] = useState('');
  const [RowPerPage,setRowperPage]=useState(100);
+
   const fetchFilterSubPopupSavedropdon = async () => {
     // Get dropdown value using api
     try {
@@ -379,7 +373,7 @@ export default function WorkRequestList() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-  }, [site_ID, currentPage]);
+  }, [site_ID]);
 
 //console.log("defaultTitle____",defaultTitle);
 
@@ -389,7 +383,7 @@ export default function WorkRequestList() {
       handleOptionTableList({ target: { value: defaultTitle }});
 
     }
-  }, [defaultTitle,site_ID, currentPage]);
+  }, [defaultTitle,site_ID]);
 
   const handleOptionTableList = async (event,responseData) => {
    //console.log("cancel___edit___");
@@ -460,7 +454,7 @@ export default function WorkRequestList() {
 
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+     // setCurrentPage(1);
       setDropListIdGet([]);
       setDashbordDataGauge([]);
       setTitleAstReg("");
@@ -477,6 +471,7 @@ export default function WorkRequestList() {
     setCurrentPage(1);
     setSelectedRowIdbackState("");
     setInputValueSearch("");
+    setSearchTriggered(false);
     const selectedOptionObjectFilter = workReqFilterDpd.find(
       (item) => item.cf_query_title === selectedValue
     );
@@ -549,14 +544,14 @@ export default function WorkRequestList() {
       }
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+   //   setCurrentPage(1);
       setDropListIdGet([]);
       setTitleAstReg("");
     }else{
       const GetRowID = selectedOptionObject.RowID;
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+   //   setCurrentPage(1);
       setDropListIdGet([]);
       setTitleAstReg("");
     }
@@ -565,11 +560,12 @@ export default function WorkRequestList() {
   };
 
   const fetchDataUsingRefreshBtn = useCallback(async () =>{
+//    console.log("refresh btn call api");
     getb();
 }, [site_ID, currentPage, selectDropRowID]);
 
   const getb = useCallback(async () => {
-  
+//  console.log("currentPage____",currentPage);
     setIsLoading(true);
     try {
      
@@ -803,6 +799,8 @@ export default function WorkRequestList() {
   const handleResetFilters = useCallback(() => {
     setInputValueSearch('');
     setTableData("");
+    setTableSearchData("");
+    setCurrentPage(1);
     if (inputRef.current) {
       inputRef.current.value = ''; // Clear the input field value directly
     }
@@ -1005,7 +1003,7 @@ export default function WorkRequestList() {
   const handelFilterAction = () => {
     setIgnoreEffect(true); 
     setselectDropRowID("");
-    setCurrentPage(1);
+   // setCurrentPage(1);
     const updatedEmptyRows = rows.map((row) => ({
       // empty state data
       ...row,
@@ -1061,6 +1059,8 @@ export default function WorkRequestList() {
     let hasEmptyValuept = false;
     let fieldName = '';
     setSelectedRowIdbackState("");
+    setTableSearchData("");
+    setInputValueSearch("");
     for (const row of rows) {
       if (!row.selectedOption) {
         hasEmptyOption = true;
@@ -1121,7 +1121,7 @@ export default function WorkRequestList() {
 
     setSelectedOption("");
     setselectDropRowID("");
-
+    setCurrentPage(1);
     let foundPromptOne = false;
     for (const rowChk of rows) {
       if (rowChk.prompt === "1") {
@@ -1214,8 +1214,11 @@ export default function WorkRequestList() {
     setSelectedOption("");
     setselectDropRowID("");
     setDropListIdGet("");
+    setCurrentPage(1);
     setSelectedRowIdbackState("");
     setDashbordDataGauge([]);
+    setTableSearchData("");
+    setInputValueSearch("");
     Swal.fire({
       title: "Please Wait!",
       allowOutsideClick: false,
@@ -1272,7 +1275,7 @@ export default function WorkRequestList() {
         },
       });
     }
-  }, [currentPage, site_ID, emp_owner,selectDropRowID]);
+  }, [currentPage, site_ID, emp_owner]);
 
     const retriveBtn = () => {
       if (rows.some((row) => row.selectedOption !== "")) {
@@ -2131,8 +2134,10 @@ const handleIncludeChangeLogcilQtr2 = (index, logical) => {
 const handelSearchButton = async () => {
   const inputValueGet = inputRef.current.value.trim(); 
   inputRef.current.blur();
-  //console.log("inputValueGet_____",inputValueGet);
-  
+  if (!searchTriggered) {
+    setCurrentPage(1); 
+    setSearchTriggered(true); 
+  }
   if (inputValueGet !== "" && inputValueGet !== null) {
     Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
     Swal.showLoading();
@@ -2141,7 +2146,7 @@ const handelSearchButton = async () => {
       const response = await httpCommon.get(
         `/get_search_work_req_module.php?site_cd=${site_ID}&searchTerm=${inputValueGet}&page=${currentPage}`
       );
-       // console.log("responseSerach_____",response);
+       // console.log("responseSerach_____search",response);
       if (response.data.data.result.length > 0) {
         setTableSearchData(response.data.data.result);
         setTotalRow(response.data.total_count);
@@ -2896,22 +2901,21 @@ const getStatusColor = (status) => {
   }
 };
 
-//console.log("setDashbordDataGauge___",DashbordDataGauge);
-
 useEffect(() => {
 
   if (ignoreEffect) {
     setIgnoreEffect(false); // Reset the flag
     return;
   }
-  
-  if (selectDropRowID !== "" && selectDropRowID !== null) {
-  //  console.log("firstquery____");
-    getb();
-  }else if(TableSearchData !="" && TableSearchData != null){
+  if (searchTriggered) {
+    // console.log("searchTriggered____",searchTriggered);
     handelSearchButton();
+  }
+  else if (selectDropRowID !== "" && selectDropRowID !== null) {
+   // console.log("firstquery____");
+    getb();
   }else if(Array.isArray(DashbordDataGauge) && DashbordDataGauge.length > 0){
-    // console.log("dashbord data coming____");
+   //  console.log("dashbord data coming____");
     fetchDataGaugeDSB();
 
   }else {
@@ -2920,7 +2924,7 @@ useEffect(() => {
   }
   fetchFilterSubPopupSavedropdon();
   get_dropdown();
-}, [site_ID, currentPage, selectDropRowID,fetchData,getb,fetchDataGaugeDSB]);
+}, [site_ID, currentPage,selectDropRowID,fetchData,getb,fetchDataGaugeDSB]);
 
 const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 const [isOptionSelected, setIsOptionSelected] = useState(TitleAstReg !== "" || selectedOption);
@@ -2946,11 +2950,14 @@ const handleOptionChangeInternal = (event) => {
 };
 const handleSearchInputChange = (e) => {
   setInputValueSearch(e.target.value);
+  setSearchTriggered(false);
 };
  
 const handleClearButton = () => {
   handleResetFilters();
+  setSearchTriggered(false);
   setTotalRow(0);
+  
  
   if (inputRef.current) {
     inputRef.current.focus(); // Refocus the input field
@@ -3029,7 +3036,7 @@ const handleClearButton = () => {
               >
                 
                 <InputLabel id="select-label" className={(TitleAstReg!== "" || selectedOption)? "selectedcss" : "defaultLabelSelect"}>Select Query</InputLabel>
-                {/* <InputLabel id="select-label"  className={`select-label ${(isDropdownOpen || isOptionSelected) ? 'hiddendd' : 'selectedcss'}`}>Select an Query</InputLabel> */}
+               
                 <Select
                   labelId="select-label"
                   id="select"

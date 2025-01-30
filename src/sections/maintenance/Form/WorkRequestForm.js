@@ -67,7 +67,8 @@ import OriginalPriorityModel from "../model/OriginalPriorityModel";
 import APIServices from "src/services/APIServices";
 import List1 from "../WorkRequestModule/List1";
 import List2 from "../WorkRequestModule/List2";
-import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
+import { useSwalCloseContext } from "src/sections/ContextApi/WorkOrder/SwalCloseContext";
+import AttachmentImageViewer from "src/sections/CommanComponet/AttachmentImageViewer";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -109,6 +110,7 @@ const StepContainer = styled("div")`
 
 export default function WorkRequestForm({ currentUser }) {
   let site_ID = localStorage.getItem("site_ID");
+  let CurretnUser = localStorage.getItem("emp_mst_login_id");
   const location = useLocation();
 
   const { swalCloseTime } = useSwalCloseContext();
@@ -3160,10 +3162,11 @@ function CustomTextField({ rightIcons, ...props }) {
                                 onClick={handleClosedd2}
                                 sx={{
                                   position: "absolute",
-                                  right: 8,
+                                  left: 8,
                                   top: 8,
                                   padding:"0px !important",
-                                  margin:"5px !important"
+                                  margin:"5px !important",
+                                  zIndex: 10,
                                  // color: (theme) => theme.palette.grey[500],
                                 }}
                               >
@@ -3178,21 +3181,33 @@ function CustomTextField({ rightIcons, ...props }) {
                               >
                                 {getDbImg && getDbImg.length > 0 ? (
                                   <div>
-                                    <img
+                                    <AttachmentImageViewer  
+                                            imageSrc={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
+                                            />
+                                    {/* <img
                                        src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
                                       alt="dummy"
                                       className="dummyImg"
                                       onClick={openSaveImg}
-                                    />
+                                    /> */}
                                   </div>
                                 ) : (
-                                  <img
-                                    src={image.preview}
-                                    alt="dummy"
-                                    style={{ height: "50%", width: "50%" }}
-                                    onClick={openSaveImg}
-                                    className="dummyImg"
-                                  />
+                                  <AttachmentImageViewer  
+                                            imageSrc={image.preview} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummyImg"
+                                            />
+                                  // <img
+                                  //   src={image.preview}
+                                  //   alt="dummy"
+                                  //   style={{ height: "50%", width: "50%" }}
+                                  //   onClick={openSaveImg}
+                                  //   className="dummyImg"
+                                  // />
                                 )}
                               </DialogContent>
                             </BootstrapDialog>
@@ -3733,10 +3748,11 @@ function CustomTextField({ rightIcons, ...props }) {
                                   onClick={handleClosedd2}
                                   sx={{
                                     position: "absolute",
-                                    right: 8,
+                                    left: 8,
                                     top: 8,
                                     padding:"0px !important",
-                                    margin:"5px !important"
+                                    margin:"5px !important",
+                                    zIndex: 10,
                                     //color: (theme) => theme.palette.grey[500],
                                   }}
                                 >
@@ -3751,21 +3767,33 @@ function CustomTextField({ rightIcons, ...props }) {
                                 >
                                   {getDbImg && getDbImg.length > 0 ? (
                                     <div>
-                                      <img
+                                      {/* <img
                                         src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
                                         alt="dummy"
                                         className="dummyImg"
                                         onClick={openSaveImg}
-                                      />
+                                      /> */}
+                                      <AttachmentImageViewer  
+                                            imageSrc={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
+                                            />
                                     </div>
                                   ) : (
-                                    <img
-                                      src={image.preview}
-                                      alt="dummy"
-                                      style={{ height: "50%", width: "50%" }}
-                                      onClick={openSaveImg}
-                                      className="dummyImg"
-                                    />
+                                    <AttachmentImageViewer  
+                                            imageSrc={image.preview} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
+                                            />
+                                    // <img
+                                    //   src={image.preview}
+                                    //   alt="dummy"
+                                    //   style={{ height: "50%", width: "50%" }}
+                                    //   onClick={openSaveImg}
+                                    //   className="dummyImg"
+                                    // />
                                   )}
                                 </DialogContent>
                               </BootstrapDialog>
@@ -5292,7 +5320,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                       />
                                     </td>
                                     <td>{image.name}</td>
-                                    <td>Admin</td>
+                                    <td>{CurretnUser}</td>
                                     <td>{new Date().toLocaleString() + ""}</td>
                                     <td>
                                       <button
@@ -5320,7 +5348,36 @@ function CustomTextField({ rightIcons, ...props }) {
                                     />
                                   </td>
                                   <td>{image.name}</td>
-                                  <td>Admin</td>
+                                  <td>{CurretnUser}</td>
+                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>
+                                    <button
+                                      type="button"
+                                      className="btn"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        handleDeleteImg(index);
+                                      }}
+                                    >
+                                      <Iconify icon="carbon:close-outline" />
+                                    </button>
+                                  </td>
+                                </tr>
+                                  
+                                ):
+                                image.name.toLowerCase().endsWith(".xls") ? (
+                                  <tr key={index}>
+                                  <td>
+                                    <FontAwesomeIcon
+                                      icon={faFileExcel}
+                                      style={{
+                                        width: "35px",
+                                        height: "35px",
+                                      }}
+                                    />
+                                  </td>
+                                  <td>{image.name}</td>
+                                  <td>{CurretnUser}</td>
                                   <td>{new Date().toLocaleString() + ""}</td>
                                   <td>
                                     <button
@@ -5348,7 +5405,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                     />
                                   </td>
                                   <td>{image.name}</td>
-                                  <td>Admin</td>
+                                  <td>{CurretnUser}</td>
                                   <td>{new Date().toLocaleString() + ""}</td>
                                   <td>
                                     <button
@@ -5376,7 +5433,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                     />
                                   </td>
                                   <td>{image.name}</td>
-                                  <td>Admin</td>
+                                  <td>{CurretnUser}</td>
                                   <td>{new Date().toLocaleString() + ""}</td>
                                   <td>
                                     <button
@@ -5404,7 +5461,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                     />
                                   </td>
                                   <td>{image.name}</td>
-                                  <td>Admin</td>
+                                  <td>{CurretnUser}</td>
                                   <td>{new Date().toLocaleString() + ""}</td>
                                   <td>
                                     <button
@@ -5432,7 +5489,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                     />
                                   </td>
                                   <td>{image.name}</td>
-                                  <td>Admin</td>
+                                  <td>{CurretnUser}</td>
                                   <td>{new Date().toLocaleString() + ""}</td>
                                   <td>
                                     <button
@@ -5464,7 +5521,7 @@ function CustomTextField({ rightIcons, ...props }) {
                                       />
                                     </td>
                                     <td>{image.name}</td>
-                                    <td>Admin</td>
+                                    <td>{CurretnUser}</td>
                                     <td>{new Date().toLocaleString() + ""}</td>
 
                                     <td>
@@ -5500,10 +5557,11 @@ function CustomTextField({ rightIcons, ...props }) {
                                   onClick={handleClosedd}
                                   sx={{
                                     position: "absolute",
-                                    right: 8,
+                                    left: 8,
                                     top: 8,
                                     padding:"0px !important",
-                                    margin:"5px !important"
+                                    margin:"5px !important",
+                                    zIndex: 10,
                                    // color: (theme) => theme.palette.grey[500],
                                   }}
                                 >
@@ -5511,9 +5569,18 @@ function CustomTextField({ rightIcons, ...props }) {
                                 </IconButton>
                                 <DialogContent dividers>
                                   <Typography gutterBottom>
-                                    <img
+                                    {/* <img
                                       src={selectedImage ? `${httpCommon.defaults.baseURL}${selectedImage}` :""}
                                       style={{ width: "100%", height: "auto" }}
+                                    /> */}
+                                    <AttachmentImageViewer 
+                                        imageSrc={selectedImage
+                                          ? `${httpCommon.defaults.baseURL}${selectedImage}`
+                                          : ""} 
+                                        width="100%" 
+                                        height="auto" 
+                                        alt="first"
+                                        
                                     />
                                   </Typography>
                                 </DialogContent>
@@ -5529,10 +5596,11 @@ function CustomTextField({ rightIcons, ...props }) {
                                      onClick={handleClosedd}
                                      sx={{
                                       position: "absolute",
-                                      right: 8,
+                                      left: 8,
                                       top: 8,
                                       padding:"0px !important",
-                                      margin:"5px !important"
+                                      margin:"5px !important",
+                                      zIndex: 10,
                                       
                                     }}
                                    >
@@ -5540,11 +5608,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                 </IconButton>
                                 <DialogContent dividers>
                                   <Typography gutterBottom>
-                                    <img
-                                      style={{ height: "100%", width: "100%" }}
-                                      src={handalImg}
-                                      alt="Uploaded image"
-                                    />
+                                    
+                                    <AttachmentImageViewer 
+                                      imageSrc={handalImg} 
+                                      width="100%" 
+                                      height="auto" 
+                                      alt="second"
+                                    
+                                      />
                                   </Typography>
                                 </DialogContent>
                               </BootstrapDialog>

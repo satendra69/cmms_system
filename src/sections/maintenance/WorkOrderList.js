@@ -36,6 +36,7 @@ import { styled } from "@mui/material/styles";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 // hooks
 import { useBoolean } from "src/hooks/use-boolean";
 // _mock
@@ -46,9 +47,7 @@ import { useSettingsContext } from "src/components/settings";
 import {
   useTable,
   getComparator,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSelectedAction,
   TablePaginationCustom,
@@ -67,7 +66,9 @@ import WorkOrderTableRow from "./workorder-table-row";
 import WorkOrderTableFiltersResult from "./WorkOrderTableFiltersResult";
 import WorkOrderCalendarView from "./WorkOrderCalendarView";
 import ExportWorkOrderlistToExcel from "./ExportFIle/ExportWorkOrderlistToExcel";
-import { useSwalCloseContext } from "../ContextApi/SwalCloseContext";
+import { useSwalCloseContext } from "../ContextApi/WorkOrder/SwalCloseContext";
+import {useWorkOrderHeaderData} from "../ContextApi/WorkOrder/WorkOrderTableHeader";
+import {useCreateSelectQueryContext} from "../ContextApi/WorkOrder/SelectQueryContextApi";
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -142,7 +143,11 @@ export default function WorkOrderList({ onValueChange }) {
   const AuditUser = localStorage.getItem("emp_mst_login_id");
 
   const { swalCloseTime }  = useSwalCloseContext();
-  ;
+  const { StoreHeaderData , updateWorkOrderHeader} = useWorkOrderHeaderData();
+  const {assetFilterDpd , updateAssetFilterDpd} = useCreateSelectQueryContext();
+
+  //const [assetFilterDpd, setAssetFilterDpd] = useState([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const [maxHeight, setMaxHeight] = useState("400px"); // Default maxHeight
@@ -192,6 +197,7 @@ export default function WorkOrderList({ onValueChange }) {
   const confirm = useBoolean();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTriggered, setSearchTriggered] = useState(false);
 
   const [showDiv1, setShowDiv1] = useState(true);
   const [showDiv2, setShowDiv2] = useState(false);
@@ -214,7 +220,7 @@ export default function WorkOrderList({ onValueChange }) {
 
   const [showSave, setShowSave] = useState(false);
 
-  const [assetFilterDpd, setAssetFilterDpd] = useState([]);
+
   const [TitleAstReg, setTitleAstReg] = useState("");
 
   const [showWordOrderQryList, setShowWordOrderQryList] = useState(false);
@@ -285,27 +291,33 @@ export default function WorkOrderList({ onValueChange }) {
     setFilterShow(false);
   }
   // Get Dropdowwn Value
-  const fetchFilterDropdown = useCallback(async () => {
-    try {
-      const response = await httpCommon.get(
-        `/get_work_order_filter_dropdown.php?site_cd=${site_ID}`
-      );
-      setWorkOdrFilterDpd(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }, [site_ID]);
+  // const fetchFilterDropdown = useCallback(async () => {
+
+  //   try {
+  //     const response = await httpCommon.get(
+  //       `/get_work_order_filter_dropdown.php?site_cd=${site_ID}`
+  //     );
+  //     setWorkOdrFilterDpd(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // }, [site_ID]);
 
 
-  const fetchFilterSubPopupSavedropdon = async () => {
+  const fetchFilterSubPopupSavedropdon = async (forceRefresh = false) => {
     // Get dropdown value using api
    
+    if (!forceRefresh && assetFilterDpd.length > 0) {
+      return;
+    }
+  //  console.log("fetchFilterDropdown();____clalll");
     try {
       const response = await httpCommon.get(
         `/get_work_order_subsave_filter_dropdown.php?site_cd=${site_ID}&auditUser=${AuditUser}`
       );
-    //  console.log("response____",response);
-      setAssetFilterDpd(response.data);
+    
+     // setAssetFilterDpd(response.data);
+      updateAssetFilterDpd(response.data);
      
       if (DropListIdGet !== "" && DropListIdGet !== null) {
         const matchedItem = response.data.find(
@@ -362,28 +374,28 @@ export default function WorkOrderList({ onValueChange }) {
       setIsLoading(true);
       try {
       
-        const response = await httpCommon.get(
-          `/get_workordermaster-Copy.php?site_cd=${site_ID}&page=${currentPage}`
-        );
+        // const response = await httpCommon.get(
+        //   `/get_workordermaster-Copy.php?site_cd=${site_ID}&page=${currentPage}`
+        // );
     
 
         // get Dropdown Title
         const response2 = await httpCommon.get(
           `/get_work_order_filter_dropdown.php?site_cd=${site_ID}&auditUser=${AuditUser}`
         );
-
-       
+    //    console.log("response2____",response2)
+       console.log("selectedOption____",selectedOption)
         if(selectedOption === ""){
           const defaultItem = response2.data.find(item => item.cf_query_default_flag === "1");
            if (defaultItem) {
              setDefaultTitle(defaultItem.cf_query_title);
            //  setselectDropRowID(defaultItem.RowID);
            }
-           setheaderData(response.data.data.header);
+           //setheaderData(response.data.data.header);
          }else{
 
            setDefaultTitle(selectedOption);
-           setheaderData(response.data.data.header);
+           //setheaderData(response.data.data.header);
         }
   
       } catch (error) {
@@ -392,11 +404,13 @@ export default function WorkOrderList({ onValueChange }) {
         // Set the loading state to false in all cases
         setIsLoading(false);
       }
-    }, [site_ID, currentPage]);
+    }, [site_ID, ]);
 
     const fetchHeaderData = useCallback(async () => {
+      if (StoreHeaderData.length > 0) {
+        return;
+      }
       setIsLoading(true);
-     // console.log("fetchHeader____data___",currentPage);
       try {
       
         const response = await httpCommon.get(
@@ -404,7 +418,8 @@ export default function WorkOrderList({ onValueChange }) {
         );
         
         if(response.data.status === "SUCCESS"){
-          setheaderData(response.data.header.header);
+        //  setheaderData(response.data.header.header);
+          updateWorkOrderHeader(response.data.header.header)
         }
 
       } catch (error) {
@@ -413,18 +428,19 @@ export default function WorkOrderList({ onValueChange }) {
         // Set the loading state to false in all cases
         setIsLoading(false);
       }
-    }, [site_ID, currentPage]);
+    }, [site_ID]);
 
   useEffect(() => {
+  //  console.log("coming here___");
     if (defaultTitle) {
 
       handleOptionTableList({ target: { value: defaultTitle }});
      
     }
-  }, [defaultTitle,site_ID, currentPage]);
+  }, [defaultTitle,site_ID]);
 
   const handleOptionTableList = async (event,responseData) => {
-  //  console.log("default___handleOptionTableList");
+   
     const selectedValue = event?.target?.value || selectedOption;
     setCurrentPage(1);
   
@@ -439,7 +455,7 @@ export default function WorkOrderList({ onValueChange }) {
         (item) => item.cf_query_title === selectedValue
       );
     }
-
+    
     if (selectedOptionObjectFilter) {
       const GetRowID = selectedOptionObjectFilter.RowID;
       const GetPrompt = selectedOptionObjectFilter.cf_query_list_prompt;
@@ -495,7 +511,7 @@ export default function WorkOrderList({ onValueChange }) {
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
      // setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+     // setCurrentPage(1);
       setDropListIdGet([]);
       setDashbordDataGauge([]);
       setTitleAstReg("");
@@ -514,6 +530,7 @@ export default function WorkOrderList({ onValueChange }) {
     setCurrentPage(1);
     setSelectedRowIdbackState("");
     setInputValueSearch("");
+    setSearchTriggered(false);
     const selectedOptionObjectFilter = assetFilterDpd.find(
       (item) => item.cf_query_title === selectedValue
     );
@@ -581,7 +598,7 @@ export default function WorkOrderList({ onValueChange }) {
     //  console.log("GetRowID___first",GetRowID);
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+     // setCurrentPage(1);
       setDropListIdGet([]);
       setDashbordDataPrmMst([]);
       setDashbordDataGauge([]);
@@ -591,7 +608,7 @@ export default function WorkOrderList({ onValueChange }) {
    //   console.log("GetRowID___first222",GetRowID);
       setExportExcelId(GetRowID);
       setselectDropRowID(GetRowID);
-      setCurrentPage(1);
+     // setCurrentPage(1);
       setDropListIdGet([]);
       setDashbordDataPrmMst([]);
       setDashbordDataGauge([]);
@@ -606,7 +623,7 @@ export default function WorkOrderList({ onValueChange }) {
      const signal = controller.signal; // Get the signal object
     setIsLoading(true);
  
-  // console.log("enter___Fetching data..",currentPage);
+ //  console.log("enter___Fetching data..",currentPage);
     try {
      
       
@@ -614,7 +631,7 @@ export default function WorkOrderList({ onValueChange }) {
         `/get_workorder_list_select_option_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`,
         { signal } // Pass the signal to the request
       );
-      // console.log("enter___getb..",currentPage);
+     //  console.log("enter___getb..",response);
       //  console.log("response___getb",response);
       if (
         response.data.data &&
@@ -657,10 +674,11 @@ export default function WorkOrderList({ onValueChange }) {
       setIsLoading(false);
       controller.abort();
     }
-  }, [site_ID, currentPage, selectDropRowID,emp_owner]);
+  }, [site_ID, ,currentPage,selectDropRowID,emp_owner]);
 
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage + 1);
+  
     table.onChangePage(event, newPage);
   };
 
@@ -677,7 +695,8 @@ export default function WorkOrderList({ onValueChange }) {
             );
   
             if (response.data.length > 1) {
-              setAssetFilterDpd(response.data);
+             // setAssetFilterDpd(response.data);
+              updateAssetFilterDpd(response.data);
               setFirstEffectComplete(true);
               handleOptionChange({ target: { value: dropdownSelect } }, response.data);
             }
@@ -700,52 +719,59 @@ export default function WorkOrderList({ onValueChange }) {
    // setIsLoading(true);
    
     try {
-        await fetchHeaderData();
         await getb();
     } catch (error) {
         console.error("Error in sequential fetch:", error);
     } 
-  }, [fetchHeaderData, getb]);
+  }, [getb]);
+
 
   useEffect(() => {
-   
+ 
     if (ignoreEffect)  {
-      
+    
       setIgnoreEffect(false); // Reset the flag
       return;
     }
     
     if (firstEffectComplete) {
-      if (selectDropRowID !== "" && selectDropRowID !== null) {
-       
+
+      if (searchTriggered) {
+     
+        handelSearchButton();
+      }
+       else if (selectDropRowID !== "" && selectDropRowID !== null) {
+      
        fetchDataSequentially();
        
       }
       else if (Array.isArray(DashbordDataGauge) && DashbordDataGauge.length > 0) {
-      //  console.log("Coming from dashborad");
+      
         fetchDataGaugeDSB();
       } else if (
       Array.isArray(DashbordDataPrmMst) &&
       DashbordDataPrmMst.length > 0
     ) {
-   //   console.log("Coming from dashborad");
+     
       fetchDataGaugeDSB();
     }  else {
-   //   console.log("Coming from Default");
+    
       fetchData();
      
     }
-     fetchFilterSubPopupSavedropdon();
+    
     }
     if(ModuleFrom !=="" && ModuleFrom === "CalendarModule"){
       handleButtonClick2();
     }
     
-  }, [firstEffectComplete, site_ID, currentPage, selectDropRowID, fetchData, fetchDataSequentially]);
+  }, [firstEffectComplete, site_ID, selectDropRowID,currentPage, searchTriggered,fetchData]);
+
 
   useEffect(() => {
-    fetchFilterDropdown();
-  }, [fetchFilterDropdown,]);
+    fetchHeaderData();
+    fetchFilterSubPopupSavedropdon();
+  }, []);
 
   // set screen revolation set
   useEffect(() => {
@@ -765,6 +791,7 @@ export default function WorkOrderList({ onValueChange }) {
     // Remove event listener on component unmount
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
   const dataFiltered = applyFilter({
     inputData: Array.isArray(tableData) ? tableData : [],
     comparator: getComparator(table.order, table.orderBy),
@@ -775,8 +802,6 @@ export default function WorkOrderList({ onValueChange }) {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-
-  const denseHeight = table.dense ? 60 : 80;
 
   const canReset = !isEqual(defaultFilters, filters);
 
@@ -988,11 +1013,14 @@ export default function WorkOrderList({ onValueChange }) {
 
  const handleSearchInputChange = (e) => {
   setInputValueSearch(e.target.value);
+  setSearchTriggered(false);
 };
 
   const handleResetFilters = useCallback(() => { 
     setInputValueSearch('');
     setTableData("");
+    setTableSearchData("");
+    setCurrentPage(1);
     if (inputRef.current) {
       inputRef.current.value = ''; // Clear the input field value directly
     }
@@ -1005,28 +1033,40 @@ export default function WorkOrderList({ onValueChange }) {
   const handleClearButton = () => {
    
     handleResetFilters();
+    setSearchTriggered(false);
     setTotalRow(0);
     setTotalCount(0);
+  
+    
     if (inputRef.current) {
       inputRef.current.focus(); // Refocus the input field
     }
     // Log current state to ensure it's updated
 };
 
+
+
   const handelSearchButton = async () => {
     const inputValueGet = inputRef.current.value.trim(); 
     inputRef.current.blur();
+    if (!searchTriggered) {
+      setCurrentPage(1); 
+      setSearchTriggered(true); 
+    }
     if (inputValueGet !== "" && inputValueGet !== null) {
       Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
       Swal.showLoading();
+
+      
       try {
         const response = await httpCommon.get(
-          `/get_search_workmaster.php?site_cd=${site_ID}&searchTerm=${inputValueGet}`
+          `/get_search_workmaster.php?site_cd=${site_ID}&searchTerm=${inputValueGet}&page=${currentPage}`
         );
-            
+         
+         
         if (response.data.data.result.length > 0) {
           setTableSearchData(response.data.data.result);
-          setTotalRow(response.data.data.result.length);
+          setTotalRow(response.data.total_count);
 
           const filteredData = response.data.data.result.filter((item) => {
             const searchString = inputValueGet.toLowerCase();
@@ -1112,7 +1152,7 @@ export default function WorkOrderList({ onValueChange }) {
           });
 
           setTableData(filteredData);
-          setCurrentPage(1);
+        //  setCurrentPage(1);
           Swal.close();
         } else {
           Swal.close();
@@ -1170,7 +1210,7 @@ export default function WorkOrderList({ onValueChange }) {
   const handelFilterAction = () => {
     setIgnoreEffect(true); 
     setselectDropRowID("");
-    setCurrentPage(1);
+    
     const updatedEmptyRows = rows.map((row) => ({
       // empty state data
       ...row,
@@ -1217,6 +1257,7 @@ export default function WorkOrderList({ onValueChange }) {
       console.error("Error fetching data:", error);
     }
   };
+
   const [rows, setRows] = useState([
     {
       selectedOption: "",
@@ -1385,6 +1426,8 @@ export default function WorkOrderList({ onValueChange }) {
     let fieldName = '';
 
     setSelectedRowIdbackState("");
+    setTableSearchData("");
+    setInputValueSearch("");
     for (const row of rows) {
       if (!row.selectedOption) {
         hasEmptyOption = true;
@@ -1438,7 +1481,7 @@ export default function WorkOrderList({ onValueChange }) {
     });
     Swal.showLoading();
 
-   // setCurrentPage(1);
+    setCurrentPage(1);
     setTitleAstReg("");
     setTableData("");
     setDropListIdGet("");
@@ -1457,7 +1500,7 @@ export default function WorkOrderList({ onValueChange }) {
    }
    if (!foundPromptOne) {
     try {
-      console.log("popup__rows___",rows);
+     // console.log("popup__rows___",rows);
       const response = await httpCommon.post(
         "/get_retrive_popup_filed_data.php?page=" + currentPage,
         {
@@ -1467,7 +1510,7 @@ export default function WorkOrderList({ onValueChange }) {
           admin: emp_owner,
         }
       );
-      console.log("popup__retrive___",response);
+     // console.log("popup__retrive___",response);
             if (
               response.data.data &&
               response.data.data.result &&
@@ -1535,11 +1578,13 @@ const RetriveDataAllData = async () =>{
   setTableData("");
   setSelectedOption("");
   setTitleAstReg("");
+  setCurrentPage(1);
   setselectDropRowID("");
   setDropListIdGet("");
   setSelectedRowIdbackState("");
   setDashbordDataGauge([]);
-
+  setTableSearchData("");
+  setInputValueSearch("");
   Swal.fire({
     title: "Please Wait !",
     allowOutsideClick: false,
@@ -1556,7 +1601,7 @@ const RetriveDataAllData = async () =>{
         admin: emp_owner,
       }
     );
-    console.log("response___getAll",response);
+  //  console.log("response___getAll",response);
     if (
       response.data.data &&
       response.data.data.result &&
@@ -1570,8 +1615,8 @@ const RetriveDataAllData = async () =>{
       setselectDropRowID(response.data.titleRowId);
       setExportExcelId(response.data.titleRowId);
 
-      Swal.close();
-      FilterhandleClose();
+      
+     await FilterhandleClose();
       const updatedEmptyRows = rows.map((row) => ({
         // empty state data
         ...row,
@@ -1587,9 +1632,10 @@ const RetriveDataAllData = async () =>{
         selectedOptionShort: "",
       }));
       setRowsort(updatedEmptyRowsort);
+      Swal.close();
     } else {
       Swal.close();
-      FilterhandleClose();
+      await FilterhandleClose();
       Swal.fire({
         title: "Opps..!",
         text: "No Record Found!",
@@ -1600,6 +1646,7 @@ const RetriveDataAllData = async () =>{
       });
     }
   } catch (error) {
+    Swal.close();
     console.error("Error fetching data:", error);
   }
 }
@@ -1703,19 +1750,19 @@ const RetriveDataAllData = async () =>{
       owner: emp_owner,
       availability: "G",
     };
-      console.log("combinedData___",combinedData);
+   
     try {
       const response = await httpCommon.post(
         "/inser_work_order_filter_save_data.php",
         combinedData
       );
-      console.log("response_____save_btn_",response);
+  
 
       if (response.data.status == "SUCCESS") {
       //  setTitleAstReg(response.data.Title);
         setSelectedOption(response.data.Title);
         setselectDropRowID(response.data.ROW_ID);
-        fetchFilterSubPopupSavedropdon();
+        fetchFilterSubPopupSavedropdon(true);
         //RetriveData();
         handleDeleteRowPopup();
         handleDeleteRowShort();
@@ -1802,54 +1849,54 @@ const RetriveDataAllData = async () =>{
     },
   ]);
 
-  const RetriveDataQueryList = async () => {
-    Swal.fire({
-      title: "Please Wait !",
-      allowOutsideClick: false,
-      customClass: {
-        container: "swalcontainercustom",
-      },
-    });
-    Swal.showLoading();
-    try {
-      const response = await httpCommon.post(
-        "/get_retrive_popup_filed_data.php?page=" + currentPage,
-        {
-          rows: rowsQrt,
-          rowsort: rowsortQrt,
-          SiteCD:site_ID,
-          admin:emp_owner
-        }
-      );
-     console.log("response___retrive first save button",response);
-      //setTableData(response.data.data.result);
-      //setTotalRow(response.data.total_count);
+  // const RetriveDataQueryList = async () => {
+  //   Swal.fire({
+  //     title: "Please Wait !",
+  //     allowOutsideClick: false,
+  //     customClass: {
+  //       container: "swalcontainercustom",
+  //     },
+  //   });
+  //   Swal.showLoading();
+  //   try {
+  //     const response = await httpCommon.post(
+  //       "/get_retrive_popup_filed_data.php?page=" + currentPage,
+  //       {
+  //         rows: rowsQrt,
+  //         rowsort: rowsortQrt,
+  //         SiteCD:site_ID,
+  //         admin:emp_owner
+  //       }
+  //     );
+   
+  //     //setTableData(response.data.data.result);
+  //     //setTotalRow(response.data.total_count);
 
-      setSelectedOption(response.data.titleName);
-      setselectDropRowID(response.data.SelectId);
-      setExportExcelId(response.data.SelectId);
+  //     setSelectedOption(response.data.titleName);
+  //     setselectDropRowID(response.data.SelectId);
+  //     setExportExcelId(response.data.SelectId);
 
-      Swal.close();
-      FilterhandleClose();
-      const updatedEmptyRows = rowsQrt.map((row) => ({
-        // empty state data
-        ...row,
-        selectedOption: "",
-        logical: "",
-        valuept: "",
-      }));
-      setRows(updatedEmptyRows);
+  //     Swal.close();
+  //     FilterhandleClose();
+  //     const updatedEmptyRows = rowsQrt.map((row) => ({
+  //       // empty state data
+  //       ...row,
+  //       selectedOption: "",
+  //       logical: "",
+  //       valuept: "",
+  //     }));
+  //     setRows(updatedEmptyRows);
 
-      const updatedEmptyRowsort = rowsortQrt.map((rowsort) => ({
-        // empty state data
-        ...rowsort,
-        selectedOptionShort: "",
-      }));
-      setRowsort(updatedEmptyRowsort);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  //     const updatedEmptyRowsort = rowsortQrt.map((rowsort) => ({
+  //       // empty state data
+  //       ...rowsort,
+  //       selectedOptionShort: "",
+  //     }));
+  //     setRowsort(updatedEmptyRowsort);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
   const handleOptionChangeQtr = (index, selectedOption) => {
     const updatedRowsQtr = [...rowsQrt];
     updatedRowsQtr[index].selectedOption = selectedOption;
@@ -1875,12 +1922,12 @@ const RetriveDataAllData = async () =>{
     //setValueptEmptyErrorQtr(false);
     setRowsQrt(updatedRowsQtr);
   };
-  const handleIncludeChangeLogcilQtr = (index, logical) => {
-    const updatedRowsQtr = [...rowsQrt];
-    updatedRowsQtr[index].logical = logical.target.value;
-    setLogicalEmptyErrorQtr(false);
-    setRowsQrt(updatedRowsQtr);
-  };
+  // const handleIncludeChangeLogcilQtr = (index, logical) => {
+  //   const updatedRowsQtr = [...rowsQrt];
+  //   updatedRowsQtr[index].logical = logical.target.value;
+  //   setLogicalEmptyErrorQtr(false);
+  //   setRowsQrt(updatedRowsQtr);
+  // };
 
   const handleIncludeChangeLogcilQtr2 = (index, logical) => {
     const updatedRowsQtr = [...rowsQrt];
@@ -2175,7 +2222,7 @@ const RetriveDataAllData = async () =>{
 
             if (response.data.status == "SUCCESS") {
 
-              fetchFilterSubPopupSavedropdon();
+              fetchFilterSubPopupSavedropdon(true);
               //  setErrord(null);
               setselectedOptionValue("");
               setRowsQrt([]);
@@ -2438,7 +2485,7 @@ const RetriveDataAllData = async () =>{
        setSelectedOption(response.data.Title);
        setselectDropRowID(response.data.ROW_ID);
        setExportExcelId(response.data.ROW_ID);
-        fetchFilterSubPopupSavedropdon();
+        fetchFilterSubPopupSavedropdon(true);
        // RetriveDataQueryList();
         setRowsQrt([]);
         setselectedOptionValue("");
@@ -2774,7 +2821,7 @@ const RetriveDataAllData = async () =>{
 }, [site_ID, currentPage, selectDropRowID]);
 
 
-const TABLE_HEAD = Headerdata && Headerdata.map((item, index) => {
+const TABLE_HEAD = StoreHeaderData && StoreHeaderData.map((item, index) => {
   const width = [140, 110, 80,220,180, 155, 210, 160,160,160,120,130,135,135,165,135,120,130,130,130,135,145,130,170,160,140,160,170,150,180,140,120,170,140,180,160,150,130,130,150,140,210,150,210,140,210,120,120,140,140,140,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,120,140,140,130,130][index]; 
   return {
     id: item.accessor,
@@ -3307,7 +3354,7 @@ if (TABLE_HEAD) {
                             margin: "0 auto", 
                             width: "30%" 
                           }}
-                          class="custom-default-select"
+                          className="custom-default-select"
                           type="checkbox"
                           value=""
                           id="flexCheckChecked"
@@ -3344,7 +3391,9 @@ if (TABLE_HEAD) {
                             handleIncludeChangeLogcil(index, logical)
                           }
                           value={row.logical || "And"}
+                     
                         >
+                          
                           {Logcl.map((option, index) => (
                             <MenuItem key={index} value={option.value}>
                               {option.label}
@@ -3438,7 +3487,7 @@ if (TABLE_HEAD) {
                       <td style={{ width: "15%" }}></td>
                       <td style={{ width: "10%" }}>
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="checkbox"
                           checked={rowsort[index].promptAsd === "ASC"}
                           onChange={(e) =>
@@ -3560,9 +3609,9 @@ if (TABLE_HEAD) {
 
             <fieldset className="Subpopup-fieldset">
               <legend>Availability:</legend>
-              <div class="form-check">
+              <div className="form-check">
                 <input
-                  class="form-check-input"
+                  className="form-check-input"
                   type="radio"
                   name="availability"
                   id="exampleRadios1"
@@ -3570,18 +3619,18 @@ if (TABLE_HEAD) {
                   checked
                   onChange={handleInputChangeSav}
                 />
-                <label class="form-check-label" for="exampleRadios1">
+                <label className="form-check-label" for="exampleRadios1">
                   Global(available to everyone)
                 </label>
                 <input
-                  class="form-check-input"
+                  className="form-check-input"
                   type="radio"
                   name="availability"
                   id="exampleRadios2"
                   value="P"
                   onChange={handleInputChangeSav}
                 />
-                <label class="form-check-label" for="exampleRadios2">
+                <label className="form-check-label" for="exampleRadios2">
                   Personal
                 </label>
               </div>
@@ -3705,7 +3754,7 @@ if (TABLE_HEAD) {
                       <td>
                        
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="checkbox"
                           value=""
                           id="flexCheckDefault"
@@ -3803,7 +3852,7 @@ if (TABLE_HEAD) {
                             </td>
                             <td style={{ width: "8%" }}>
                               <input
-                                class="form-check-input"
+                                className="form-check-input"
                                 type="checkbox"
                                 onChange={(e) =>
                                   handleSelectChangeQtr(index, e.target.checked)
@@ -3955,7 +4004,7 @@ if (TABLE_HEAD) {
                           <td style={{ width: "15%" }}></td>
                           <td style={{ width: "8%" }}>
                             <input
-                              class="form-check-input"
+                              className="form-check-input"
                               type="checkbox"
                               //checked={row.prompt === '1'}
                               checked={rowsortQrt[index].promptAsd === "ASC"}
@@ -4088,9 +4137,9 @@ if (TABLE_HEAD) {
 
             <fieldset className="Subpopup-fieldset">
               <legend>Availability:</legend>
-              <div class="form-check">
+              <div className="form-check">
                 <input
-                  class="form-check-input"
+                  className="form-check-input"
                   type="radio"
                   name="availability"
                   id="exampleRadios1"
@@ -4098,18 +4147,18 @@ if (TABLE_HEAD) {
                   checked
                   onChange={handleInputChangeSav}
                 />
-                <label class="form-check-label" for="exampleRadios1">
+                <label className="form-check-label" for="exampleRadios1">
                   Global(available to everyone)
                 </label>
                 <input
-                  class="form-check-input"
+                  className="form-check-input"
                   type="radio"
                   name="availability"
                   id="exampleRadios2"
                   value="P"
                   onChange={handleInputChangeSav}
                 />
-                <label class="form-check-label" for="exampleRadios2">
+                <label className="form-check-label" for="exampleRadios2">
                   Personal
                 </label>
               </div>

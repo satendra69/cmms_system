@@ -25,6 +25,7 @@ export default function TableNoData({ notFound, sx }) {
         <TableCell colSpan={12} sx={{ p: 0 }} />
       )}
     </TableRow>
+  
   );
 }
 

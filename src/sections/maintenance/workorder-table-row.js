@@ -14,7 +14,6 @@ import { useBoolean } from "src/hooks/use-boolean";
 import httpCommon from "src/http-common";
 import Swal from "sweetalert2";
 // components
-import Label from "src/components/label";
 import Iconify from "src/components/iconify";
 import { ConfirmDialog } from "src/components/custom-dialog";
 import CustomPopover, { usePopover } from "src/components/custom-popover";
@@ -36,6 +35,7 @@ export default function WorkOrderTableRow({
 }) {
   const empl_site_cd = localStorage.getItem("site_ID");
   const [TableStatus, setTableStatus] = useState([]);
+  const hasFetchedStatus = useRef(false);
  
     // Get Status data 
     const fetchStatus = useCallback(async () => {
@@ -61,8 +61,12 @@ export default function WorkOrderTableRow({
     }, [empl_site_cd]);
 
     useEffect(() => {
-      fetchStatus();
-    }, [fetchStatus]);
+      if (!hasFetchedStatus.current) {
+       
+        fetchStatus();
+        hasFetchedStatus.current = true; // Set to true after fetching
+      }
+    }, []);
 
  
     const rowRef = useRef(null);
@@ -263,7 +267,7 @@ export default function WorkOrderTableRow({
           onClick(row.id); // Pass the row ID or other relevant data to the onClick handler
         }
       };
-
+     
   return (
     <>
       {rowStats === "PrmMstTable" ? (
@@ -324,7 +328,12 @@ export default function WorkOrderTableRow({
         </TableRow>
       ) : (
         // Render other table
-        <TableRow ref={rowRef} hover selected={selected || isHighlighted}  onClick={handleRowClickTable} sx={{ cursor: 'pointer' }} >
+        <TableRow ref={rowRef} 
+        hover 
+       // selected={selected || isHighlighted} 
+        selected={selected === true || isHighlighted} 
+         onClick={handleRowClickTable} 
+         sx={{ cursor: 'pointer' }} >
           <TableCell align="right">
             <IconButton
               color={popover.open ? "primary" : "default"}
@@ -364,7 +373,7 @@ export default function WorkOrderTableRow({
                         placement="top"
                         arrow
                       >
-                        {col4}
+                        <span>{col4}</span>
                       </Tooltip>
                     </span>
                   </div>
@@ -388,7 +397,7 @@ export default function WorkOrderTableRow({
                         placement="top"
                         arrow
                       >
-                        {col4}
+                        <span>{col4}</span>
                       </Tooltip>
                     </span>
                   </div>
@@ -412,7 +421,7 @@ export default function WorkOrderTableRow({
                         placement="top"
                         arrow
                       >
-                        {col4}
+                        <span>{col4}</span>
                       </Tooltip>
                     </span>
                   </div>
@@ -437,7 +446,7 @@ export default function WorkOrderTableRow({
                         placement="top"
                         arrow
                       >
-                        {col4}
+                      <span>{col4}</span>
                       </Tooltip>
                     </span>
                   </div>

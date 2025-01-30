@@ -86,7 +86,8 @@ import AssetSpares from "../Asset_module/AssetSpares";
 import AssetUsage from "../Asset_module/AssetUsage";
 import MrHistory from "../Asset_module/MrHistory";
 import AssetSpecification from "../Asset_module/AssetSpecification";
-import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
+import { useSwalCloseContext } from "src/sections/ContextApi/WorkOrder/SwalCloseContext";
+import AttachmentImageViewer from "src/sections/CommanComponet/AttachmentImageViewer";
 
 //import logo from "../../../assets/img/work-time.png";
 
@@ -3976,7 +3977,9 @@ if (
                                                           position: "absolute",
                                                           right: 8,
                                                           top: 8,
-                                                           
+                                                          padding:"0px !important",
+                                                          margin:"5px !important",
+                                                          zIndex: 10,
                                                          // color: (theme) =>  theme.palette.grey[500],
                                                         }}
                                                       >
@@ -3991,24 +3994,26 @@ if (
                                                       >
                                                         {getDbImg && getDbImg.length > 0 ? (
                                                           <div>
-                                                            <img
+                                                            {/* <img
                                                               src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
                                                               alt="dummy"
                                                               className="dummyImg"
                                                               onClick={openSaveImg}
-                                                            />
+                                                            /> */}
+                                                            <AttachmentImageViewer  
+                                                              imageSrc={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""} 
+                                                              width="100%" 
+                                                              height="auto" 
+                                                              alt="dummy"
+                                                              />
                                                           </div>
                                                         ) : (
-                                                          <img
-                                                            src={image.preview}
-                                                            alt="dummy"
-                                                            style={{
-                                                              height: "50%",
-                                                              width: "50%",
-                                                            }}
-                                                            onClick={openSaveImg}
-                                                            className="dummyImg"
-                                                          />
+                                                          <AttachmentImageViewer  
+                                                            imageSrc={image.preview} 
+                                                            width="100%" 
+                                                            height="auto" 
+                                                            alt="dummyImg"
+                                                            />
                                                         )}
                                                       </DialogContent>
                                                     </BootstrapDialog>
@@ -4629,23 +4634,19 @@ if (
                                                           >
                                                             {getDbImg && getDbImg.length > 0 ? (
                                                               <div>
-                                                                <img
-                                                                  src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
+                                                                <AttachmentImageViewer  
+                                                                  imageSrc={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""} 
+                                                                  width="100%" 
+                                                                  height="auto" 
                                                                   alt="dummy"
-                                                                  className="dummyImg"
-                                                                  onClick={openSaveImg}
-                                                                />
+                                                                  />
                                                               </div>
                                                             ) : (
-                                                              <img
-                                                                src={image.preview}
-                                                                alt="dummy"
-                                                                style={{
-                                                                  height: "50%",
-                                                                  width: "50%",
-                                                                }}
-                                                                onClick={openSaveImg}
-                                                                className="dummyImg"
+                                                              <AttachmentImageViewer  
+                                                              imageSrc={image.preview} 
+                                                              width="100%" 
+                                                              height="auto" 
+                                                              alt="dummyImg"
                                                               />
                                                             )}
                                                           </DialogContent>
@@ -7599,7 +7600,8 @@ if (
                                        right: 8,
                                        top: 8,
                                        padding:"0px !important",
-                                       margin:"5px !important"
+                                       margin:"5px !important",
+                                       zIndex: 10,
                                       // color: (theme) => theme.palette.grey[500],
                                      }}
                                    >
@@ -7608,11 +7610,20 @@ if (
                                    <DialogContent dividers>
                                      <Typography gutterBottom>
                                       
-                                       <img
+                                       {/* <img
                                         // src={selectedImage}
                                          src={selectedImage ? `${httpCommon.defaults.baseURL}${selectedImage}` :""}
                                          style={{ width: "100%", height: "auto" }}
-                                       />
+                                       /> */}
+                                        <AttachmentImageViewer 
+                                        imageSrc={selectedImage
+                                          ? `${httpCommon.defaults.baseURL}${selectedImage}`
+                                          : ""} 
+                                        width="100%" 
+                                        height="auto" 
+                                        alt="first"
+                                        
+                                    />
                                      </Typography>
                                    </DialogContent>
                                  </BootstrapDialog>
@@ -7630,7 +7641,8 @@ if (
                                       right: 8,
                                       top: 8,
                                       padding:"0px !important",
-                                      margin:"5px !important"
+                                      margin:"5px !important",
+                                      zIndex: 10,
                                       
                                     }}
                                    >
@@ -7638,12 +7650,12 @@ if (
                                    </IconButton>
                                    <DialogContent dividers>
                                      <Typography gutterBottom>
-                                       <img
-                                         style={{ height: "100%", width: "100%" }}
-                                         src={handalImg}
-                                         
-                                         alt="Uploaded image"
-                                       />
+                                      <AttachmentImageViewer 
+                                        imageSrc={handalImg} 
+                                        width="100%" 
+                                        height="auto" 
+                                        alt="second"
+                                        />
                                      </Typography>
                                    </DialogContent>
                                  </BootstrapDialog>

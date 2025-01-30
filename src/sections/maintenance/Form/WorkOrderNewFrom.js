@@ -93,7 +93,8 @@ import WorkOrderMaterial from "../component_module/Planning/WorkOrderMaterial";
 import WorkorderSpecial from "../component_module/Planning/WorkOrderSpecial";
 import WorkOrderOutsource from "../component_module/Planning/WorkOrderOutsource";
 import WorkOrderMisc from "../component_module/Planning/WorkOrderMisc";
-import { useSwalCloseContext } from "src/sections/ContextApi/SwalCloseContext";
+import { useSwalCloseContext } from "src/sections/ContextApi/WorkOrder/SwalCloseContext";
+import AttachmentImageViewer from "../../CommanComponet/AttachmentImageViewer"
 
 //const MySwal = withReactContent(Swal);
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -5452,10 +5453,11 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                       onClick={handleClosedd2}
                                       sx={{
                                         position: "absolute",
-                                        right: 8,
+                                        left: 8,
                                         top: 8,
                                         padding:"0px !important",
-                                        margin:"5px !important"
+                                        margin:"5px !important",
+                                        zIndex: 10,
                                        // color: (theme) => theme.palette.grey[500],
                                       }}
                                     >
@@ -5470,24 +5472,37 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                     >
                                       {getDbImg && getDbImg.length > 0 ? (
                                         <div>
-                                          <img
+                                          <AttachmentImageViewer  
+                                            imageSrc={getDbImg[0].attachment} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
+                                            />
+                                          {/* <img
                                             src={getDbImg[0].attachment}
                                             alt="dummy"
                                             className="dummyImg"
-                                            onClick={openSaveImg}
-                                          />
+                                            //onClick={openSaveImg}
+                                          /> */}
+
                                         </div>
                                       ) : (
-                                        <img
-                                          src={image.preview}
-                                          alt="dummy"
-                                          style={{
-                                            height: "50%",
-                                            width: "50%",
-                                          }}
-                                          onClick={openSaveImg}
-                                          className="dummyImg"
-                                        />
+                                        <AttachmentImageViewer  
+                                            imageSrc={image.preview} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummyImg"
+                                            />
+                                        // <img
+                                        //   src={image.preview}
+                                        //   alt="dummy"
+                                        //   style={{
+                                        //     height: "50%",
+                                        //     width: "50%",
+                                        //   }}
+                                        // //  onClick={openSaveImg}
+                                        //   className="dummyImg"
+                                        // />
                                       )}
                                     </DialogContent>
                                   </BootstrapDialog>
@@ -6043,10 +6058,11 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                           onClick={handleClosedd2}
                                           sx={{
                                             position: "absolute",
-                                            right: 8,
+                                            left: 8,
                                             top: 8,
                                             padding:"0px !important",
-                                            margin:"5px !important"
+                                            margin:"5px !important",
+                                            zIndex: 10,
                                             //color: (theme) => theme.palette.grey[500],
                                           }}
                                         >
@@ -6061,7 +6077,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                         >
                                           {getDbImg && getDbImg.length > 0 ? (
                                             <div>
-                                              <img
+                                              {/* <img
                                                 src={
                                                   getDbImg[0].attachment
                                                     ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}`
@@ -6070,18 +6086,33 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                                 alt="dummy"
                                                 className="dummyImg"
                                                 onClick={openSaveImg}
-                                              />
+                                              /> */}
+                                              <AttachmentImageViewer  
+                                            imageSrc={getDbImg[0].attachment
+                                              ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}`
+                                              : ""} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
+                                            />
+
                                             </div>
                                           ) : (
-                                            <img
-                                              src={image.preview}
-                                              alt="dummy"
-                                              style={{
-                                                height: "50%",
-                                                width: "50%",
-                                              }}
-                                              onClick={openSaveImg}
-                                              className="dummyImg"
+                                            // <img
+                                            //   src={image.preview}
+                                            //   alt="dummy"
+                                            //   style={{
+                                            //     height: "50%",
+                                            //     width: "50%",
+                                            //   }}
+                                            //   onClick={openSaveImg}
+                                            //   className="dummyImg"
+                                            // />
+                                            <AttachmentImageViewer  
+                                            imageSrc={image.preview} 
+                                            width="100%" 
+                                            height="auto" 
+                                            alt="dummy"
                                             />
                                           )}
                                         </DialogContent>
@@ -7718,6 +7749,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                   </div>
                                 </div>
                                 <div className="table-responsive">
+                                  
                                   <table className="table table-hover mt-2 col-sm-12 astFimg">
                                     <thead>
                                       <tr>
@@ -8071,10 +8103,11 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                           onClick={handleClosedd}
                                           sx={{
                                             position: "absolute",
-                                            right: 8,
+                                            left: 8,
                                             top: 8,
                                             padding:"0px !important",
-                                            margin:"5px !important"
+                                            margin:"5px !important",
+                                            zIndex: 10,
                                             //color: (theme) => theme.palette.grey[500],
                                           }}
                                         >
@@ -8082,8 +8115,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                         </IconButton>
                                         <DialogContent dividers>
                                           <Typography gutterBottom>
-                                            
-                                            <img
+                                          <AttachmentImageViewer 
+                                              imageSrc={selectedImage
+                                                ? `${httpCommon.defaults.baseURL}${selectedImage}`
+                                                : ""} 
+                                              width="100%" 
+                                              height="auto" 
+                                              />
+                                            {/* <img
                                               // src={selectedImage}
                                               src={
                                                 selectedImage
@@ -8091,7 +8130,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                                   : ""
                                               }
                                               style={{ width: "100%", height: "auto" }}
-                                            />
+                                            /> */}
                                           </Typography>
                                         </DialogContent>
                                       </BootstrapDialog>
@@ -8106,10 +8145,11 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                           onClick={handleClosedd}
                                           sx={{
                                             position: "absolute",
-                                            right: 8,
+                                            left: 8,
                                             top: 8,
                                             padding:"0px !important",
-                                            margin:"5px !important"
+                                            margin:"5px !important",
+                                            zIndex: 10,
                                            // color: (theme) => theme.palette.grey[500],
                                           }}
                                         >
@@ -8117,11 +8157,16 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                         </IconButton>
                                         <DialogContent dividers>
                                           <Typography gutterBottom>
-                                            <img
+                                          <AttachmentImageViewer 
+                                              imageSrc={handalImg} 
+                                              width="100%" 
+                                              height="auto" 
+                                              />
+                                            {/* <img
                                               style={{ height: "100%", width: "100%" }}
                                               src={handalImg}
                                               alt="Uploaded image"
-                                            />
+                                            /> */}
                                           </Typography>
                                         </DialogContent>
                                       </BootstrapDialog>

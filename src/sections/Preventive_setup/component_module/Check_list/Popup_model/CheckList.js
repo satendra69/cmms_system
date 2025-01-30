@@ -8,8 +8,6 @@ const CheckList = ({ onRowClick,dataId }) => {
   let site_ID = localStorage.getItem("site_ID");
   const [data, setData] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState(null);
- 
-  const [viewedRows, setViewedRows] = useState(0);
 
   useEffect(() => {
     Swal.fire({ title: "Please Wait !", allowOutsideClick: false });
@@ -65,17 +63,12 @@ const CheckList = ({ onRowClick,dataId }) => {
   };
   const handleRowClick = (event, rowData) => {
     if (selectedRowKeys && selectedRowKeys === rowData.job_mst_job_cd) {
-      onRowClick(rowData.job_mst_job_cd,1);
+      onRowClick(rowData.job_mst_job_cd,rowData.job_mst_desc,1);
     }
     setSelectedRowKeys(rowData.job_mst_job_cd);
-    onRowClick( rowData.job_mst_job_cd);
+    onRowClick( rowData.job_mst_job_cd,rowData.job_mst_desc);
   };
-  const handlePageChange = (page) => {
-    const pageSize = 10; // Assuming each page displays 10 rows
-    const viewedRowsCount = page * pageSize;
-    setViewedRows(viewedRowsCount);
-   // onChangePage(viewedRowsCount);
-  };
+
 
   const handleSearch = (searchText) => {
     // Filter the data based on the search text

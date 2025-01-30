@@ -69,7 +69,7 @@ import { styled } from "@mui/material/styles";
 import AssetTableRow from './asset-table-row';
 import AssetTableFiltersResult from './AssetTableFiltersResult';
 import ExportAssetlistToExcel from "./ExportFIle/ExportAssetlistToExcel";
-import { useSwalCloseContext } from '../ContextApi/SwalCloseContext';
+import { useSwalCloseContext } from "../ContextApi/WorkOrder/SwalCloseContext";
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -131,6 +131,7 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
   const confirm = useBoolean();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTriggered, setSearchTriggered] = useState(false);
   const inputRef = useRef(null);
   const numberOfColumns = "71";
   const [FilterShow, setFilterShow] = useState(false);
@@ -378,9 +379,10 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
     setDefaultTitle("");
     setSelectedComeBack("");
     setSelectedRowIdbackState("");
-    setInputValueSearch("");
+   
     setCurrentPage(1);
-
+    setInputValueSearch("");
+    setSearchTriggered(false);
     const selectedOptionObjectFilter = assetFilterDpd.find(
       (item) => item.cf_query_title === selectedValue
     );
@@ -480,7 +482,7 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
       const response = await httpCommon.post(
         `/get_asset_list_selectoption_data.php?site_cd=${site_ID}&ItemID=${selectDropRowID}&page=${currentPage}&EmpId=${emp_owner}`
       );
-     // console.log("response_____getb___",response);
+      console.log("response_____getb___",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -704,6 +706,8 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
   const handleResetFilters = useCallback(() => {
     setInputValueSearch('');
     setTableData("");
+    setTableSearchData("");
+    setCurrentPage(1);
     if (inputRef.current) {
       inputRef.current.value = ''; // Clear the input field value directly
     }
@@ -2031,7 +2035,10 @@ const handlelogicalValueChangeQtr2 = (index, newValue) => {
 const handelSearchButton = async () => {
   const inputValueGet = inputRef.current.value;
   //console.log("inputValueGet_____",inputValueGet);
-  
+  if (!searchTriggered) {
+    setCurrentPage(1); 
+    setSearchTriggered(true); 
+  }
   if (inputValueGet !== "" && inputValueGet !== null) {
     Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
     Swal.showLoading();
@@ -2040,7 +2047,7 @@ const handelSearchButton = async () => {
       const response = await httpCommon.get(
         `/get_search_asset_module.php?site_cd=${site_ID}&searchTerm=${inputValueGet}&page=${currentPage}`
       );
-      //  console.log("responseSerach_____",response);
+        console.log("responseSerach_____",response);
       if (response.data.data.result.length > 0) {
         setTableSearchData(response.data.data.result);
         setTotalRow(response.data.total_count);
@@ -2452,8 +2459,11 @@ useEffect(() => {
     setIgnoreEffect(false); // Reset the flag
     return;
   }
-
-  if (selectDropRowID !== "" && selectDropRowID !== null) {
+  if (searchTriggered) {
+     
+    handelSearchButton();
+  }
+  else if (selectDropRowID !== "" && selectDropRowID !== null) {
    // console.log("console_____getb__");
     getb();
   }else if(TableSearchData !="" && TableSearchData != null){
@@ -2475,7 +2485,7 @@ useEffect(() => {
   }
  // console.log("fiveQuery____");
  fetchFilterSubPopupSavedropdon();
-}, [site_ID, currentPage, selectDropRowID, fetchDataCallback, getb, retriveDataCallback,fetchDataGaugeDSB,isButtonClicked]);
+}, [site_ID, currentPage, selectDropRowID, fetchDataCallback, getb, retriveDataCallback,fetchDataGaugeDSB,searchTriggered, isButtonClicked]);
 
 // Add Table Header Daynamic value pass
 const TABLE_HEAD = Headerdata && Headerdata.map((item, index) => {
@@ -2516,11 +2526,15 @@ const handleOptionChangeInternal = (event) => {
 
 const handleSearchInputChange = (e) => {
   setInputValueSearch(e.target.value);
+  setSearchTriggered(false);
 };
  
 const handleClearButton = () => {
   handleResetFilters();
-  setTotalRow("");
+  setInputValueSearch('');
+  setSearchTriggered(false);
+  setTotalRow(0);
+
   if (inputRef.current) {
     inputRef.current.focus(); 
   }
