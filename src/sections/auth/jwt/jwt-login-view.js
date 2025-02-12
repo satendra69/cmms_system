@@ -162,7 +162,7 @@ export default function JwtLoginView() {
         }
       })
       .catch((e) => {
-        console.log(e);
+        //console.log(e);
         Swal.fire({
           icon: 'error',
           title: 'Oops get_sitecode...',
@@ -196,7 +196,7 @@ export default function JwtLoginView() {
        
         setsite_ID(value);
         }else {
-          console.error("default_site is not defined on the first element of data array.");
+        //  console.error("default_site is not defined on the first element of data array.");
       }
         //setSelectedValue(responseJson.data.data[0].site_name);
       }

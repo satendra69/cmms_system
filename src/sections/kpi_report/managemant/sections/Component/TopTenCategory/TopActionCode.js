@@ -181,14 +181,6 @@ function TopActionCode({seriesData,seriesDataLoc}) {
 
 
 
-
-
-
-
-
-
-
-
   useEffect(() => {
     const fetchKpi = async () => {
       const today = new Date();

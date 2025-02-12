@@ -125,7 +125,7 @@ const WorkOrderCheckList = ({ onRowClick, data }) => {
       const response = await httpCommon.get(
         `/get_check_list_header.php?site_cd=${site_ID}&mst_RowID=${RowID ||""}`
       );
-       console.log("response____checklist___rrrr",response);
+     //  console.log("response____checklist___rrrr",response);
       if (response.data.status === "SUCCESS") {
         const responseData = response.data.data.HeaderData;
         const responseResult = response.data.data.FormData;
@@ -440,7 +440,7 @@ const formDataToSend = AddFormData.length === 0 ? StorEmptyFromData : AddFormDat
       "/insert_check_list_data.php",
       JSON.stringify(json_workorder_checkList)
     );
-     console.log("json_workordchecklist Data", response);
+    // console.log("json_workordchecklist Data", response);
 
     if (response.data.status === "SUCCESS") {
       // console.log("responseJson", response.data.ROW_ID);

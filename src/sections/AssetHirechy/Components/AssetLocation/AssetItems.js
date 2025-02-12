@@ -92,7 +92,7 @@ function AssetItems({ data, allImages }) {
     if (image) {
       const url = httpCommon.defaults.baseURL;
       const img = `${url}/${image.attachment}`;
-      console.log("image");
+     
       return img;
     }
 

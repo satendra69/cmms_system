@@ -184,7 +184,7 @@ useEffect(()=>{
       const year=seriesData2 && selectedSortYear2.value ? selectedSortYear2.value:""
 
   const response = await httpCommon.get(`/get_kpi_open_close_data_pie.php?site_cd=${site_ID}&sortBy=${sort? sort :"Yearly"}&year=${year}`)
-  console.log("response_report_week",response)
+
   if(response.data.status === "SUCCESS"){
     setKpiPieData(response.data.kpi_result_pie)
       const rep =response.data.kpi_result_pie;
@@ -250,7 +250,7 @@ useEffect(()=>{
           };
         }
         if (entry.WorkOrderType === "Outstanding WOs") {
-            console.log("Outstanding_WOs",entry)
+          
           acc[key].TotalWO_Open += entry.TotalWO;
         } else if (entry.WorkOrderType === "Closed WOs") {
           acc[key].TotalWO_Close += entry.TotalWO;
@@ -259,7 +259,7 @@ useEffect(()=>{
       
       return acc;
     }, {});
-    console.log("aggregatedData",aggregatedData)
+    
     const aggregatedDataArray = Object.values(aggregatedData);
 
 

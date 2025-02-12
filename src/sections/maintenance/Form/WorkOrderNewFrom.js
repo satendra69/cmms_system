@@ -71,7 +71,7 @@ import { RouterLink } from "src/routes/components";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import httpCommon from "src/http-common";
 import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
+// import withReactContent from "sweetalert2-react-content";
 
 // components
 import { useSettingsContext } from "src/components/settings";
@@ -1336,14 +1336,6 @@ export default function WorkOrderText({ currentUser, onPageChange }) {
     return "";
   };
 
-  const calculateDaysBetween = (startDate, endDate) => {
-    if (!endDate) return null;
-    const oneDay = 24 * 60 * 60 * 1000; // Hours * minutes * seconds * milliseconds
-    const diffDays = Math.round(Math.abs((endDate - startDate) / oneDay));
-    return diffDays;
-  };
-
-  const daysBetween = calculateDaysBetween(OriginationDate, DueDate);
   // show due date funcation
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -3349,8 +3341,8 @@ if (missingFields.length > 0) {
                 },
                 title: response.data.status,
                 text: `Work Oder ` + WorkOrderNo + ` Updated Successfully`,
-                timer: swalCloseTime, // Auto-close after 3 seconds
-                timerProgressBar: true, // Optional: Shows a progress bar
+                timer: swalCloseTime, 
+                timerProgressBar: true, 
                 willClose: () => {
                   // Navigate to the desired page when the modal closes
                   navigate(`/dashboard/work/order`, {
@@ -3381,7 +3373,7 @@ if (missingFields.length > 0) {
             //Handle error  WorkOrderNo
           }
         } else {
-          Swal.close();
+          
           Swal.fire({
             icon: "success",
             customClass: {
@@ -3457,6 +3449,7 @@ if (missingFields.length > 0) {
     const formattedDate = CompletionDate2
       ? Moment(CompletionDate2).format("YYYY-MM-DD HH:mm:ss.SSS")
       : "";
+    const formattedOrgDate = OriginationDate ? Moment(OriginationDate).format("YYYY-MM-DD HH:mm:ss.SSS") :"";  
     let CompleteStatus;
    // console.log("selected_Status2_____",selected_Status2);
     if (selected_Status2.label === "" || selected_Status2.label === null) {
@@ -3498,6 +3491,7 @@ if (missingFields.length > 0) {
       wko_det_corr_action: CorrectiveActionTemp.trim(),
       wko_sts_wo_no: WorkOrderNo,
       mst_RowID: RowID,
+      wko_mst_org_date:formattedOrgDate,
       wko_det_act_code: selectedActionCode.trim(),
       wko_det_cause_code: selectedCauseCode.trim(),
     };
@@ -3507,7 +3501,7 @@ if (missingFields.length > 0) {
         "/complete_workorder.php",
         JSON.stringify(json_workorder)
       );
-    //    console.log("response___complet___",response);
+        console.log("response___complet___",response);
       if (response.data.status == "SUCCESS") {
         Swal.close();
         Swal.fire({
@@ -3566,6 +3560,9 @@ if (missingFields.length > 0) {
     const formattedDate = CloseDate2
       ? Moment(CloseDate2).format("YYYY-MM-DD HH:mm:ss.SSS")
       : "";
+
+      const formattedOrgDate = OriginationDate ? Moment(OriginationDate).format("YYYY-MM-DD HH:mm:ss.SSS") : ""; 
+
     let CloseStatus;
     if (selected_Status2.label === "" || selected_Status2.label === null) {
       CloseStatus = "";
@@ -3604,6 +3601,7 @@ if (missingFields.length > 0) {
       wko_det_corr_action: CorrectiveActionTemp.trim(),
       wko_sts_wo_no: WorkOrderNo,
       mst_RowID: RowID,
+      wko_mst_org_date:formattedOrgDate,
       wko_det_act_code: selectedActionCode.trim(),
       wko_det_cause_code: selectedCauseCode.trim(),
     };
@@ -5918,7 +5916,7 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                                     className="imgCurPont"
                                                     onClick={openSaveImg}
                                                     disabled={statusKey === "CLO"}
-                                                    style={{ width: "200px", height: "180px", cursor: "pointer" }} // Adjust size as needed
+                                                    // style={{ width: "200px", height: "180px", cursor: "pointer" }} // Adjust size as needed
                                                   />
                                                 ) : (
                                                   // Handle non-image files (PDF, DOCX, XLSX, etc.)
@@ -6088,13 +6086,13 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                                 onClick={openSaveImg}
                                               /> */}
                                               <AttachmentImageViewer  
-                                            imageSrc={getDbImg[0].attachment
-                                              ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}`
-                                              : ""} 
-                                            width="100%" 
-                                            height="auto" 
-                                            alt="dummy"
-                                            />
+                                                imageSrc={getDbImg[0].attachment
+                                                  ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}`
+                                                  : ""} 
+                                                width="100%" 
+                                                height="auto" 
+                                                alt="dummy"
+                                                />
 
                                             </div>
                                           ) : (
@@ -7841,17 +7839,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             <td>{item.file_name}</td>
                                             <td>{item.audit_user}</td>
                                             <td>
-                                              {new Date(
-                                                item.audit_date.date
-                                              ).toLocaleString("en-US", {
-                                                year: "numeric",
-                                                month: "2-digit",
-                                                day: "2-digit",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                second: "2-digit",
-                                                // Show milliseconds with 3 digits
-                                              })}
+                                            
+                                              {new Date(item.audit_date.date).toLocaleDateString("en-GB")}{" "}
+                                                {new Date(item.audit_date.date).toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}
                                             </td>
                                             <td>
                                               <button
@@ -7903,8 +7898,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                               />
                                             </td>
                                             <td>{image.name}</td>
-                                            <td>Admin</td>
-                                            <td>{new Date().toLocaleString() + ""}</td>
+                                            <td>{emp_mst_login_id}</td>
+                                            <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                             <td>
                                               <button
                                                 type="button"
@@ -7930,8 +7931,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             />
                                           </td>
                                           <td>{image.name}</td>
-                                          <td>Admin</td>
-                                          <td>{new Date().toLocaleString() + ""}</td>
+                                          <td>{emp_mst_login_id}</td>
+                                          <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                           <td>
                                             <button
                                               type="button"
@@ -7958,8 +7965,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             />
                                           </td>
                                           <td>{image.name}</td>
-                                          <td>Admin</td>
-                                          <td>{new Date().toLocaleString() + ""}</td>
+                                          <td>{emp_mst_login_id}</td>
+                                          <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                           <td>
                                             <button
                                               type="button"
@@ -7986,8 +7999,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             />
                                           </td>
                                           <td>{image.name}</td>
-                                          <td>Admin</td>
-                                          <td>{new Date().toLocaleString() + ""}</td>
+                                          <td>{emp_mst_login_id}</td>
+                                          <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                           <td>
                                             <button
                                               type="button"
@@ -8014,8 +8033,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             />
                                           </td>
                                           <td>{image.name}</td>
-                                          <td>Admin</td>
-                                          <td>{new Date().toLocaleString() + ""}</td>
+                                          <td>{emp_mst_login_id}</td>
+                                          <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                           <td>
                                             <button
                                               type="button"
@@ -8042,8 +8067,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                             />
                                           </td>
                                           <td>{image.name}</td>
-                                          <td>Admin</td>
-                                          <td>{new Date().toLocaleString() + ""}</td>
+                                          <td>{emp_mst_login_id}</td>
+                                          <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
                                           <td>
                                             <button
                                               type="button"
@@ -8072,8 +8103,14 @@ const handleWorkOrderSubModule = (btnClkDataRecived) =>{
                                               />
                                             </td>
                                             <td>{image.name}</td>
-                                            <td>Admin</td>
-                                            <td>{new Date().toLocaleString() + ""}</td>
+                                            <td>{emp_mst_login_id}</td>
+                                            <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                                {new Date().toLocaleTimeString("en-US", {
+                                                  hour: "2-digit",
+                                                  minute: "2-digit",
+                                                  second: "2-digit",
+                                                  hour12: false, // 24-hour format
+                                                })}</td>
 
                                             <td>
                                               <button

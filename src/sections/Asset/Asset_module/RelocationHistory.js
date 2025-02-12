@@ -103,7 +103,7 @@ const RelocationHistory = ({ data, onDataFromSecondComponent }) => {
       const response = await httpCommon.get(
         `/get_assetrelocationhistory.php?site_cd=${site_ID}&Asset_No=${Asset_No}`
       );
-        console.log("responseRelocation________setup",response);
+     
       if (response.data.status === "SUCCESS") {
        // setHeader(response.data.data.header);
        setHeader(["add","sss"]);
@@ -548,7 +548,7 @@ const RelocationHistory = ({ data, onDataFromSecondComponent }) => {
       }
     }
   };
-console.log("relocation History____",Result)
+
   const items = Result.map((data) => ({
     title: format(parseISO(data.audit_date.date), 'dd-MMM-yy HH:mm'), 
     cardTitle: (

@@ -105,6 +105,8 @@ export default function Asset_List() {
   const [DropListIdGet, setDropListIdGet] = useState(
     location.state?.DropListId || []
   );
+
+  const [DashBordTitle, setDashbordTitle] = useState(location.state?.PassTitle || []);
  
   const [isLoading, setIsLoading] = useState(true);
   const popover = usePopover();
@@ -247,6 +249,7 @@ const [selectedComeBack, setSelectedComeBack] = useState(comeBack || '');
             setheaderData(response.data.data.header);
            // setTableData(response.data.data.result);
            // setTotalRow(response.data.total_count);
+            setTitleAstReg(DashBordTitle);
             setselectDropRowID(DropListIdGet);
            // setResponceStats(response.data.StatusPRM);
            // setTotalCount(response.data.TotalCountPRM);
@@ -622,7 +625,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
             Ast_no:AstNo,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }
@@ -643,7 +646,7 @@ const fetchDataUsingRefreshBtn = useCallback(async () =>{
             Ast_no:AstNo,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }

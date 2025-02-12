@@ -100,9 +100,6 @@ export default function InventoryMasterList() {
     location.state?.DropListId || []
   );
 
-  console.log("DashbordDataGauge____",DashbordDataGauge);
-  console.log("DashbordDataSrt____",DashbordDataSrt);
-  console.log("DropListIdGet____",DropListIdGet);
 
   const TABLE_HEAD = [
     { id: "", label: "Action", width: 60 },
@@ -632,7 +629,7 @@ export default function InventoryMasterList() {
               const response = await httpCommon.get(
                 `/delete_inventory_list_record.php?site_cd=${site_ID}&mst_id=${Rowid}&stockno=${stockno}`
               );
-               console.log("response_____delete___",response);
+              
               if (response.data.status == "SUCCESS") {
                 Swal.fire({
                   title: "Deleted!",
@@ -947,7 +944,7 @@ export default function InventoryMasterList() {
       const response = await httpCommon.get(
         "/get_inventoryMasterFilterFileName.php"
       );
-       console.log("response___assetList",response);
+     
       if (response.data.status == "SUCCESS") {
         setInventoryMasterFiledname(response.data.data);
         //setAstdetLabel(response.data.data.ast_det);
@@ -1435,7 +1432,7 @@ export default function InventoryMasterList() {
   // fetch data using dropdon
   const handleClickOption = async (selectedOption) => {
 
-    console.log("response____fluter___",selectedOption);
+  
 
     setselectedOptionValue(selectedOption);
 
@@ -1471,7 +1468,7 @@ export default function InventoryMasterList() {
             "&RowID=" +
             RowID
         );
-          console.log("response____fluter___",response);
+         
         if (
           response.data.data &&
           response.data.data.list_typeF &&
@@ -1757,7 +1754,7 @@ export default function InventoryMasterList() {
         const response = await httpCommon.post(
           `/get_inventoryMasterExcelSheetData.php?site_cd=${site_ID}&ItemID=${ExportExcelId}`
         );
-        console.log("response_____first", response);
+      
         Swal.close();
         if (
           response.data.data &&

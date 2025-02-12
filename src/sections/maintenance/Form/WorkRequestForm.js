@@ -5261,17 +5261,13 @@ function CustomTextField({ rightIcons, ...props }) {
                                     <td>{item.file_name}</td>
                                     <td>{item.audit_user}</td>
                                     <td>
-                                      {new Date(
-                                        item.audit_date.date
-                                      ).toLocaleString("en-US", {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                        // Show milliseconds with 3 digits
-                                      })}
+                                      {new Date(item.audit_date.date).toLocaleDateString("en-GB")}{" "}
+                                        {new Date(item.audit_date.date).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
                                     </td>
                                     <td>
                                       <button
@@ -5321,7 +5317,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                     </td>
                                     <td>{image.name}</td>
                                     <td>{CurretnUser}</td>
-                                    <td>{new Date().toLocaleString() + ""}</td>
+                                    <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                     <td>
                                       <button
                                         type="button"
@@ -5349,7 +5352,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5378,7 +5388,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5406,7 +5423,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5434,7 +5458,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5462,7 +5493,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5490,7 +5528,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                   </td>
                                   <td>{image.name}</td>
                                   <td>{CurretnUser}</td>
-                                  <td>{new Date().toLocaleString() + ""}</td>
+                                  <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                   <td>
                                     <button
                                       type="button"
@@ -5522,7 +5567,14 @@ function CustomTextField({ rightIcons, ...props }) {
                                     </td>
                                     <td>{image.name}</td>
                                     <td>{CurretnUser}</td>
-                                    <td>{new Date().toLocaleString() + ""}</td>
+                                    <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
 
                                     <td>
                                       <button

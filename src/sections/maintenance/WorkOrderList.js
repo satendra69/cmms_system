@@ -137,7 +137,7 @@ const defaultFilters = {
 };
 // ----------------------------------------------------------------------
 
-export default function WorkOrderList({ onValueChange }) {
+export default function WorkOrderList() {
   const site_ID = localStorage.getItem("site_ID");
   const emp_owner = localStorage.getItem("emp_mst_empl_id");
   const AuditUser = localStorage.getItem("emp_mst_login_id");
@@ -163,6 +163,8 @@ export default function WorkOrderList({ onValueChange }) {
     location.state?.DropListId || []
   );
 
+  const [DashBordTitle, setDashbordTitle] = useState(location.state?.PassTitle || []);
+
   const numberOfColumns = "71";
   
   const [DashbordDataPrmMst, setDashbordDataPrmMst] = useState(
@@ -182,6 +184,8 @@ export default function WorkOrderList({ onValueChange }) {
   const [TableSearchData, setTableSearchData] = useState([]);
   const [totalRow, setTotalRow] = useState(0);
   const [TotalCount, setTotalCount] = useState(0);
+  const [TableStatus, setTableStatus] = useState([]);
+  const hasFetchedStatus = useRef(false);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -334,6 +338,7 @@ export default function WorkOrderList({ onValueChange }) {
       console.error("Error fetching data:", error);
     }
   };
+ 
   //  fetch the data Gauge dashbord
   const fetchDataGaugeDSB = useCallback(async () => {
     setIsLoading(true);
@@ -348,13 +353,14 @@ export default function WorkOrderList({ onValueChange }) {
           emp_ID:emp_owner,
         }
       );
-     // console.log("response____workOrder_gauge",response);
+    //  console.log("response____workOrder_gauge",response);
       if (response.data.status === "SUCCESS") {
         if (response.data.data.result.length > 0) {
         //  setTableData(response.data.data.result);
          // setTotalRow(response.data.total_count);
           setResponceStats(response.data.StatusPRM);
           setTotalCount(response.data.TotalCountPRM);
+          setTitleAstReg(DashBordTitle);
           setselectDropRowID(DropListIdGet);
         }
        
@@ -384,7 +390,7 @@ export default function WorkOrderList({ onValueChange }) {
           `/get_work_order_filter_dropdown.php?site_cd=${site_ID}&auditUser=${AuditUser}`
         );
     //    console.log("response2____",response2)
-       console.log("selectedOption____",selectedOption)
+      // console.log("selectedOption____",selectedOption)
         if(selectedOption === ""){
           const defaultItem = response2.data.find(item => item.cf_query_default_flag === "1");
            if (defaultItem) {
@@ -632,7 +638,7 @@ export default function WorkOrderList({ onValueChange }) {
         { signal } // Pass the signal to the request
       );
      //  console.log("enter___getb..",response);
-      //  console.log("response___getb",response);
+       // console.log("response___getb",response);
       if (
         response.data.data &&
         response.data.data.result &&
@@ -648,7 +654,7 @@ export default function WorkOrderList({ onValueChange }) {
         //setTotalRow(response.data.DashbrdCount);
        // table.updateRowsPerPage(response.data.data.result.length);
         
-        Swal.close();
+       // Swal.close();
        
       } else {
         setTableData([]);
@@ -715,6 +721,33 @@ export default function WorkOrderList({ onValueChange }) {
     fetchUrlData(); 
   }, [location.search]);
 
+  useEffect(() => {
+    const fetchStatus = async () => {
+      if (hasFetchedStatus.current) return;
+      hasFetchedStatus.current = true;
+
+      Swal.fire({
+        title: "Please Wait!",
+        allowOutsideClick: false,
+        customClass: { container: "swalcontainercustom" },
+      });
+      Swal.showLoading();
+
+      try {
+        const response = await httpCommon.get(
+          `/get_site_cd_login_user.php?empl_site_cd=${site_ID}`
+        );
+     //   console.log("response____",response)
+        setTableStatus(response.data.default_site);
+        Swal.close();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        Swal.close();
+      }
+    };
+
+    fetchStatus();
+  }, []);
   const fetchDataSequentially = useCallback(async () => {
    // setIsLoading(true);
    
@@ -741,18 +774,18 @@ export default function WorkOrderList({ onValueChange }) {
         handelSearchButton();
       }
        else if (selectDropRowID !== "" && selectDropRowID !== null) {
-      
+     /// console.log("calling___dropdown")
        fetchDataSequentially();
        
       }
       else if (Array.isArray(DashbordDataGauge) && DashbordDataGauge.length > 0) {
-      
+     
         fetchDataGaugeDSB();
       } else if (
       Array.isArray(DashbordDataPrmMst) &&
       DashbordDataPrmMst.length > 0
     ) {
-     
+      console.log("dashbord click 2");
       fetchDataGaugeDSB();
     }  else {
     
@@ -916,7 +949,7 @@ export default function WorkOrderList({ onValueChange }) {
             RowID:Rowid,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }
@@ -933,7 +966,7 @@ export default function WorkOrderList({ onValueChange }) {
             RowID:Rowid,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }
@@ -1044,8 +1077,6 @@ export default function WorkOrderList({ onValueChange }) {
     // Log current state to ensure it's updated
 };
 
-
-
   const handelSearchButton = async () => {
     const inputValueGet = inputRef.current.value.trim(); 
     inputRef.current.blur();
@@ -1054,8 +1085,14 @@ export default function WorkOrderList({ onValueChange }) {
       setSearchTriggered(true); 
     }
     if (inputValueGet !== "" && inputValueGet !== null) {
-      Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
-      Swal.showLoading();
+      Swal.fire({
+      title: "Please Wait!",
+      html: "Fetching data...",
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
       
       try {
@@ -2243,7 +2280,7 @@ const RetriveDataAllData = async () =>{
           console.error("Error fetching data:", error);
         }
     } else {
-      console.log("empty");
+    // console.log("empty");
     }
   };
 
@@ -2930,7 +2967,6 @@ if (TABLE_HEAD) {
                   }}
                   className="selectOptioncls"
                 >
-                  
 
                <InputLabel id="select-label" className={(TitleAstReg!== "" || selectedOption)? "selectedcss" : "defaultLabelSelect"}>Select Query</InputLabel>
                   <Select
@@ -3145,11 +3181,13 @@ if (TABLE_HEAD) {
                                     key={row.id}
                                     index={index}
                                     row={row}
+                                    
                                     rowStats={ResponceStats}
                                     options={{
                                       emptyRowsWhenPaging: false,
                                     }}
                                     isHighlighted={selectedRowIdbackState && selectedRowIdbackState === row.col71} 
+                                    TableStatus={TableStatus}
                                     selected={table.selected.includes(row.id)}
                                     onSelectRow={() => table.onSelectRow(row.id)}
                                     onDeleteRow={() => handleDeleteRow(row.col71,row)}

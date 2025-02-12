@@ -1,11 +1,14 @@
 import PropTypes from "prop-types";
-import React, { useState, useEffect, useRef,useCallback } from "react";
+import React, { useState, useEffect, useRef,useCallback,lazy, Suspense } from "react";
+
 import { styled } from "@mui/material/styles";
 import { Helmet } from "react-helmet-async";
 // @mui
 import Autocomplete from "@mui/material/Autocomplete";
 import Container from "@mui/material/Container";
 // @bootstrap
+
+
 
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 
@@ -18,7 +21,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from "@mui/material/TableCell";
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from "@mui/material/IconButton";
-import { ConfigProvider, DatePicker as AntDatePicker } from 'antd';
+import { DatePicker as AntDatePicker } from 'antd';
 
 import dayjs from 'dayjs';
 import 'antd/dist/reset.css';
@@ -46,7 +49,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import Alert from "@mui/material/Alert";
 
 import Typography from "@mui/material/Typography";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Moment from "moment";
 import "moment-timezone";
@@ -69,22 +72,20 @@ import { Avatar, Badge } from '@mui/material'
 // components
 import { useSettingsContext } from "src/components/settings";
 import Iconify from "src/components/iconify";
-import refrencImg from "../../../assets/img/specification.png";
+
 // import WorkOrderAssetNo from "../WorkOrderAssetNo";
 import Tooltip from "@mui/material/Tooltip";
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+
 import { faFileWord } from "@fortawesome/free-solid-svg-icons";
-import GetAssetList from "../PopupModel/GetAssetList";
 
-
-
-import { color } from "framer-motion";
-import { event } from "jquery";
-import FrequencyCodeList from "../PopupModel/FrequencyCodeList";
-import AllPlanningModule from "../component_module/Planning/AllPlanningModule"
 import { useSwalCloseContext } from "src/sections/ContextApi/WorkOrder/SwalCloseContext";
-import PmCheckList2 from "../component_module/Check_list/PmCheckList2"
+
+const GetAssetList = lazy(() => import("../PopupModel/GetAssetList"));
+const FrequencyCodeList = lazy(() => import("../PopupModel/FrequencyCodeList"));
+const AllPlanningModule = lazy(() => import("../component_module/Planning/AllPlanningModule"));
+const PmCheckList2 = lazy(() => import("../component_module/Check_list/PmCheckList2"));
+const AttachmentImageViewer = lazy(() => import("../../CommanComponet/AttachmentImageViewer"));
+
 
 //import WorkOrderSpecialOrder from "../component_module/Planning/WorkOrderSpecialOrder";
 const MySwal = withReactContent(Swal);
@@ -173,7 +174,8 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export default function CreateNewPmform ({ currentUser, onPageChange }) {
   let site_ID = localStorage.getItem("site_ID");
-  let emp_mst_name = localStorage.getItem("emp_mst_name");
+ // let emp_mst_name = localStorage.getItem("emp_mst_name");
+  const emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
   const {swalCloseTime} = useSwalCloseContext();
 
   const location = useLocation();
@@ -197,11 +199,10 @@ export default function CreateNewPmform ({ currentUser, onPageChange }) {
 
   const classes = useStyles();
 
-  const currentDate = new Date();
-  const formattedDateTime = currentDate.toISOString().slice(0, 16);
+
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedImages2, setSelectedImages2] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(currentDate);
+
   const [selectedPdfFiles, setSelectedPdfFiles] = useState([]);
   const [RefImg, setRefImg] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
@@ -307,7 +308,6 @@ const [selectedAction_Code,setSelectedAction_Code] = useState([]);
 const [PmCustomerCode,setPmCustomerCode] = useState([]);
 const [selected_CustomerCode,setSelected_CustomerCode] = useState([]);
 
-const [Assign_To, setAssign_To] = useState([]);
 const [selected_Assign_To, setSelected_Assign_To] = useState([]);
 
 const [Originator,setOriginator] = useState([]);
@@ -407,7 +407,6 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
     []
   );
   
-  const [selected_Depreciation_Method, setSelectedDepreciationMethod] = useState([]);
 
   const [isAssetShortDescEmpty,setIsAssetShortDescEmpty] = useState(false);
  
@@ -420,71 +419,12 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
   const [selected_Fault_Code, setSelected_Fault_Code] = useState([]);
   const [Asset_Status, setAsset_Status] = useState([]);
 
-
-  const [Supervisor_ID, setSupervisor_ID] = useState([]);
-
-
   const [Asset_Laboraccount, setAsset_Laboraccount] = useState([]); 
   
-
-
-  const [WorkOrderNo, setWorkOrderNo] = useState("");
-  
-  const [selected_Asset_Status, setSelected_Asset_Status] = useState([]);
-  const [selected_Asset_Group_Code, setSelected_Asset_Group_Code] = useState(
-    []
-  );
- 
-  const [Phone, setPhone] = useState("");
-  const [OriginationDate, setOriginationDate] = useState(new Date());
-  const [DueDate, setDueDate] = useState(new Date());
-  const [CorrectiveAction, setCorrectiveAction] = useState("");
-  const [selected_Original_Periority, setSelected_Original_Periority] =
-    useState([]);
-  const [selected_Cause_Code, setSelected_Cause_Code] = useState([]);
-  const [ScheduleDate, setScheduleDate] = useState();
-  const [selected_Action_Code, setSelected_Action_Code] = useState([]);
-  const [ExceptionDate, setExceptionDate] = useState();
-  const [selected_Delay_Code, setSelected_Delay_Code] = useState([]);
-  const [StatusChangeDate, setStatusChangeDate] = useState();
- 
-
-  const [selected_Work_Type, setSelected_Work_Type] = useState([]);
-  const [CompletionDate, setCompletionDate] = useState();
-  const [CompletionDate2, setCompletionDate2] = useState(new Date());
-
-  const [selected_Work_Class, setSelected_Work_Class] = useState([]);
-  const [CloseDate, setCloseDate] = useState();
-  const [CloseDate2, setCloseDate2] = useState(new Date());
-  const [selected_Supervisor_ID, setSelected_Supervisor_ID] = useState([]);
-  const [Planner, setPlanner] = useState([]);
   const [selected_Planner, setSelected_Planner] = useState([]);
 
-  const [Approver, setApprover] = useState([]);
-  
-
-
-  const [Temporary_Asset, setTemporary_Asset] = useState(false);
-  const [CheckBox_Temporary_Asset, setCheckBox_Temporary_Asset] = useState("0");
-
-  const [Approved, setApproved] = useState(false);
-  const [CheckBox_Approved, setCheckBox_Approved] = useState("0");
-
-  const [Safety, setSafety] = useState(false);
-  const [CheckBox_Safety, setCheckBox_Safety] = useState("0");
-
-
-
-  const [Credit_Cost_Center, setCredit_Cost_Center] = useState([]);
-  const [selected_Credit_Cost_Center, setSelected_Credit_Cost_Center] =
-    useState([]);
-
-  const [Columns, setColumns] = useState([]);
   const [Data, setData] = useState([]);
-  const [AutoNumring, setAutoNumring] = useState("");
-
-  const [UDFNote1, setUDFNote1] = useState("");
-
+ 
 
   const [Button_save, setButton_save] = useState("");
   const [getDbImgRowId, setDbImgRowId] = useState("");
@@ -494,26 +434,16 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
 
   const [StatusShow, setStatusShow] = useState(false);
 
-  const [message, setMessage] = useState("");
-  const [imageComment, setimageComment] = useState(null);
-  const messageRef = useRef(null);
   const [AllCommnet, setAllComment] = useState([]);
 
   const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef2 = useRef(null);
-  const [selectedImageCommnt, setSelectedImageCommnt] = useState(null);
+
 
   const [uploadImgShow, setUploadImgShow] = useState(false);
   const UploadImghandleClose = () => setUploadImgShow(false);
   const chatContainerRef = useRef(null);
   const [isFiledValueEmpty, setIsFiledValueEmpty] = useState(false);
  
-  const [isChargeCostEmpty, setIsChargeCostEmpty] = useState(false);
-  const [isFaultCodeEmpty, setIsFaultCodeEmpty] = useState(false);
-  const [isOriginalPeriorityEmpty, setIsOriginalPeriorityEmpty] =
-    useState(false);
-  const [isWorkTypeEmpty, setIsWorkTypeEmpty] = useState(false);
-  
   const [isOpenWork, setIsOpenWork] = useState(true);
   const [isOpenAsset, setIsOpenAsset] = useState(true);
   const [isOpenWorkActivity, setIsOpenWorkActivity] = useState(true);
@@ -527,7 +457,6 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
   const assetNoAutocompleteRef = useRef(null);
   const frequencyCodecompleteRef = useRef(null);
   const CustomerCodeRef = useRef(null);
-  const [anchorEl, setAnchorEl] = useState(null);
 
   const [PMSetupShow, setPMSetupShow] = useState(false);
   const PMSetuphandleClose = () => setPMSetupShow(false);
@@ -1065,7 +994,7 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
       const response = await httpCommon.get(
          `/get_asset_dropdownlist.php?site_cd=${site_ID}&assetNo=${AssetNo}`
       );
-       //console.log("response____status__", response); 
+     //  console.log("response____status__", response); 
         
       let Status = response.data.data.AssetStatusList.map((item) => ({
         label: item.wrk_sts_status + " : " + item.wrk_sts_desc,
@@ -1241,12 +1170,22 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
 
       /*   end */
 
-      let Plan_Priority = response.data.data.PlanPeriority.map((item) => ({
-        label: item.wrk_pri_pri_cd + " : " + item.wrk_pri_desc,
-        value: item.wrk_pri_desc,
-      }));
+      // let Plan_Priority = response.data.data.PlanPeriority.map((item) => ({
+      //   label: item.wrk_pri_pri_cd + " : " + item.wrk_pri_desc,
+      //   value: item.wrk_pri_desc,
+      // }));
+      // setPlan_Priority(Plan_Priority);
+
+      let Plan_Priority = [];
+      if (response.data.data.PlanPeriority && Array.isArray(response.data.data.PlanPeriority)) {
+        Plan_Priority = response.data.data.PlanPeriority.map((item) => ({
+          label: item.wrk_pri_pri_cd + " : " + item.wrk_pri_desc,
+          value: item.wrk_pri_desc,
+        }));
+      }
       setPlan_Priority(Plan_Priority);
 
+      
       let Fault_Code = response.data.data.FaultCode.map((item) => ({
         label: item.wrk_flt_fault_cd + " : " + item.wrk_flt_desc,
         value: item.wrk_flt_desc,
@@ -1264,27 +1203,6 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
     }
   };
 
-  // Get Status And Plan Priorty Data
-  const fetchStusPriortyData = async () => {
-    try {
-      const response = await httpCommon.get(
-        "/GetWordkOrderStatus_Plan_PriorityData.php"
-      );
-      if (response.data.status == "SUCCESS") {
-        setSelected_Status({
-          label: response.data.data.dft_mst_wko_sts,
-        });
-        setSelected_Plan_Priority({
-          label: response.data.data.dft_mst_wko_pri,
-        });
-        setSelected_Originator({
-          label: emp_mst_name,
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   // Thired Api Call
   const fetchImgData = async () => {
@@ -1326,16 +1244,6 @@ const [Asset_CriFactor, setAsset_CriFactor] = useState([]);
   }
 }
 
-const getDueDateAndDesc =(DueValue) =>{
- 
-  if (DueValue.key !=="") {
-    const matchedGroup = FrequencyCodeAllData.find(group => group.prm_fcd_freq_code === DueValue.key);
-    if (matchedGroup) {
-      console.log("matchedGroup___",matchedGroup)
-     // setAssetLocation(matchedGroup.prm_grp_ast_loc);  
-  } 
-}
-}
   const handleChange = (event, newValue) => {
     window.scrollTo({
       top: 0,
@@ -1530,12 +1438,6 @@ const getDueDateAndDesc =(DueValue) =>{
     setModalOpenAsset(false);
   }
 
-  const handleCancelClickCustomeCode = () =>{
-    setCustomerCode("");
-  }
-  const handleEditClickCustomerCode = () =>{
-    setModalOpenAssetCustomerCode(true);
-  }
   function handleCloseModalCustomeCode() {
     setModalOpenAssetCustomerCode(false);
   }
@@ -1931,21 +1833,6 @@ const getDueDateAndDesc =(DueValue) =>{
       
     }
   };
-  const handleRowData3 = (dataLenth, dataa, dataSecond) => {
-  
-    setCustomerCode(dataa);
-   
-    if (dataLenth !== undefined && dataLenth !== null) {
-      setTotalAssetNo(dataLenth);
-    }
-    // if (dataa !== undefined && dataa !== null) {
-    //   handleSelectedAssetNo(dataa);
-    // }
-    if (dataSecond == "1") {
-      setModalOpenAssetCustomerCode(false);
-      setTotalSearch("");
-    }
-  };
 
   const handleRowDataPagechg = (pageCount) => {
     setViewedTotlRows(pageCount);
@@ -2004,10 +1891,10 @@ const getDueDateAndDesc =(DueValue) =>{
     });
    // Swal.showLoading();
    // console.log("enter_____save");
-    let get_date = Moment().utcOffset("+08:00").format("yyyy-MM-DD HH:mm:ss");
+    //let get_date = Moment().utcOffset("+08:00").format("yyyy-MM-DD HH:mm:ss");
 
     let site_ID = localStorage.getItem("site_ID");
-    let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
+   // let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
     let emp_mst_empl_id = localStorage.getItem("emp_mst_empl_id");
 
   
@@ -2595,7 +2482,7 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
    Swal.showLoading();
 
     let site_ID = localStorage.getItem("site_ID");
-    let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
+   // let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
     let emp_mst_empl_id = localStorage.getItem("emp_mst_empl_id");
 
     let typePm, setTypePM;
@@ -3135,16 +3022,31 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
                   container: "swalcontainercustom",
                 },
                 title: response.data.status,
-                text: response.data.message,
-              }).then(() => {
+                text: `PM ` + PM_no + ` Updated Successfully`,
+                timer: swalCloseTime, // Auto-close after 3 seconds
+                timerProgressBar: true,
+                willClose: () =>{
+                  navigate(`/dashboard/PreventiveSetup`, {
+                    state: {
+                      currentPage,
+                      selectedOption, 
+                      selectedRowIdBack:RowID,
+                    },
+                  });
+                }
+                //text: response.data.message,
+              }).then((result) => {
                // navigate(`/dashboard/work/order`);
-               navigate(`/dashboard/PreventiveSetup`, {
-                state: {
-                  currentPage,
-                  selectedOption, 
-                  selectedRowIdBack:RowID,
-                },
-              });
+                if (result.dismiss !== Swal.DismissReason.timer) {
+                  navigate(`/dashboard/PreventiveSetup`, {
+                    state: {
+                      currentPage,
+                      selectedOption, 
+                      selectedRowIdBack:RowID,
+                    },
+                  });
+                }
+            
               });
             }
           } catch (error) {
@@ -3159,7 +3061,7 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
               container: "swalcontainercustom",
             },
             title: response.data.status,
-            text: response.data.message,
+            text: `PM ` + PM_no + ` Updated Successfully`,
             timer: swalCloseTime, // Auto-close after 3 seconds
             timerProgressBar: true, // Optional: Shows a progress bar
             willClose: () => {
@@ -3172,17 +3074,18 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
                 },
               });
             },
-          }).then(() => {
-            if (response.data.status === "SUCCESS") {
-             // navigate(`/dashboard/work/order`);
-             navigate(`/dashboard/PreventiveSetup`, {
-              state: {
-                currentPage,
-                selectedOption,
-                selectedRowIdBack:RowID,
-              },
-            });
+          }).then((result) => {
+            if (result.dismiss !== Swal.DismissReason.timer) {
+              navigate(`/dashboard/PreventiveSetup`, {
+                state: {
+                  currentPage,
+                  selectedOption,
+                  selectedRowIdBack:RowID,
+                },
+              });
+
             }
+            
           });
         }
       } else {
@@ -3354,169 +3257,7 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
     }
     // return `${days}d: ${hours}h: ${minutes}m`;
   };
-  const getsteps = async () => {
-    // console.log("enter_getSteps___");
-    Swal.fire({ title: "Please Wait !", allowOutsideClick: false , customClass: {
-      container: "swalcontainercustom",
-    }, });
-    Swal.showLoading();
 
-    try {
-
-      const responseJson = await httpCommon.get(
-        `/get_assetmaster_statusaudit.php?site_cd=${site_ID}&RowID=${RowID}`
-      );
-      // console.log("responseJson___audit",responseJson);
-      if (responseJson.data.status === "SUCCESS") {
-        // console.log('get_workordermaster_statusaudit', responseJson.data.data)
-
-        let Status = responseJson.data.data.map((item, index) => ({
-          label: item.ast_sts_desc,
-          label1: item.ast_aud_status,
-          label2: item.emp_mst_name,
-          label3: item.audit_user,
-          label4: `${new Date(item.ast_aud_start_date.date).toLocaleString(
-            "default",
-            {
-              weekday: "short",
-              day: "numeric",
-              month: "numeric",
-              year: "numeric",
-              hour: "numeric",
-              minute: "numeric",
-              second: "numeric",
-            }
-          )}`,
-          label5: formatDuration(item.duration),
-          step: index + 1,
-        }));
-        setsteps(Status);
-
-        Swal.close();
-      } else {
-        Swal.close();
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: responseJson.data.message,
-        });
-      }
-    } catch (error) {
-      Swal.close();
-      Swal.fire({
-        icon: "error",
-        title: "Oops get_sitecode...",
-        text: error,
-      });
-    }
-  };
-  const StatushandleShow = () => {
-    setStatusShow(true);
-    getsteps();
-  };
-
-  const handleImageChange2 = (event) => {
-    const file = event.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        // const base64String = reader.result.split(',')[1];
-        const base64String2 = reader.result.split(",")[1];
-
-        const base64String = reader.result;
-
-        const fileName = file.name;
-        setImagePreview(base64String);
-        // Set the state with the base64 string and file name
-        setimageComment({
-          base64: base64String2,
-          fileName: fileName,
-        });
-      };
-
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmitCmmnt = async () => {
-    Swal.fire({ title: "Loading.... !", allowOutsideClick: false });
-    Swal.showLoading();
-
-    let site_ID = localStorage.getItem("site_ID");
-    let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
-    let emp_mst_name = localStorage.getItem("emp_mst_name");
-
-    const inputValue = messageRef.current.value;
-
-    const newComment = {
-      // Add other properties as needed
-      audit_user: emp_mst_login_id, // Replace with the actual user
-      audit_date: {
-        date: Moment().format("YYYY-MM-DD HH:mm:ss"),
-        timezone_type: 3,
-        timezone: "UTC",
-      },
-      wko_ls11_sts_upd: inputValue,
-      attachment:
-        imageComment && imageComment.base64 ? imageComment.base64 : null,
-    };
-    setAllComment((prevComments) => [...prevComments, newComment]);
-
-    var json_workorder = {
-      site_cd: site_ID,
-      RowId: RowID,
-      commentMsg: inputValue,
-      Emp_name: emp_mst_name,
-      Emp_login_Name: emp_mst_login_id,
-      orderNo: WorkOrderNo,
-      ImgUpload: imageComment,
-    };
-
-    try {
-      const response = await httpCommon.post(
-        "/insert_comment.php",
-        JSON.stringify(json_workorder)
-      );
-      console.log("json_workordercommet Data", response);
-
-      if (response.data.status === "SUCCESS") {
-        console.log("responseJson", response.data.ROW_ID);
-        Swal.close();
-        //  setCommentShow(false);
-
-        if (messageRef.current) {
-          messageRef.current.value = "";
-        }
-        setImagePreview("");
-        setimageComment("");
-        scrollChatToBottom();
-
-      
-      } else {
-        Swal.close();
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: response.data,
-        });
-      }
-    } catch (error) {
-      Swal.close();
-
-      Swal.fire({
-        icon: "error",
-        title: "Oops get_WorkOrder_select...",
-        text: error,
-      });
-    }
-
-    imageComment(null);
-  };
-  const Refreshdatapopup = () => {
-  
-  };
   const scrollChatToBottom = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -3527,13 +3268,6 @@ if (UDFDate_10 == "" || UDFDate_10 == null) {
     scrollChatToBottom();
   }, [AllCommnet]);
   
-  const handleSelectedFaultCode = (selectedOption) => {
-    const newValue =
-      selectedOption && selectedOption.value ? selectedOption : null;
-   // setDescription(newValue ? newValue.value : null);
-  };
-
- 
   const toggleDiv = () => {
     setIsOpenWork(!isOpenWork);
   };
@@ -3922,7 +3656,7 @@ const handleCheckboxChangeFlag = (event) => {
                     icon="fluent-mdl2:pen-workspace"
                     style={{ marginRight: '5px', width: '17px' }}
                   />
-                  Schedule Master
+                  Schedule Master 
                 </div>
               }
             />
@@ -4656,10 +4390,11 @@ const handleCheckboxChangeFlag = (event) => {
                                                         onClick={handleClosedd2}
                                                         sx={{
                                                           position: "absolute",
-                                                          right: 8,
+                                                          left: 8,
                                                           top: 8,
                                                           padding:"0px !important",
-                                                          margin:"5px !important"
+                                                          margin:"5px !important",
+                                                          zIndex: 10,
                                                         }}
                                                       >
                                                        <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
@@ -4673,24 +4408,21 @@ const handleCheckboxChangeFlag = (event) => {
                                                       >
                                                         {getDbImg && getDbImg.length > 0 ? (
                                                           <div>
-                                                            <img
-                                                              src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
-                                                              alt="dummy"
-                                                              className="dummyImg"
-                                                              onClick={openSaveImg}
-                                                            />
+                                                            <AttachmentImageViewer  
+                                                                imageSrc={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""} 
+                                                                width="100%" 
+                                                                height="auto" 
+                                                                alt="dummy"
+                                                                />
                                                           </div>
                                                         ) : (
-                                                          <img
-                                                            src={image.preview}
-                                                            alt="dummy"
-                                                            style={{
-                                                              height: "50%",
-                                                              width: "50%",
-                                                            }}
-                                                            onClick={openSaveImg}
-                                                            className="dummyImg"
-                                                          />
+                                                          
+                                                          <AttachmentImageViewer  
+                                                                imageSrc={image.preview}
+                                                                width="100%" 
+                                                                height="auto" 
+                                                                alt="dummy"
+                                                                />
                                                         )}
                                                       </DialogContent>
                                                     </BootstrapDialog>
@@ -4919,10 +4651,11 @@ const handleCheckboxChangeFlag = (event) => {
                                                             onClick={handleClosedd2}
                                                             sx={{
                                                               position: "absolute",
-                                                              right: 8,
+                                                              left: 8,
                                                               top: 8,
                                                               padding:"0px !important",
-                                                               margin:"5px !important"
+                                                              margin:"5px !important",
+                                                              zIndex: 10,
                                                             }}
                                                           >
                                                             <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
@@ -4936,24 +4669,22 @@ const handleCheckboxChangeFlag = (event) => {
                                                           >
                                                             {getDbImg && getDbImg.length > 0 ? (
                                                               <div>
-                                                                <img
-                                                                  src={getDbImg[0].attachment ? `${httpCommon.defaults.baseURL}${getDbImg[0].attachment}` :""}
-                                                                  alt="dummy"
-                                                                  className="dummyImg"
-                                                                  onClick={openSaveImg}
-                                                                />
+                                                                
+                                                                 <AttachmentImageViewer  
+                                                                    imageSrc={getDbImg[0].attachment} 
+                                                                    width="100%" 
+                                                                    height="auto" 
+                                                                    alt="dummy"
+                                                                  />
                                                               </div>
                                                             ) : (
-                                                              <img
-                                                                src={image.preview}
-                                                                alt="dummy"
-                                                                style={{
-                                                                  height: "50%",
-                                                                  width: "50%",
-                                                                }}
-                                                                onClick={openSaveImg}
-                                                                className="dummyImg"
-                                                              />
+                                                              
+                                                              <AttachmentImageViewer  
+                                                              imageSrc={image.preview}
+                                                              width="100%" 
+                                                              height="auto" 
+                                                              alt="dummy"
+                                                            />
                                                             )}
                                                           </DialogContent>
                                                         </BootstrapDialog>
@@ -7285,16 +7016,16 @@ const handleCheckboxChangeFlag = (event) => {
                 role="tabpanel"
                 hidden={Tabvalue !== 2}
               >
+                <Suspense fallback={<div>Loading...</div>}>
                  <Grid container>
                   <Grid xs={12} md={12} className="mainDivClass otherTbs" sx={{ padding:"0px" }} >
                     <Card sx={{ p: 3 }} >
                     <Grid className="InnerDiv" style={{marginTop:"16px"}} >
-                  
+                
                    {(RowID) &&(
                         <AllPlanningModule
                           data={{
                             RowID: RowID,
-                           // WorkOrderNo: WorkOrderNo,
                             Asset_No: Asset_No,
                             //statusKey:statusKey,
                           }}
@@ -7304,6 +7035,7 @@ const handleCheckboxChangeFlag = (event) => {
                     </Card>
                   </Grid>
                   </Grid>
+                  </Suspense>
               </Box>
 
               {/* checklist Tab*/}
@@ -7311,22 +7043,29 @@ const handleCheckboxChangeFlag = (event) => {
                 role="tabpanel"
                 hidden={Tabvalue !== 3}
               >
+                <Suspense fallback={<div>Loading...</div>}>
                  <Grid container>
                   <Grid xs={12} md={12} className="mainDivClass otherTbs" sx={{ padding:"0px" }} >
                     <Card sx={{ p: 3 }} >
                     <Grid className="InnerDiv" style={{marginTop:"16px"}} >
-                   <PmCheckList2 
-                    data={{
-                      RowID: RowID,
-                      Asset_No: Asset_No,
-                     // formStatus: "NEW", 
-                      //statusKey:statusKey,
-                    }}
-                  />
+
+                    {(RowID) &&(
+                        <PmCheckList2 
+                        data={{
+                          RowID: RowID,
+                          Asset_No: Asset_No,
+                         // formStatus: "NEW", 
+                          //statusKey:statusKey,
+                        }}
+                      />
+                      )}
+
+                   
                       </Grid>
                     </Card>
                   </Grid>
                   </Grid>
+                  </Suspense>
               </Box>
                 {/* Attachment Tab*/}
                 <Box
@@ -7486,18 +7225,14 @@ const handleCheckboxChangeFlag = (event) => {
                                        <td>{item.file_name}</td>
                                        <td>{item.audit_user}</td>
                                        <td>
-                                         {new Date(
-                                           item.audit_date.date
-                                         ).toLocaleString("en-US", {
-                                           year: "numeric",
-                                           month: "2-digit",
-                                           day: "2-digit",
-                                           hour: "2-digit",
-                                           minute: "2-digit",
-                                           second: "2-digit",
-                                           // Show milliseconds with 3 digits
-                                         })}
-                                       </td>
+                                        {new Date(item.audit_date.date).toLocaleDateString("en-GB")}{" "}
+                                        {new Date(item.audit_date.date).toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                        </td>
                                        <td>
                                          <button
                                            type="button"
@@ -7541,8 +7276,14 @@ const handleCheckboxChangeFlag = (event) => {
                                          />
                                        </td>
                                        <td>{image.name}</td>
-                                       <td>Admin</td>
-                                       <td>{new Date().toLocaleString() + ""}</td>
+                                       <td>{emp_mst_login_id}</td>
+                                       <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                        <td>
                                          <button
                                            type="button"
@@ -7569,8 +7310,14 @@ const handleCheckboxChangeFlag = (event) => {
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                      <td>
                                        <button
                                          type="button"
@@ -7597,8 +7344,14 @@ const handleCheckboxChangeFlag = (event) => {
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                      <td>
                                        <button
                                          type="button"
@@ -7625,8 +7378,14 @@ const handleCheckboxChangeFlag = (event) => {
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                      <td>
                                        <button
                                          type="button"
@@ -7653,8 +7412,14 @@ const handleCheckboxChangeFlag = (event) => {
                                       />
                                     </td>
                                     <td>{image.name}</td>
-                                    <td>Admin</td>
-                                    <td>{new Date().toLocaleString() + ""}</td>
+                                    <td>{emp_mst_login_id}</td>
+                                    <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                     <td>
                                       <button
                                         type="button"
@@ -7681,8 +7446,14 @@ const handleCheckboxChangeFlag = (event) => {
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
                                      <td>
                                        <button
                                          type="button"
@@ -7712,8 +7483,14 @@ const handleCheckboxChangeFlag = (event) => {
                                          />
                                        </td>
                                        <td>{image.name}</td>
-                                       <td>Admin</td>
-                                       <td>{new Date().toLocaleString() + ""}</td>
+                                       <td>{emp_mst_login_id}</td>
+                                       <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}</td>
    
                                        <td>
                                          <button
@@ -7742,23 +7519,24 @@ const handleCheckboxChangeFlag = (event) => {
                                      aria-label="close"
                                      onClick={handleClosedd}
                                      sx={{
-                                       position: "absolute",
-                                       right: 8,
-                                       top: 8,
-                                       padding:"0px !important",
-                                       margin:"5px !important"
+                                      position: "absolute",
+                                      left: 8,
+                                      top: 8,
+                                      padding:"0px !important",
+                                      margin:"5px !important",
+                                      zIndex: 10,
                                      }}
                                    >
                                         <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                    </IconButton>
                                    <DialogContent dividers>
                                      <Typography gutterBottom>
-                                      
-                                       <img
-                                        // src={selectedImage}
-                                         src={selectedImage ? `${httpCommon.defaults.baseURL}${selectedImage}` :""}
-                                         style={{ width: "100%", height: "auto" }}
-                                       />
+
+                                        <AttachmentImageViewer 
+                                            imageSrc={selectedImage ? `${httpCommon.defaults.baseURL}${selectedImage}` :""}
+                                            width="100%" 
+                                            height="auto" 
+                                        />
                                      </Typography>
                                    </DialogContent>
                                  </BootstrapDialog>
@@ -7772,22 +7550,25 @@ const handleCheckboxChangeFlag = (event) => {
                                      aria-label="close"
                                      onClick={handleClosedd}
                                      sx={{
-                                       position: "absolute",
-                                       right: 8,
-                                       top: 8,
-                                        padding:"0px !important",
-                                        margin:"5px !important"
+                                      position: "absolute",
+                                      left: 8,
+                                      top: 8,
+                                      padding:"0px !important",
+                                      margin:"5px !important",
+                                      zIndex: 10,
                                      }}
                                    >
                                      <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                                    </IconButton>
                                    <DialogContent dividers>
                                      <Typography gutterBottom>
-                                       <img
-                                         style={{ height: "100%", width: "100%" }}
-                                         src={URL.createObjectURL(handalImg)}
-                                         alt="Uploaded image"
-                                       />
+
+                                       <AttachmentImageViewer 
+                                          imageSrc={URL.createObjectURL(handalImg)} 
+                                          width="100%" 
+                                          height="auto" 
+                                        />
+
                                      </Typography>
                                    </DialogContent>
                                  </BootstrapDialog>
@@ -7815,15 +7596,7 @@ const handleCheckboxChangeFlag = (event) => {
                                          className="form-control form-control-lg"
                                          id="formFileMultiple"
                                        />
-                                       {/* <Button
-                                         onClick={handleButtonClick}
-                                         type="submit"
-                                        // className="btn Refbtl"
-                                        className="tabAddButton"
-                                         
-                                       >
-                                         + Add Attachment
-                                       </Button> */}
+                                      
                                      </div>
                                    </form>
                                    </div>
@@ -7955,15 +7728,19 @@ const handleCheckboxChangeFlag = (event) => {
                 >
                    <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                 </IconButton>
-                <DialogContent dividers>
-                  <div className="TblSelect">
-                    <GetAssetList
-                      onRowClick={handleRowData2}
-                      onChangePage={handleRowDataPagechg}
-                      onSearchChange={handelRowSearch}
-                    />
-                  </div>
-                </DialogContent>
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <DialogContent dividers>
+                    <div className="TblSelect">
+                  
+                      <GetAssetList
+                        onRowClick={handleRowData2}
+                        onChangePage={handleRowDataPagechg}
+                        onSearchChange={handelRowSearch}
+                      />
+                    </div>
+                    </DialogContent>
+                  </Suspense >
+              
                 <DialogActions
                   style={{
                     display: "flex",
@@ -7971,7 +7748,7 @@ const handleCheckboxChangeFlag = (event) => {
                   }}
                 >
                   <div>
-                    <span class="TotlFont">
+                    <span className="TotlFont">
                       {TotalAssetNo ? TotalAssetNo
                         : 
                           0}
@@ -8031,7 +7808,7 @@ const handleCheckboxChangeFlag = (event) => {
                   }}
                 >
                   <div>
-                    <span class="TotlFont">
+                    <span classname="TotlFont">
                       {TotalSearch
                         ? // Content to render if condition1 is true
                           TotalSearch
@@ -8090,14 +7867,18 @@ const handleCheckboxChangeFlag = (event) => {
                 >
                   <Iconify icon="carbon:close-outline" className="modelCloseBtn" />
                 </IconButton>
-                <DialogContent dividers>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <DialogContent dividers>
                   <div className="TblSelect">
                     <FrequencyCodeList
                       onRowClick={handleRowDatafrequency}
                    
                     />
                   </div>
-                </DialogContent>
+                  </DialogContent>
+
+                </Suspense>
+              
                 <DialogActions
                   style={{
                     display: "flex",
@@ -8105,7 +7886,7 @@ const handleCheckboxChangeFlag = (event) => {
                   }}
                 >
                   <div>
-                    <span class="TotlFont">
+                    <span classname="TotlFont">
                       {TotalAssetNo ? TotalAssetNo
                         : 
                           0}

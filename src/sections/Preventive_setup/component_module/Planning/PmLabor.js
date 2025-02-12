@@ -101,7 +101,7 @@ const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
       const response = await httpCommon.get(
         `/get_pm_labor_data.php?site_cd=${site_ID}&RowID=${RowID}`
       );
-     
+    // console.log("RowID____labor___",RowID)
       if (response.data.status === "SUCCESS") {
         setHeader(response.data.data.header);
         setResult(response.data.data.result);

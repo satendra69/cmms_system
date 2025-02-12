@@ -111,9 +111,8 @@ export default function PreventiveMaintenance() {
   const location = useLocation();
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('error');
-  const [progress, setProgress] = useState(0);
+
+   const [progress, setProgress] = useState(0);
 
   const settings = useSettingsContext();
   const [maxHeight, setMaxHeight] = useState("400px");
@@ -131,6 +130,8 @@ export default function PreventiveMaintenance() {
   const confirm = useBoolean();
   
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTriggered, setSearchTriggered] = useState(false);
+
   const inputRef = useRef(null);
   const numberOfColumns = "71";
   const [FilterShow, setFilterShow] = useState(false);
@@ -174,7 +175,7 @@ export default function PreventiveMaintenance() {
   const [isOptionSelected, setIsOptionSelected] = useState(TitleAstReg !== "" || selectedOption);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [inputValueSearch, setInputValueSearch] = useState('');
-  const [RowPerPage,setRowperPage]=useState(100);
+  
   const [defaultTitle, setDefaultTitle] = useState('');
   const [tempRowID, setTempRowID] = useState(null);
   const [showPromt, setShowPromt] = useState(false);
@@ -202,15 +203,11 @@ export default function PreventiveMaintenance() {
   const [showDiv2, setShowDiv2] = useState(false);
   const [button1Active, setButton1Active] = useState(true);
   const [button2Active, setButton2Active] = useState(false);
-  
-  const [rowlikeset, setRowlikeset] = useState("like");
-  const [rowAndset, setRowAndset] = useState("And");
-  const [rowQtrlikeset, setRowQtrlikeset] = useState("like");
-  const [rowQtrAndset, setRowQtrAndset] = useState("And");
 
   const [showGenerateModel, setshowGenerateModel] = useState(false);
   const [GeneratSelectedRows, setGeneratSelectedRows] = useState([]);
   const [GenerateMsg,setGenretionMsg] = useState(); 
+  const [resetCheckboxes, setResetCheckboxes] = useState(false);
  
   // Get Api data useEffect
   const fetchData = useCallback(async () => {
@@ -302,7 +299,7 @@ export default function PreventiveMaintenance() {
         const GetRowID = selectedOptionObjectFilter.RowID;
         const GetPrompt = selectedOptionObjectFilter.cf_query_list_prompt;
         if (selectedComeBack === "" || selectedComeBack === undefined){
-        if(GetPrompt == '1'){
+        if(GetPrompt === '1'){
           setShowPromt(true);
           setIsLoading(true);
           
@@ -362,9 +359,13 @@ export default function PreventiveMaintenance() {
   const handleOptionChange = async (event,responseData) => {
    
     const selectedValue = event?.target?.value || selectedOption;
+
     setDefaultTitle("");
     setSelectedComeBack("");
     setCurrentPage(1);
+    setSelectedRowIdbackState("");
+    setInputValueSearch("");
+    setSearchTriggered(false);
   
     const selectedOptionObjectFilter = preventiveFilterDpd.find(
       (item) => item.cf_query_title === selectedValue
@@ -382,7 +383,7 @@ export default function PreventiveMaintenance() {
       const GetRowID = selectedOptionObjectFilter.RowID;
       const GetPrompt = selectedOptionObjectFilter.cf_query_list_prompt;
   
-      if(GetPrompt == '1'){
+      if(GetPrompt === '1'){
         setShowPromt(true);
         setTempRowID(GetRowID);
         Swal.fire({
@@ -497,16 +498,17 @@ export default function PreventiveMaintenance() {
       setIgnoreEffect(false); // Reset the flag
       return;
     }
-
-    if (selectDropRowID != "" && selectDropRowID != null) {
-      getb();
-    }else if(TableSearchData !="" && TableSearchData != null){
+    if (searchTriggered) {
+     
       handelSearchButton();
+    }
+    else if (selectDropRowID !== "" && selectDropRowID !== null) {
+      getb();
     }else {
       fetchData();
     }
     fetchFilterSubPopupSavedropdon();
-  }, [site_ID, currentPage, selectDropRowID,fetchData,getb]);
+  }, [site_ID, currentPage, selectDropRowID,fetchData,getb,searchTriggered]);
 
   const dataFiltered = applyFilter({
     inputData: Array.isArray(tableData) ? tableData : [],
@@ -518,8 +520,6 @@ export default function PreventiveMaintenance() {
     table.page * table.rowsPerPage,
     table.page * table.rowsPerPage + table.rowsPerPage
   );
-
-  const denseHeight = table.dense ? 60 : 80;
 
   const canReset = !isEqual(defaultFilters, filters);
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
@@ -537,11 +537,11 @@ export default function PreventiveMaintenance() {
 
   
   const handleDeleteRow = useCallback(async (id, row) => {
-  //  console.log("row++++++____", row.col1);
+    //console.log("row++++++____", row);
    // console.log("row++++++____", id);
     const Rowid = id;
-    const AstNo = row.col1;
-    if (Rowid !== '' && AstNo !== '') {
+   
+    if (Rowid !== '') {
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -556,17 +556,18 @@ export default function PreventiveMaintenance() {
     
           try {
             const response = await httpCommon.get(
-              `/asset_list_delete_record.php?site_cd=${site_ID}&mst_id=${Rowid}&ast_no=${AstNo}`
+              `/delete_pm_list_data.php?site_cd=${site_ID}&mst_id=${Rowid}`
             );
          //   console.log("response_____delete___",response);
-            if(response.data.status = "SUCCESS"){
+            if(response.data.status === "SUCCESS"){
               Swal.fire({
               title: "Deleted!",
               text: response.data.message,
               icon: "success"
               });
+              getb();
             }
-            if(response.data.status = "ERROR"){
+            if(response.data.status == "ERROR"){
               Swal.fire({
               title: "Oops!",
               text: response.data.message,
@@ -638,6 +639,8 @@ export default function PreventiveMaintenance() {
   const handleResetFilters = useCallback(() => {
     setInputValueSearch("");
     setTableData("");
+    setTableSearchData("");
+    setCurrentPage(1);
 
     if (inputRef.current) {
       inputRef.current.value = ''; 
@@ -1344,49 +1347,49 @@ export default function PreventiveMaintenance() {
       setRowsortQrt([]);
     };
 
-    const RetriveDataQueryList = async () => {
-      Swal.fire({
-        title: "Please Wait !",
-        allowOutsideClick: false,
-        customClass: {
-          container: "swalcontainercustom",
-        },
-      });
-      Swal.showLoading();
-      try {
-        const response = await httpCommon.post(
-          "/get_retrive_popup_preventive_maintinace_filed_data.php?page=" + currentPage,
-          {
-            rows: rowsQrt,
-            rowsort: rowsortQrt,
-            SiteCD:site_ID,
-            admin:emp_owner
-          }
-        );
-      // console.log("response____fliter___",response);
-        setTableData(response.data.data.result);
-        setTotalRow(response.data.total_count);
-        Swal.close();
-        FilterhandleClose();
-        const updatedEmptyRows = rowsQrt.map((row) => ({
-          // empty state data
-          ...row,
-          selectedOption: "",
-          logical: "",
-          valuept: "",
-        }));
-        setRows(updatedEmptyRows);
+    // const RetriveDataQueryList = async () => {
+    //   Swal.fire({
+    //     title: "Please Wait !",
+    //     allowOutsideClick: false,
+    //     customClass: {
+    //       container: "swalcontainercustom",
+    //     },
+    //   });
+    //   Swal.showLoading();
+    //   try {
+    //     const response = await httpCommon.post(
+    //       "/get_retrive_popup_preventive_maintinace_filed_data.php?page=" + currentPage,
+    //       {
+    //         rows: rowsQrt,
+    //         rowsort: rowsortQrt,
+    //         SiteCD:site_ID,
+    //         admin:emp_owner
+    //       }
+    //     );
+    //   // console.log("response____fliter___",response);
+    //     setTableData(response.data.data.result);
+    //     setTotalRow(response.data.total_count);
+    //     Swal.close();
+    //     FilterhandleClose();
+    //     const updatedEmptyRows = rowsQrt.map((row) => ({
+    //       // empty state data
+    //       ...row,
+    //       selectedOption: "",
+    //       logical: "",
+    //       valuept: "",
+    //     }));
+    //     setRows(updatedEmptyRows);
   
-        const updatedEmptyRowsort = rowsortQrt.map((rowsort) => ({
-          // empty state data
-          ...rowsort,
-          selectedOptionShort: "",
-        }));
-        setRowsort(updatedEmptyRowsort);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    //     const updatedEmptyRowsort = rowsortQrt.map((rowsort) => ({
+    //       // empty state data
+    //       ...rowsort,
+    //       selectedOptionShort: "",
+    //     }));
+    //     setRowsort(updatedEmptyRowsort);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //   }
+    // };
 
     const DeletePMRegQryList = async () => {
       const parts = selectedOptionValue.split("-").map(part => part.trim()); 
@@ -1843,6 +1846,7 @@ const handleInputValueChangeQtr2 = (index, newValue) => {
       // setSelectedCheckEmptyErrorShortQtr(false);
     }
   };
+
   const InsertCf_queryListDataSavaAs = async () => {
     const site_ID = localStorage.getItem("site_ID");
     const emp_owner = localStorage.getItem("emp_mst_empl_id");
@@ -1895,7 +1899,11 @@ const handleInputValueChangeQtr2 = (index, newValue) => {
 // Search Button Click funcation
 const handelSearchButton = async () => {
   const inputValueGet = inputRef.current.value;
-  
+  inputRef.current.blur();
+  if (!searchTriggered) {
+    setCurrentPage(1); 
+    setSearchTriggered(true); 
+  }
   if (inputValueGet !== "" && inputValueGet !== null) {
     Swal.fire({ title: "Please Wait!", allowOutsideClick: false });
     Swal.showLoading();
@@ -2099,6 +2107,9 @@ const handleSearchInputChange = (e) => {
 };
 const handleClearButton = () => {
   handleResetFilters();
+  setSearchTriggered(false);
+  setTotalRow(0);
+
   if (inputRef.current) {
     inputRef.current.focus(); // Refocus the input field
   }
@@ -2249,7 +2260,8 @@ const handleGenrateClose = () => {
   setshowGenerateModel(false);
   //resetAllCheckboxes(); // Reset checkboxes
   if (GenerateMsg !== undefined && GenerateMsg !== "") {
-    resetAllCheckboxes(); // Call this function if GenerateMsg is not empty
+    //resetAllCheckboxes(); 
+    setResetCheckboxes((prev) => !prev); 
   }
   //getb();
 };
@@ -2610,6 +2622,7 @@ const handleCheckboxChange = (row, isChecked) => {
                                     onDeleteRow={() => handleDeleteRow(row.RowID,row)}
                                     onEditRow={() => handleEditRow(row)}
                                     onCheckboxChange={handleCheckboxChange}
+                                    resetTrigger={resetCheckboxes} // Pass reset trigger
                                     onClick={() => handleRowClickTable(row.RowID,row)}
                                    // shouldReset={GeneratSelectedRows.length === 0} // Pass the reset trigger
                                    
@@ -3232,7 +3245,7 @@ const handleCheckboxChange = (row, isChecked) => {
                         ))}
                       </Select>
                       <td>
-                       {console.log("isChecked___",isChecked)}
+                     
                       <input
                           class="form-check-input"
                           type="checkbox"
@@ -3855,9 +3868,7 @@ const handleCheckboxChange = (row, isChecked) => {
                 autoHideDuration={null}
                 onClose={handleCloseSnackbar}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                // sx={{
-                //   boxShadow: '0 1px 10px 0 rgba(0,0,0,.1),0 2px 15px 0 rgba(0,0,0,.05)'
-                // }}
+                
                 sx={{
                   boxShadow: '0 1px 10px 0 rgba(0,0,0,.1),0 2px 15px 0 rgba(0,0,0,.05)',
                   '& .MuiAlert-filledError': {
@@ -3865,7 +3876,7 @@ const handleCheckboxChange = (row, isChecked) => {
                     color: '#000',
                     fontWeight: '600',
                     position: 'relative',
-                    animation: snackbarOpen ? 'bounce-in 0.5s ease-out' : 'none', // Apply bouncing animation conditionally
+                    animation: snackbarOpen ? 'bounce-in 0.5s ease-out' : 'none', 
                   },
                 }}
               >
@@ -3873,7 +3884,7 @@ const handleCheckboxChange = (row, isChecked) => {
                   onClose={handleCloseSnackbar}
                   severity="error"
                   variant="filled"
-                  // sx={{ backgroundColor: '#fff', color: '#000', fontWeight: '600', position: 'relative' }}
+                
                   sx={{
                     '@keyframes bounce-in': {
                       '0%': { transform: 'scale(0.9)' },
@@ -3882,7 +3893,7 @@ const handleCheckboxChange = (row, isChecked) => {
                     },
                   }}
                 >
-                  {snackbarMessage}
+
                   
                   <LinearProgress variant="determinate" value={snackbarOpen ? 100 - progress : 0} style={{ width: '99%', position: 'absolute', bottom: '0',marginLeft: '-50px',
                   }}

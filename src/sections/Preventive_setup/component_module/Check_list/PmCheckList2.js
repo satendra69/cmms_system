@@ -12,8 +12,6 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import Typography from "@mui/material/Typography";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -21,7 +19,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Unstable_Grid2";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { styled } from "@mui/material/styles";
 
@@ -31,6 +28,7 @@ import Iconify from "src/components/iconify";
 
 import { Menu, MenuItem } from "@mui/material";
 import CheckList from "./Popup_model/CheckList"
+import { useSwalCloseContext } from "../../../ContextApi/WorkOrder/SwalCloseContext";
 
 
 import httpCommon from "src/http-common";
@@ -48,8 +46,8 @@ const PmCheckList2 = ({ data }) => {
   
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
+const {swalCloseTime} = useSwalCloseContext();
 
-  const [Header, setHeader] = React.useState([]);
   const [Result, setResult] = React.useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuRowIndex, setMenuRowIndex] = useState(null);
@@ -61,13 +59,11 @@ const PmCheckList2 = ({ data }) => {
   const [show, setShow] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-const [EditPrmls1craft,setEditPrmls1craft] = useState("");
-const [EditPrmls1crewsize,setEditPrmls1crewsize] = useState("");
-const [EditPrmls1esthrs,setEditPrmls1esthrse] = useState("");
-const [EditPrmls1chgcostcenter,setEditPrmls1chgcostcenter] = useState([]);
-const [EditPrmls1chgAccount,setEditPrmls1chgAccount] = useState([]);
-const [EditPrmls1lumpsum,setEditPrmls1lumpsum] = useState("");
-const [EditPrmls1MstRowId,setEditPrmls1MstRowId] = useState("");
+const[EditChecklistName,setEditChecklistName] = useState("");
+const[EditChecklistDesc,setEditChecklistDesc] = useState("");
+const[EditCarrytoworkOrder,setEditCarrytoworkOrder] = useState("");
+const[EditChecklistMstId, setEditChecklistMstId] = useState("");
+
 
 const [isCarryChecked, setIsCarryChecked] = useState(false);
 
@@ -76,21 +72,14 @@ const [isCarryChecked, setIsCarryChecked] = useState(false);
     setInputFields(updatedInputFields);
   };
 
-  const [ChargeCostCenter, setChargeCostCenter] = useState([]);
-  const [selected_ChargeCostCenter, setSelected_ChargeCostCenter] = useState(
-    []
-  );
-
-  const [ChargeAccount, setChargeAccount] = useState([]);
-  const [selected_ChargeAccount, setSelected_ChargeAccount] = useState([]);
-
   const location = useLocation();
-  const [WorkOrderNo, setWorkOrderNo] = useState(data.WorkOrderNo);
 
   const [modalRowDt, setmodalRowDt] = useState("");
+  const [modalEditRowDt, setmodalEditRowDt] = useState("");
+
   const [prmLs1Label, setPrmls1Label] = useState([]);
   const [MaterialMandatoryFiled, setMaterialMandatoryFiled] = useState([]);
-  const [selectedCheckList, setSelectedCheckList] = useState ("");
+
 
   // First Api
   const get_pm_checklist_data = async (site_ID, RowID) => {
@@ -191,14 +180,14 @@ const [isCarryChecked, setIsCarryChecked] = useState(false);
               horizontal: 'right',
             }}
           >
-            <MenuItem key={index}
+            <MenuItem key={result.RowID || index}
             onClick={(event) => {
               event.stopPropagation(); 
               handleEdit(result, event);
             }}
 
             > <Iconify icon="solar:pen-bold" width="15px" height="15px" marginRight="5px"/> Edit</MenuItem>
-            <MenuItem 
+            <MenuItem key={result.RowID || index}
             onClick={(event) => {
               event.stopPropagation(); 
                handleDelete(result, index, event);
@@ -228,21 +217,6 @@ const [isCarryChecked, setIsCarryChecked] = useState(false);
     ));
   };
 
-
-
-
-
-  const formatNumber = (number) => {
-    if (number == null) {
-      return '';
-    }
-  
-    let [integerPart, decimalPart] = number.toString().split('.');
-    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    decimalPart = decimalPart ? decimalPart.slice(0, 2) : '00';
-  
-    return `${integerPart}.${decimalPart}`;
-  };
   // Get All Filed label Name
 const getPmLaborFormLebel = async () => {
   try {
@@ -284,15 +258,15 @@ const handleMenuClick = (event, index) => {
     setMenuRowIndex(null);
   };
 
+
   const handleEdit = (dataGet, event) => {
+  //console.log("dataGet_____",dataGet);
   
-    setEditPrmls1craft(dataGet.prm_ls1_craft);
-    setEditPrmls1crewsize(dataGet.prm_ls1_crewsize);
-    setEditPrmls1esthrse(formatNumber(dataGet.prm_ls1_est_hrs));
-    setEditPrmls1chgcostcenter({label:dataGet.prm_ls1_chg_costcenter,value:dataGet.prm_ls1_chg_costcenter});
-    setEditPrmls1chgAccount({label:dataGet.prm_ls1_chg_account,value:dataGet.prm_ls1_chg_account});
-    setEditPrmls1lumpsum(formatNumber(dataGet.prm_ls1_lumpsum));
-    setEditPrmls1MstRowId(dataGet.RowID);
+    // nw data added
+    setEditChecklistMstId(dataGet.RowID);
+    setEditChecklistDesc(dataGet.job_mst_desc);
+    setEditChecklistName(dataGet.job_mst_job_cd);
+    setEditCarrytoworkOrder(dataGet.prm_job_carry);
 
     setShowEditModal(true);
     handleMenuClose();
@@ -322,14 +296,23 @@ const handleDelete = async (data, index, event) => {
          if (result.isConfirmed) {
          try {
            const response = await httpCommon.get(
-             `/delete_pm_labor_data.php?site_cd=${site_ID}&RowID=${dltId}`
+             `/delete_pm_checklist_data.php?site_cd=${site_ID}&RowID=${dltId}`
            );
    
            if (response.data.status === "SUCCESS") {
              Swal.fire({
                title: "Deleted!",
                text: response.data.message,
-               icon: "success"
+               icon: "success",
+               confirmButtonText: "OK",
+               timer: swalCloseTime,
+               timerProgressBar: true, 
+               customClass: {
+                 container: "swalcontainercustom",
+               },
+               willClose: () => {
+                get_pm_checklist_data(site_ID, RowID);
+              }
              }).then(() => {
                // Call get_Mr_Line_Data after the "OK" button is clicked
                get_pm_checklist_data(site_ID, RowID);
@@ -346,25 +329,18 @@ const handleDelete = async (data, index, event) => {
            console.error('Error fetching data:', error);
           // setIsLoading(false);
          }
-   
-         
          }
        });
-   
      }
-   
-    
    }; 
   
 
   const resetData = () => {
-   // setSelected_StockNo("");
     setmodalRowDt("");
-   // setSelected_StockLocation("");
-   // setDescription("");
-    setSelected_ChargeCostCenter("");
-    setSelected_ChargeAccount([]);
-   // setQtyNeeded("");
+    setmodalEditRowDt("");
+    setEditChecklistName("");
+    setEditChecklistDesc("");
+    
   };
   function CustomTextField({ rightIcons, ...props }) {
     return (
@@ -391,14 +367,6 @@ const handleDelete = async (data, index, event) => {
       site_ID: site_ID,
       mst_RowID: RowID,
       emp_mst_login_id: emp_mst_login_id,
-      prm_ls1_assetno: AssetNo,
-      mtr_mst_wo_no: WorkOrderNo,
-      prm_ls1_crft:"",
-      prm_ls1_crewSize:"1",
-      prm_ls1_est_hrs:"",
-      prm_ls1_lumpsum:"",
-      selectChargeCostCenter: "",
-      selectChargeAccount: "",
 
       prm_job_grp_asset:AssetNo,
       prm_job_job_cd:"",
@@ -423,12 +391,9 @@ const handleDelete = async (data, index, event) => {
   const updatedInputFields = inputFields.map((field) => {
     return {
       ...field,
-      prm_ls1_crewSize: "1",
-      prm_ls1_crft:"",
-      selectChargeAccount: "",
-      selectChargeCostCenter: "",
-      prm_ls1_est_hrs: "",
-      prm_ls1_lumpsum: "",
+      prm_job_carry: "0",
+      job_mst_desc: "",
+      prm_job_job_cd: "",
     };
   });
 
@@ -438,198 +403,13 @@ const handleDelete = async (data, index, event) => {
   const handleCloseModal2 = () => {
     setModalOpenAsset(false);
   };
-  // Stock Popup Data Get onclcik
-  const handleRowPopupData = async (
-    index,
-    rowData,
-    RowDescp,
-    secondRowData
-  ) => {
-
-    // Use the row data in the second component
-    if (rowData !== undefined && rowData !== null) {
-        if (Result.length > 0) {
-       
-            const resultMatch = Result.some((item) => item.prm_ls1_craft.trim() === rowData.trim());
-      
-            if (resultMatch) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Oops...",
-                    text: "Duplicate Data Found In Row Craft",
-                    customClass: {
-                        container: "swalcontainercustom",
-                      },
-                  });
-                  
-              return;
-            }
-          }
-
-      setmodalRowDt(rowData);
-      const list = [...inputFields];
-
-      const crftDt = rowData + " : " + RowDescp;
-      list[index]["prm_ls1_crft"] = crftDt;
-      setInputFields(list);
-      
-    }
-    if (secondRowData == "1") {
-        
-      setModalOpenAsset(false);
-    
-    }
-
-  };
-  const handleRowPopupDataEdit = async (
-    index,
-    rowData,
-    RowDescp,
-    secondRowData
-  ) => {
-
-    // Use the row data in the second component
-
-    if (rowData !== undefined && rowData !== null) {
-     
-      if (Result.length > 0) {
-       
-        const resultMatch = Result.some((item) => item.prm_ls1_craft.trim() === rowData.trim());
-  
-        const inputFieldsMatch = inputFields.some((item) => {
-          const prm_ls1_crftValue = item.prm_ls1_crft.split(':')[0].trim(); 
-          return prm_ls1_crftValue === rowData.trim();
-        });
-  
-        if (resultMatch || inputFieldsMatch) {
-            Swal.fire({
-                icon: "warning",
-                title: "Oops...",
-                text: "Duplicate Data Found In Row Craft",
-                customClass: {
-                    container: "swalcontainercustom",
-                  },
-              });
-              
-          return;
-        }
-      }
-      setmodalRowDt(rowData);
-     // const list = [...inputFields];
-
-      const crftDt = rowData + " : " + RowDescp;
-      setEditPrmls1craft(crftDt);
-  
-
-    }
-
-    if (secondRowData == "1") {
-      setModalOpenAsset(false);
-      if (Result.length > 0) {
-  
-        const resultMatch = Result.some((item) => item.prm_ls1_craft.trim() === rowData.trim());
-  
-        const inputFieldsMatch = inputFields.some((item) => {
-          const prm_ls1_crftValue = item.prm_ls1_crft.split(':')[0].trim(); 
-          return prm_ls1_crftValue === rowData.trim();
-        });
-  
-        if (resultMatch || inputFieldsMatch) {
-            Swal.fire({
-                icon: "warning",
-                title: "Oops...",
-                text: "Duplicate Data Found In Row Craft",
-                customClass: {
-                    container: "swalcontainercustom",
-                  },
-              });
-
-          return;
-        }
-      }
-    }
-  };
-
-
+ 
   const handleCancelClick = ( index) => {
    
   const list = [...inputFields]; 
   list[index]["prm_ls1_crft"] = ""; 
   setInputFields(list); 
   };
-
-  const handleChange = async (index, fieldName, value) => {
-
-    const list = [...inputFields];
-    if (fieldName == "setQtyNeeded") {
-      list[index][fieldName] = value;
-      setInputFields(list);
-     // setQtyNeeded(value);
-    } else {
-      list[index][fieldName] = value;
-      setInputFields(list);
-    }
-
-    if (fieldName == "selectChargeCostCenter") {
-      setSelected_ChargeCostCenter(value);
-    } else if (fieldName == "selectChargeAccount") {
-      setSelected_ChargeAccount(value);
-    } else if (fieldName == "setQtyNeeded") {
-     // setQtyNeeded(value);
-    }else if(fieldName == "Editprm_ls1_crewSize"){
-        setEditPrmls1crewsize(value);
-    }
-  };
-
-  const handleEditChange = async (index, fieldName, value) => {
-
-   if(fieldName == "Editprm_ls1_crewSize"){
-        setEditPrmls1crewsize(value);
-    }else if(fieldName == "selectChargeCostCenter"){
-        setEditPrmls1chgcostcenter(value);
-    }else if(fieldName == "selectChargeAccount"){
-        setEditPrmls1chgAccount(value);
-    }else if(fieldName == "Editprm_ls1_est_hrs"){
-        setEditPrmls1esthrse(value);
-    }else if(fieldName == "Editprm_ls1_lumpsum"){
-        setEditPrmls1lumpsum(value);
-    }
-  };
-
-  const handleClickChargeCostCenter = async () => {
-    const CostType = "CostCenter";
-    try {
-      const response = await httpCommon.get(
-        "/get_dropdown.php?site_cd=" + site_ID + "&type=" + CostType
-      );
-      let ChargeCostCenter = response.data.data.CostCenter.map((item) => ({
-        label: item.costcenter + " : " + item.descs,
-        value: item.costcenter,
-      }));
-     
-      setChargeCostCenter(ChargeCostCenter);
-     // setEditPrmls1chgcostcenter(ChargeCostCenter);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleClickChargeAccount = async () => {
-    const AccountType = "WKO_Labor_Account";
-    try {
-      const response = await httpCommon.get(
-        "/get_dropdown.php?site_cd=" + site_ID + "&type=" + AccountType
-      );
-      let ChargeAccount = response.data.data.WKO_Labor_Account.map((item) => ({
-        label: item.account + " : " + item.descs,
-        value: item.account,
-      }));
-      setChargeAccount(ChargeAccount);
-     
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
 
   // Submit Data in database
   const handleAddButtonClick = async (e) => {
@@ -667,14 +447,19 @@ const handleDelete = async (data, index, event) => {
             text: response.data.message,
             icon: "success",
             confirmButtonText: "OK",
+            timer: swalCloseTime,
+            timerProgressBar: true, 
+            willClose: () =>{
+              setResult([...Result, inputFields]);
+              get_pm_checklist_data(site_ID, RowID);
+              removeInputFields();
+              handleClose();
+            }
           }).then((result) => {
-            setResult([...Result, inputFields]);
-            get_pm_checklist_data(site_ID, RowID);
-            // console.log("inputFields_after",inputFields);
-
             if (result.isConfirmed) {
               // Call the next function when the user clicks the "OK" button
-
+              setResult([...Result, inputFields]);
+              get_pm_checklist_data(site_ID, RowID);
               removeInputFields();
               handleClose();
             }
@@ -688,24 +473,7 @@ const handleDelete = async (data, index, event) => {
         handleClose();
     }
   };
-  //Sum calculation
-  const totalQty = Result.reduce(
-    (acc, item) => acc + (parseFloat(item.wko_ls2_qty_needed) || 0),
-    0
-  );
 
-  //Multiply calculation
-  const totalCost = Result.reduce(
-    (acc, item) =>
-      acc +
-      (parseFloat(item.wko_ls2_qty_needed) || 0) *
-        (parseFloat(item.wko_ls2_item_cost) || 0),
-    0
-  );
-
-  const formattedTotalCost = totalCost.toLocaleString('en-US');
-  const formattedtotalQty  = totalQty.toLocaleString('en-US');
-  
   const handleClose = () => {
     setShow(false);
     resetData();
@@ -715,13 +483,6 @@ const handleDelete = async (data, index, event) => {
         site_ID: site_ID,
         mst_RowID: RowID,
         emp_mst_login_id: emp_mst_login_id,
-        prm_ls1_assetno: AssetNo,
-        prm_ls1_crft:"",
-        prm_ls1_crewSize:"1",
-        prm_ls1_est_hrs:"",
-        prm_ls1_lumpsum:"",
-        selectChargeCostCenter: "",
-        selectChargeAccount: "",
 
         prm_job_grp_asset:AssetNo,
         prm_job_job_cd:"",
@@ -758,69 +519,16 @@ const handleDelete = async (data, index, event) => {
     return "";
   };
 
-  const handleNumericInputChange = (event, setterFunction) => {
-    let { value } = event.target;
-    if (value.length >= 14) {
-      return; 
-    }
-   
-    value = value.replace(/[^0-9.]/g, '');
-    value = value.slice(0, 14); 
-    const parts = value.split('.');
-    let integerPart = parts[0];
-    let decimalPart = parts[1];
-      if ( decimalPart === '') { 
-        integerPart += '.';
-        decimalPart = '';
-      } else if (decimalPart && decimalPart.length >= 4) {
-        decimalPart = decimalPart.slice(0, 4);
-      }else{
-        let integerPart2 = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        let decimalPart2 = parts[1] ? parts[1].slice(0, 4) : '';
-        if (integerPart2.length > 11) {
-          integerPart2 = integerPart2.slice(0, 12) + '.' + integerPart2.slice(12, 14);
-        }
-       
-        const formattedValue2 = decimalPart2 ? `${integerPart2}.${decimalPart2}` : integerPart2;
-        setterFunction(formattedValue2);
-       // setErrorField(null); // Clear any error state
-         return; 
-      }
-    const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
-    setterFunction(formattedValue); // Set the state for the respective UDFNumber state
-   // setErrorField(null);
-    
-  };
-
-  const handleNumericInputChange_4_limit = (e, setterFunction) =>{
-    let { value } = e.target;
-    value = value.replace(/[^\d.]/g, ''); // Remove non-numeric characters except decimal
-    value = value.slice(0, 4); // Limit to 16 characters including decimals and commas
-
-    const parts = value.split('.');
-    let integerPart = parts[0].replace(/\B(?=(\d{4})+(?!\d))/g, ',');
-    if (integerPart.length > 5) {
-      integerPart = integerPart.slice(0, 5);
-    }
-    let decimalPart = parts[1] ? parts[1].slice(0, 5) : '';
-
-    const formattedValue = decimalPart ? `${integerPart}` : integerPart;
-    setterFunction(formattedValue); // Set the state for the respective UDFNumber state
-    
-
-    
-  }
-
    // Handel Update button click
    const handleUpdateButtonClick = async (e) => {
     e.preventDefault();
     let isValid = true;
    
-      if (EditPrmls1craft.trim() === "") {
+      if (EditChecklistName.trim() === "") {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Craft is Required!",
+          text: "Checklist is Required!",
           customClass: {
             container: "swalcontainercustom",
           },
@@ -837,43 +545,46 @@ const handleDelete = async (data, index, event) => {
         },
       });
   
-      var json_PmLaborUpdate = {
+      var json_ChkListUpdate = {
         site_cd: site_ID,
-        EditPrmls1craft: String(EditPrmls1craft || "").trim(), 
-        EditPrmls1crewsize: String(EditPrmls1crewsize || "").trim(),
-        EditPrmls1esthrs: String(EditPrmls1esthrs || "").trim(), 
-        EditPrmls1lumpsum: String(EditPrmls1lumpsum || "").trim(), 
-        EditPrmls1chgcostcenter: EditPrmls1chgcostcenter,
-        EditPrmls1chgAccount: EditPrmls1chgAccount,
-        EditPrmls1MstRowId:EditPrmls1MstRowId,
+        EditChecklistName: String(EditChecklistName || "").trim(), 
+        EditChecklistDesc: String(EditChecklistDesc || "").trim(),
+      
+        EditCarrytoworkOrder: EditCarrytoworkOrder,
+        EditChecklistMstId:EditChecklistMstId,
         emp_mst_login_id: emp_mst_login_id,
 
       }
        Swal.showLoading();
-   // console.log("inputFields____post",json_PmLaborUpdate);
+   // console.log("inputFields____post",json_ChkListUpdate);
       try {
         const response = await httpCommon.post(
-          "/update_pm_labor_data.php",
-          json_PmLaborUpdate
+          "/update_pm_checklist_data.php",
+          json_ChkListUpdate
         );
-     //   console.log("API Response_update__:", response);
+      //  console.log("API Response_update__:", response);
         if (response.data.status === "SUCCESS") {
           Swal.close();
           Swal.fire({
-            title: "Labor!",
+            title: "Checklist!",
             customClass: {
               container: "swalcontainercustom",
             },
             text: response.data.message,
             icon: "success",
             confirmButtonText: "OK",
+            timer: swalCloseTime,
+            timerProgressBar: true, 
+            willClose: () => {
+              get_pm_checklist_data(site_ID, RowID);
+              removeInputFields();
+              handleEditClose();
+            }
           }).then((result) => {
-            get_pm_checklist_data(site_ID, RowID);
-            // console.log("inputFields_after",inputFields);
 
             if (result.isConfirmed) {
               // Call the next function when the user clicks the "OK" button
-
+              get_pm_checklist_data(site_ID, RowID);
               removeInputFields();
               handleEditClose();
             }
@@ -945,7 +656,44 @@ const handleDelete = async (data, index, event) => {
             });
         });
     };
-    
+
+    const handleEditRowData = (dataa, firstData,secondData) => {
+   
+      const checklistname = dataa;
+      const checklistDesc = firstData;
+
+      setEditChecklistName(checklistname);
+      setEditChecklistDesc(checklistDesc);
+      setmodalEditRowDt(checklistname);
+        // Handle secondData logic at the end
+        if (secondData === 1) {
+          //  setmodalRowDt(dataa);
+            handleCloseModal2();
+            setModalOpenAsset(false);
+        }
+      };
+
+    const PopupRowEditDataSelect = () =>{
+        if (modalEditRowDt === "") {
+                Swal.fire({
+                  icon: "error",
+                  title: "Oops...",
+                  text: "Please select one checklist option!",
+                  customClass: {
+                      container: "swalcontainercustom",
+                    },
+                });
+              } else {
+                setModalOpenAsset(false);
+        }
+    }
+
+    const handleEditCheckboxChange = (event) => {
+      const checked = event.target.checked;
+      setEditCarrytoworkOrder(checked);
+      
+     
+  };
   return (
     <>
       <div>
@@ -989,7 +737,7 @@ const handleDelete = async (data, index, event) => {
           </div>
         </div>
         <div className="table-responsive">
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} style={{marginBottom:"15px"}}>
             <Table>
               <TableHead>
                 <TableRow>{renderTableHeader()}</TableRow>
@@ -999,7 +747,7 @@ const handleDelete = async (data, index, event) => {
           </TableContainer>
         </div>
 
-        {/*************************************** Add Labor Popup **************************************************/}
+        {/*************************************** Add Checklist Popup **************************************************/}
         <div>
           <Dialog
              onClose={(event, reason) => {
@@ -1019,7 +767,12 @@ const handleDelete = async (data, index, event) => {
               }}
           >
             <DialogTitle
-              sx={{ m: 0, p: 2 }}
+              sx={{
+                m: 0,
+                p: 2,
+                display: "flex",
+                alignItems: "center", 
+              }}
               id="customized-dialog-title"
               className="dailogTitWork"
             >
@@ -1055,7 +808,7 @@ const handleDelete = async (data, index, event) => {
                     {/* {console.log("datadatadatadata____", data)} */}
                     {inputFields.map((data, index) => {
                       const {
-                        prm_ls1_assetno,
+
                         prm_ls1_crft,
                         prm_ls1_crewSize,
                         selectChargeCostCenter,
@@ -1149,7 +902,7 @@ const handleDelete = async (data, index, event) => {
                                 ]}
                               />
                             </Grid>
-                            {/* Model Craft Select  */}
+                            {/* Model checklist Select  */}
                             <BootstrapDialog
                                     
                                     onClose={(event, reason) => {
@@ -1333,7 +1086,7 @@ const handleDelete = async (data, index, event) => {
             </DialogActions>
           </Dialog>
         </div>
-          {/*************************************** Edit Labor Popup **************************************************/}
+          {/*************************************** Edit Checklist Popup **************************************************/}
 
            {/*  Row Click to open model popup */}
            <div>
@@ -1354,13 +1107,18 @@ const handleDelete = async (data, index, event) => {
                 marginTop: "20px",
               }}
           >
-            <DialogTitle
-              sx={{ m: 0, p: 2 }}
+           <DialogTitle
+              sx={{
+                m: 0,
+                p: 2,
+                display: "flex",
+                alignItems: "center", // Align icon and text vertically
+              }}
               id="customized-dialog-title"
               className="dailogTitWork"
             >
-              <Iconify icon="hugeicons:labor" style={{ width: "30px", height: "30px" ,marginRight: "2px"}} />
-              Update Labor
+              <Iconify icon="icon-park-outline:list" sx={{ mr: 1, fontSize: "1.2rem" }} />
+              Update Checklist
             </DialogTitle>
             <IconButton
               aria-label="close"
@@ -1401,8 +1159,8 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_assetno") || "Requiredlabel"}> {findCustomizeLabel("prm_ls1_assetno") ||
-                                    "Asset No:"}</label>
+                             <label className={findCustomizerequiredLabel("prm_job_grp_asset") }> {findCustomizeLabel("prm_job_grp_asset") ||
+                                    "PM Group/Asset No:"}</label>
                             </Grid>
                             <Grid item xs={12} md={8}>
                               <TextField
@@ -1424,8 +1182,7 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_craft") || "Requiredlabel"}> {findCustomizeLabel("prm_ls1_craft") ||
-                                    "Craft:"}</label>
+                             <label> Checklist:</label>
                             </Grid>
                             <Grid item xs={12} md={8}>
 
@@ -1435,7 +1192,7 @@ const handleDelete = async (data, index, event) => {
                                 size="small"
                                 fullWidth
                                 value={
-                                    EditPrmls1craft != "" ? EditPrmls1craft : ""
+                                  EditChecklistName != "" ? EditChecklistName : ""
                                 }
                                 
                                  placeholder="Select..."
@@ -1444,7 +1201,7 @@ const handleDelete = async (data, index, event) => {
                                 rightIcons={[
                                   <Iconify
                                     icon="material-symbols:close"
-                                  //  onClick={() => handleCancelClick(index)}
+                                   // onClick={() => handleCancelClick()}
                                   />,
                                   <Iconify
                                     icon="tabler:edit"
@@ -1453,7 +1210,7 @@ const handleDelete = async (data, index, event) => {
                                 ]}
                               />
                             </Grid>
-                            {/* Model Craft Select  */}
+                            {/* Model Checklist Select  */}
                             <Dialog
                               
                               onClose={(event, reason) => {
@@ -1479,7 +1236,7 @@ const handleDelete = async (data, index, event) => {
                                 className="dailogTitWork"
                               >
                                
-                               Craft
+                               Checklist
                               </DialogTitle>
                               <IconButton
                                 aria-label="close"
@@ -1500,7 +1257,11 @@ const handleDelete = async (data, index, event) => {
                                     marginTop: "15px",
                                   }}
                                 >
-                                 
+                                 <CheckList
+                                    onRowClick={handleEditRowData}
+                                    dataId = {RowID}
+                                    
+                                    />
                                 </div>
                               </DialogContent>
                               <DialogActions
@@ -1535,7 +1296,7 @@ const handleDelete = async (data, index, event) => {
                                     className="SaveButton assetSpares"
                                     onClick={(e) => {
                                       e.preventDefault();
-                                      PopupRowDataSelect();
+                                      PopupRowEditDataSelect();
                                     }}
                                     style={{ marginLeft: "5px" }}
                                   >
@@ -1544,7 +1305,7 @@ const handleDelete = async (data, index, event) => {
                                 </div>
                               </DialogActions>
                             </Dialog>
-                            {/* End of Craft Select model */}
+                            {/* End of Checklist Select model */}
                            
                             <Grid
                               item
@@ -1553,195 +1314,36 @@ const handleDelete = async (data, index, event) => {
                               style={{ padding: "10px" }}
                             >
                               
-                              <label className={findCustomizerequiredLabel("prm_ls1_crewsize")}> {findCustomizeLabel("prm_ls1_crewsize") ||
-                                    "Crew Size:"}</label>
+                              <label> Description: </label>
                             </Grid>
                             <Grid item xs={12} md={8}>
-                              <TextField
+                            <TextField
                                 variant="outlined"
                                 size="small"
                                 type="text"
                                 className="Extrasize"
                                 fullWidth
-                                placeholder="1"
-                              
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange_4_limit(event, (formattedValue) => {
-                                        handleEditChange(EditPrmls1MstRowId, "Editprm_ls1_crewSize", formattedValue);
-                                    });
-                                  }
-                                }}
-
-                                value={EditPrmls1crewsize}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
+                                disabled
+                                value={ EditChecklistDesc != "" ? EditChecklistDesc : "" }
+                                
+                                
                               />
                             </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
-                              <label className={findCustomizerequiredLabel("prm_ls1_chg_costcenter")}> {findCustomizeLabel("prm_ls1_chg_costcenter") ||
-                                    "Charge Cost Center:"}</label>
-                            </Grid>
-
-                            <Grid item xs={12} md={8}>
-                              <Autocomplete
-                                options={ChargeCostCenter}
-                                value={EditPrmls1chgcostcenter}
-                                getOptionLabel={(option) => (option && option.label ? option.label : '')}
-                                onChange={(event, newValue) =>
-                                    handleEditChange(
-                                     EditPrmls1MstRowId,
-                                      "selectChargeCostCenter",
-                                      newValue
-                                    )
-                                  }
-                                onOpen={handleClickChargeCostCenter}
-                                renderInput={(params) => (
-                                  <div>
-                                    <TextField
-                                      {...params}
-                                      size="small"
-                                      placeholder="Select..."
-                                      variant="outlined"
-                                      className="Extrasize"
-                                    />
-                                  </div>
-                                )}
-                              />
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
-                             
-                              <label className={findCustomizerequiredLabel("prm_ls1_chg_account")}> {findCustomizeLabel("prm_ls1_chg_account") ||
-                                    "Charge Account:"}</label>
-                            </Grid>
-                            <Grid item xs={12} md={8}>
-                              <Autocomplete
-                                options={ChargeAccount}
-                                value={EditPrmls1chgAccount}
-                                getOptionLabel={(option) => (option && option.label ? option.label : '')}
-                                onChange={(event, newValue) =>
-                                    handleEditChange(
-                                     EditPrmls1MstRowId,
-                                      "selectChargeAccount",
-                                      newValue
-                                    )
-                                  }
-                                onOpen={handleClickChargeAccount}
-                                renderInput={(params) => (
-                                  <div>
-                                    <TextField
-                                      {...params}
-                                      size="small"
-                                      placeholder="Select..."
-                                      variant="outlined"
-                                      className="Extrasize"
-                                    />
-                                  </div>
-                                )}
-                              />
-                            </Grid>
-
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
-                              
-                              <label className={findCustomizerequiredLabel("prm_ls1_est_hrs")}> {findCustomizeLabel("prm_ls1_est_hrs") ||
-                                    "Estimate Hours:"}</label>
-                            </Grid>
-                            <Grid item xs={12} md={8}>
-                              <TextField
-                                variant="outlined"
-                                size="small"
-                                type="text"
-                                className="Extrasize"
-                                fullWidth
-                                placeholder="0.00"
-                               
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange(event, (formattedValue) => {
-                                      handleEditChange(EditPrmls1MstRowId, "Editprm_ls1_est_hrs", formattedValue);
-                                    });
-                                  }
-                                }}
-
-                                value={EditPrmls1esthrs}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
-                              />
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                              md={4}
-                              style={{ padding: "10px" }}
-                            >
                             
-                              <label className={findCustomizerequiredLabel("prm_ls1_lumpsum")}>
-                                 {findCustomizeLabel("prm_ls1_lumpsum") ||
-                                    "Lump Sum Amount:"}</label>
+                            <Grid
+                              item
+                              xs={12}
+                              md={4}
+                              style={{ padding: "10px" }}
+                            >
+                              <label> Carry to work order:</label>
                             </Grid>
-                            <Grid item xs={12} md={8}>
-                              <TextField
-                                variant="outlined"
-                                size="small"
-                                type="text"
-                                className="Extrasize"
-                                fullWidth
-                                placeholder="0.00"
-                               
-                                onChange={(event) => {
-                                  const value = event.target.value;
-                                  if (value.length === 0 || value[0] !== '0') {
-                                    handleNumericInputChange(event, (formattedValue) => {
-                                        handleEditChange(EditPrmls1MstRowId, "Editprm_ls1_lumpsum", formattedValue);
-                                    });
-                                  }
-                                }}
 
-                                value={EditPrmls1lumpsum}
-                                onInput={(event) => {
-                                  const value = event.target.value;
-                                  // Prevent '0' or empty value
-                                  if (value === '0') {
-                                    event.target.value = '';
-                                  }
-                                }}
-                                InputProps={{
-                                  inputProps: { style: { textAlign: 'right' } }
-                                }}
-                              />
+                            <Grid item xs={12} md={8}>
+                                <Checkbox 
+                                 checked={Number(EditCarrytoworkOrder) === 1}
+                                  onChange={handleEditCheckboxChange}
+                                />
                             </Grid>
                            
                           </Grid>

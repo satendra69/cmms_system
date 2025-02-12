@@ -55,7 +55,7 @@ function AssetLocation() {
       const response = await httpCommon.get(
         `/get_asset_hirechy_plant.php?site_cd=${site_ID}`
       );
-      console.log("responsePlant", response);
+    
       const plant = response.data.data;
       if (plant) {
         const formattedData = plant.map((item) => ({
@@ -80,7 +80,7 @@ function AssetLocation() {
       setLevel([]);
     }
   };
-  console.log("index", folder);
+
 
   // fetch Asset Location
   const fetchLocation = async (lvl) => {
@@ -104,7 +104,7 @@ function AssetLocation() {
       );
       setImages(response.data.data.AllImgGet);
     } catch (error) {
-      console.log("error", error);
+     
     } finally {
       setLoading(false);
     }
@@ -123,7 +123,7 @@ function AssetLocation() {
           page ? page : "1"
         }`
       );
-      console.log("response_new", response);
+  
       setLimit(response.data.limit);
       setTotal(response.data.total);
 

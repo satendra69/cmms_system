@@ -725,7 +725,6 @@ const [hoveredRow, setHoveredRow] = useState(null);
   };
   //Sum calculation
 
-
   const totalQty = Array.isArray(Result)
   ? Result.reduce(
       (acc, item) => acc + (parseFloat(item.wko_ls2_qty_needed) || 0),

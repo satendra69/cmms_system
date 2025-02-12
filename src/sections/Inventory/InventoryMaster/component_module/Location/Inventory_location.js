@@ -86,10 +86,10 @@ const Inventory_location = ({data}) =>{
         });
         Swal.showLoading();
         try {
-            console.log("get_inventory_master_location:", httpCommon.get( `/get_inventory_master_location.php?site_cd=${site_ID}&RowID=${RowID}` ));
+           
 
             const response = await httpCommon.get( `/get_inventory_master_location.php?site_cd=${site_ID}&RowID=${RowID}` );
-             console.log("response____material___", JSON.stringify(response));
+           
             if (response.data.status === "SUCCESS") {
                 setHeader(response.data.data.header);
                 setResult(response.data.data.result);
@@ -340,9 +340,7 @@ const Inventory_location = ({data}) =>{
 
     const handleAddButtonClick = async (e) => {
 
-        console.log("Test",e)
-
-        console.log("Test",JSON.stringify(inputFields))
+   
     }
 
     const addInputField = (event) => {
@@ -474,12 +472,11 @@ const Inventory_location = ({data}) =>{
        }else if(value === 'itm_loc_prim_locn_flg'){
 
         const stockInInputFields = inputFields.some((field) => field.itm_loc_prim_locn_flg === '1');
-        console.log("PL",stockInInputFields);
+      
         if (stockInInputFields) {
 
             const matchingRow = inputFields.find((field) => field.itm_loc_prim_locn_flg === '1');
-            console.log("PL2",matchingRow);
-            console.log("PL3",inputFields[index].itm_loc_stk_loc);
+          
 
             Swal.close();
             Swal.fire({
@@ -537,7 +534,7 @@ const Inventory_location = ({data}) =>{
         if (secondRowData == "1") {
 
             const stockInInputFields = inputFields.some((field) => field.itm_loc_stk_loc === rowData);
-            console.log("stockInInputFields",stockInInputFields);
+           
             Swal.fire({
                 title: "Please Wait!",
                 allowOutsideClick: false,
@@ -620,7 +617,7 @@ const Inventory_location = ({data}) =>{
         if (secondRowData == "1") {
 
             const stockInInputFields = Result.some((field) => field.itm_loc_stk_loc === rowData);
-            console.log("stockInInputFields",stockInInputFields);
+      
             Swal.fire({
                 title: "Please Wait!",
                 allowOutsideClick: false,

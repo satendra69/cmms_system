@@ -134,6 +134,7 @@ const StepContainer = styled("div")`
 export default function CreateAssetFrom({ currentUser, onPageChange }) {
   let site_ID = localStorage.getItem("site_ID");
   let emp_mst_name = localStorage.getItem("emp_mst_name");
+  const emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
   const location = useLocation();
   const {swalCloseTime} = useSwalCloseContext();
   
@@ -1517,7 +1518,7 @@ const handleAssetSpecifi = (btnClkDataRecived) =>{
     Swal.showLoading();
 
     let site_ID = localStorage.getItem("site_ID");
-    let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
+   // let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
     let emp_mst_empl_id = localStorage.getItem("emp_mst_empl_id");
 
     //Select Status
@@ -2168,7 +2169,7 @@ if (
     let get_date = Moment().utcOffset("+08:00").format("yyyy-MM-DD HH:mm:ss");
 
     let site_ID = localStorage.getItem("site_ID");
-    let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
+   // let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
     let emp_mst_empl_id = localStorage.getItem("emp_mst_empl_id");
 
     //Select Status
@@ -7339,18 +7340,14 @@ if (
                                        <td>{item.file_name}</td>
                                        <td>{item.audit_user}</td>
                                        <td>
-                                         {new Date(
-                                           item.audit_date.date
-                                         ).toLocaleString("en-US", {
-                                           year: "numeric",
-                                           month: "2-digit",
-                                           day: "2-digit",
-                                           hour: "2-digit",
-                                           minute: "2-digit",
-                                           second: "2-digit",
-                                           // Show milliseconds with 3 digits
-                                         })}
-                                       </td>
+                                          {new Date(item.audit_date.date).toLocaleDateString("en-GB")}{" "}
+                                          {new Date(item.audit_date.date).toLocaleTimeString("en-US", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            second: "2-digit",
+                                            hour12: false, 
+                                          })}
+                                          </td>
                                        <td>
                                          <button
                                            type="button"
@@ -7394,8 +7391,15 @@ if (
                                          />
                                        </td>
                                        <td>{image.name}</td>
-                                       <td>Admin</td>
-                                       <td>{new Date().toLocaleString() + ""}</td>
+                                       <td>{emp_mst_login_id}</td>
+                                       <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                        <td>
                                          <button
                                            type="button"
@@ -7422,8 +7426,15 @@ if (
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                      <td>
                                        <button
                                          type="button"
@@ -7450,8 +7461,15 @@ if (
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                      <td>
                                        <button
                                          type="button"
@@ -7478,8 +7496,15 @@ if (
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                      <td>
                                        <button
                                          type="button"
@@ -7506,8 +7531,15 @@ if (
                                       />
                                     </td>
                                     <td>{image.name}</td>
-                                    <td>Admin</td>
-                                    <td>{new Date().toLocaleString() + ""}</td>
+                                    <td>{emp_mst_login_id}</td>
+                                    <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                     <td>
                                       <button
                                         type="button"
@@ -7534,8 +7566,15 @@ if (
                                        />
                                      </td>
                                      <td>{image.name}</td>
-                                     <td>Admin</td>
-                                     <td>{new Date().toLocaleString() + ""}</td>
+                                     <td>{emp_mst_login_id}</td>
+                                     <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
                                      <td>
                                        <button
                                          type="button"
@@ -7566,8 +7605,15 @@ if (
                                          />
                                        </td>
                                        <td>{image.name}</td>
-                                       <td>Admin</td>
-                                       <td>{new Date().toLocaleString() + ""}</td>
+                                       <td>{emp_mst_login_id}</td>
+                                       <td>{new Date().toLocaleDateString("en-GB")}{" "}
+                                        {new Date().toLocaleTimeString("en-US", {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                          second: "2-digit",
+                                          hour12: false, 
+                                        })}
+                                    </td>
    
                                        <td>
                                          <button

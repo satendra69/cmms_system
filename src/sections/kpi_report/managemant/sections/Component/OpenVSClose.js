@@ -166,7 +166,7 @@ const barSize = calculateBarSize(filterData.length, containerWidth);
     
             // Convert the aggregated map back to an array of objects
             const aggregatedDataArray = Object.values(aggregatedData);
-            console.log("_aggrited_Data", aggregatedDataArray);
+           
             setFilterData(aggregatedDataArray);
     
             let closedTotal = 0;
@@ -277,7 +277,7 @@ const barSize = calculateBarSize(filterData.length, containerWidth);
               };
             }
             if (entry.WorkOrderType === "Outstanding WOs") {
-              console.log("Outstanding_WOs", entry);
+           
               acc[key].TotalWO_Open += entry.TotalWO;
             } else if (entry.WorkOrderType === "Closed WOs") {
               acc[key].TotalWO_Close += entry.TotalWO;
@@ -286,7 +286,7 @@ const barSize = calculateBarSize(filterData.length, containerWidth);
 
           return acc;
         }, {});
-        console.log("aggregatedData", aggregatedData);
+  
         const aggregatedDataArray = Object.values(aggregatedData);
 
         setPieFilterData(aggregatedDataArray);

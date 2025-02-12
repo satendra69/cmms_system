@@ -68,7 +68,7 @@ function AssetDescription() {
         `/insert_ast_parent_hirech.php`,
         body
       );
-      console.log("responseParent", response);
+     
       if (response.data.status === "SUCCESS") {
         setRefetch(true);
         setData("");
@@ -159,7 +159,7 @@ function AssetDescription() {
       const response = await httpCommon.get(
         `/get_ast_desc_all_list_hirech.php?site_cd=${site_ID}`
       );
-      console.log("all_assets", response);
+     
       setAllAssets(response.data.data);
     };
     fetchAllAssets();

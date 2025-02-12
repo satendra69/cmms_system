@@ -96,7 +96,7 @@ const Inventory_Supplier = ({data}) =>{
         Swal.showLoading();
         try {
             const response = await httpCommon.get( `/get_inventory_master_supplier.php?site_cd=${site_ID}&RowID=${RowID}` );
-             console.log("response____material___", response);
+           
             if (response.data.status === "SUCCESS") {
                 setHeader(response.data.data.header);
                 setResult(response.data.data.result);
@@ -463,7 +463,7 @@ const Inventory_Supplier = ({data}) =>{
         if (secondRowData == "1") {
 
             const stockInInputFields = inputFields.some((field) => field.itm_sup_supplier === rowData.sup_mst_supplier_cd);
-            console.log("stockInInputFields",stockInInputFields);
+       
             Swal.fire({
                 title: "Please Wait!",
                 allowOutsideClick: false,
@@ -505,7 +505,7 @@ const Inventory_Supplier = ({data}) =>{
 
     const PopupRowDataSelect = async (index) => {
 
-        console.log('modalRowDt',modalRowDt);
+       
 
         const stockInInputFields = inputFields.some((field) => field.sup_mst_supplier_cd === modalRowDt);
 
@@ -544,11 +544,6 @@ const Inventory_Supplier = ({data}) =>{
     const handleNumericInputChange = (index, rowData, e) => {
 
 
-        console.log('index',index)
-
-        console.log('rowData',rowData)
-
-        console.log('e',e)
         
         let { value } = e.target;
         
@@ -572,12 +567,12 @@ const Inventory_Supplier = ({data}) =>{
             }
             let decimalPart2 = parts[1] ? parts[1].slice(0, 4) : '';
             const formattedValue2 = decimalPart2 ? `${integerPart2}.${decimalPart2}` : integerPart2
-            console.log('formattedValue2',formattedValue2)
+        
            
             return; 
         }
         const formattedValue = decimalPart ? `${integerPart}.${decimalPart}` : integerPart;
-        console.log('formattedValue',formattedValue)
+       
        
             
         
@@ -602,7 +597,7 @@ const Inventory_Supplier = ({data}) =>{
        
         // Use the row data in the second component
 
-        console.log('rowData',rowData)
+     
         if (rowData !== undefined && rowData !== null) {
           setmodalRowDt(rowData);
         }
@@ -630,7 +625,7 @@ const Inventory_Supplier = ({data}) =>{
 
     const Taxcode_PopupRowDataSelect = async (index) => {
 
-        console.log('modalRowDt',modalRowDt);
+       
 
         const stockInInputFields = inputFields.some((field) => field.sup_mst_supplier_cd === modalRowDt);
 
@@ -698,7 +693,7 @@ const Inventory_Supplier = ({data}) =>{
     const TextField_onChange = async (index, value,e) => {
 
 
-        console.log('e',e);
+      
 
         if(value === 'itm_sup_supplier_partno'){
 

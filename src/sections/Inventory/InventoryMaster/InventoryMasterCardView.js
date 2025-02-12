@@ -32,7 +32,7 @@ const InventoryMasterCardView = () => {
         const response = await httpCommon.get(
           `/get_InventoryMasterCardViewTableData.php?site_cd=${site_ID}&page=${currentPage}`
         );
-        console.log("response______",response);
+       
         setTableData(response.data.data.result);
         setTotalRow(response.data.total_count);
         setIsLoading(false);
@@ -53,7 +53,7 @@ const InventoryMasterCardView = () => {
   const [page, setPage] = useState(1);
 
   const handleChangePage = (event, newPage) => {
-    console.log("newPage____",newPage);
+  
    // setPage(newPage);
     setCurrentPage(newPage);
   };

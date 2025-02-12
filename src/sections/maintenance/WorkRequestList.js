@@ -164,6 +164,8 @@ export default function WorkRequestList() {
   
   const DashbordDataSrt = location.state?.GaugeDashbordDataSort || [];
 
+  const [DashBordTitle, setDashbordTitle] = useState(location.state?.PassTitle || []);
+
   const [isLoading, setIsLoading] = useState(true);
   const popover = usePopover();
   const router = useRouter();
@@ -325,7 +327,9 @@ export default function WorkRequestList() {
          // setTableData(response.data.data.result);
           setheaderData(response.data.data.header);
           //setTotalRow(response.data.total_count);
+          setTitleAstReg(DashBordTitle);
           setselectDropRowID(DropListIdGet);
+          
           // setResponceStats(response.data.StatusPRM);
           // setTotalCount(response.data.TotalCountPRM);
         }
@@ -760,7 +764,7 @@ export default function WorkRequestList() {
             WorkReqNo:WorkReqNo,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }
@@ -781,7 +785,7 @@ export default function WorkRequestList() {
             WorkReqNo:WorkReqNo,
             currentPage,
             selectDropRowID,
-            selectedOption,
+            selectedOption: selectedOption || DashBordTitle,
           },
         });
       }

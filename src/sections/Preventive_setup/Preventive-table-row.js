@@ -29,8 +29,8 @@ export default function PreventiveTableRow({
   onDeleteRow,
   onEditRow,
   onCheckboxChange,
+  resetTrigger, 
   onViewRow,
-  shouldReset,
   isHighlighted
 }) {
 
@@ -115,16 +115,15 @@ export default function PreventiveTableRow({
       : prm_mst_desc;
 
     const [isChecked, setIsChecked] = useState(false);
-
+    
     useEffect(() => {
-      // Reset the checkbox if shouldReset is true
-      if (shouldReset) {
-        setIsChecked(false);
-      }
-    }, [shouldReset]);
+      // Reset checkbox when resetTrigger changes
+      setIsChecked(false);
+    }, [resetTrigger]); // 
 
     const handleCheckboxChange = (event) => {
       const checked = event.target.checked;
+      
       setIsChecked(checked); // Update local state
       onCheckboxChange(row, checked);
     };

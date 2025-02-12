@@ -165,7 +165,7 @@ function MangementDashboard() {
 
         const aggregatedData = rep.reduce((acc, entry) => {
           const key = `${entry.MonthNo}_${entry.MonthName}`;
-          console.log("key", key);
+       
           if (!acc[key]) {
             acc[key] = {
               MonthNo: entry.MonthNo,
@@ -388,7 +388,7 @@ function MangementDashboard() {
   };
 
   const CustomTooltip = ({ active, payload }) => {
-    console.log("month", payload);
+   
     if (payload) {
       const newD = payload[0];
       let month;

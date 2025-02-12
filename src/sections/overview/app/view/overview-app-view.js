@@ -141,7 +141,7 @@ export default function OverviewAppView() {
           "&admin=" +
           emp_mst_loginID
       );
-        console.log("response____dash__",response);
+       // console.log("response____dash__",response);
       if (response.data.status === "SUCCESS") {
         setDashbordData(response.data.data);
         setGetPRM_MST(response.data.PRM_MST);
@@ -159,7 +159,7 @@ export default function OverviewAppView() {
     }
   };
 
-  const handleOnClickDB = async (cfQueryRowID) => {
+  const handleOnClickDB = async (cfQueryRowID,cfQueryTitle) => {
     Swal.fire({
       title: "Please Wait !",
       allowOutsideClick: false,
@@ -168,7 +168,8 @@ export default function OverviewAppView() {
       },
     });
     const cfRowID = cfQueryRowID;
-
+    const StoreTitle = cfQueryTitle;
+     
     let newArrayFltr = null;
     let newArraySort = null;
     let newArrayPrm = null;
@@ -206,6 +207,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -215,6 +217,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -224,6 +227,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -233,6 +237,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -256,6 +261,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -266,6 +272,7 @@ export default function OverviewAppView() {
             GaugeDashbordData: newArrayFltr,
             GaugeDashbordDataSort: newArraySort,
             DropListId: cfRowID,
+            PassTitle: StoreTitle,
           },
         });
         Swal.close();
@@ -278,6 +285,7 @@ export default function OverviewAppView() {
           GaugeDashbordDataSort: newArraySort,
           GetDashbordDataPrmMst: newArrayPrm,
           DropListId: cfRowID,
+          PassTitle: StoreTitle,
         },
       });
     }
@@ -409,7 +417,7 @@ export default function OverviewAppView() {
               total={parseInt(DashbordTotalNumber[item.cf_query_RowID])}
               description={item.dsh_mst_desc}
              // onClick={() => handleOnClickDB(item.cf_query_RowID)}
-              onClick={EditFlagStatus === "1" ? undefined : () => handleOnClickDB(item.cf_query_RowID)}
+              onClick={EditFlagStatus === "1" ? undefined : () => handleOnClickDB(item.cf_query_RowID,item.dsh_mst_query)}
             />
           </Grid>
         ))}

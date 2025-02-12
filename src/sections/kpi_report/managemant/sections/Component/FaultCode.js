@@ -302,7 +302,6 @@ function CauseCode({ seriesData, seriesDataLoc }) {
 
   const truncateText = (text) => {
     let charLimit;
-    console.log("screenWidth",screenWidth)
     if (screenWidth < 576) {
       charLimit = 8;
     } else if (screenWidth >= 576 && screenWidth < 768) {
@@ -337,7 +336,7 @@ function CauseCode({ seriesData, seriesDataLoc }) {
           sort ? sort : "Yearly"
         }&year=${year}`
       );
-      console.log("aggregatedDataArray",response)
+     
       if (response.data.status === "SUCCESS") {
         setKpiPieData(response.data.kpi_result_pie);
         const data = response.data.kpi_result_pie;

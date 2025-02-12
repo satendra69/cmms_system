@@ -32,44 +32,12 @@ export default function WorkOrderTableRow({
   onCloseRow,
   onClick,
   isHighlighted,
+  TableStatus,
 }) {
   const empl_site_cd = localStorage.getItem("site_ID");
-  const [TableStatus, setTableStatus] = useState([]);
-  const hasFetchedStatus = useRef(false);
- 
-    // Get Status data 
-    const fetchStatus = useCallback(async () => {
-      Swal.fire({
-        title: "Please Wait!",
-        allowOutsideClick: false,
-        customClass: {
-          container: "swalcontainercustom",
-        },
-      });
-      Swal.showLoading();
   
-      try {
-        const response = await httpCommon.get(
-          `/get_site_cd_login_user.php?empl_site_cd=${empl_site_cd}`
-        );
-      //  console.log("response____",response)
-       setTableStatus(response.data.default_site);
-        Swal.close();
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }, [empl_site_cd]);
+  const rowRef = useRef(null);
 
-    useEffect(() => {
-      if (!hasFetchedStatus.current) {
-       
-        fetchStatus();
-        hasFetchedStatus.current = true; // Set to true after fetching
-      }
-    }, []);
-
- 
-    const rowRef = useRef(null);
     useEffect(() => {
    
       if (isHighlighted && index >= 8 && rowRef.current) {
@@ -248,8 +216,10 @@ export default function WorkOrderTableRow({
 
     return `${day}-${month}-${year} ${hours}:${minutes}`;
   };
-  const filteredData = TableStatus.filter(item => item.site_cd === empl_site_cd && item.wrk_sts_status === col4);
-
+  //const filteredData = TableStatus.filter(item => item.site_cd === empl_site_cd && item.wrk_sts_status === col4);
+  const filteredData = Array.isArray(TableStatus)
+  ? TableStatus.filter(item => item.site_cd === empl_site_cd && item.wrk_sts_status === col4)
+  : [];
   const maxCharactersToShow = 30;
   const truncatedDescription =
   col5 && col5.length > maxCharactersToShow

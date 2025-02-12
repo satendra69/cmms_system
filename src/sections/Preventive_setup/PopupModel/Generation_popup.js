@@ -16,6 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 const GenerationPopup = ({ data ,AlltableData,onMessage }) => {
  
     let site_ID = localStorage.getItem("site_ID");
+    let emp_id = localStorage.getItem("emp_mst_empl_id")
     const SelectedData = data;
     const TableAllData = AlltableData;
 
@@ -36,7 +37,8 @@ const GenerationPopup = ({ data ,AlltableData,onMessage }) => {
         const requestData = selectedOption === "selected" ? SelectedData : TableAllData;
         const requestDataWithSiteCd = requestData.map((item) => ({
             ...item,
-            siteCd: site_ID, // Append the siteCd
+            siteCd: site_ID,
+            emp_id:emp_id // Append the siteCd
         }));
 
         Swal.fire({
@@ -54,7 +56,7 @@ const GenerationPopup = ({ data ,AlltableData,onMessage }) => {
               "/insert_update_pm_generation.php",
               JSON.stringify(requestDataWithSiteCd)
             );
-           // console.log("response______",response);
+            console.log("response______",response);
             if (response.data.status === "SUCCESS") {
                 setResultLog(response.data);
                 onMessage("Data generation has been submitted!");
@@ -72,7 +74,7 @@ const GenerationPopup = ({ data ,AlltableData,onMessage }) => {
           }
     }
     }
-    console.log("ResultLog____",ResultLog);
+ //   console.log("ResultLog____",ResultLog);
   return (
     <>
       <div>

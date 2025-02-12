@@ -566,7 +566,7 @@ const headerStyles = {
   
   const handleDelete = async (data) => {
     // Handle delete logic here
-    console.log(`Delete row: ${data.RowID}`);
+   // console.log(`Delete row: ${data.RowID}`);
     const dltId = data.RowID;
     handleMenuClose();
     if(dltId !== ""){
@@ -787,7 +787,7 @@ const headerStyles = {
     setterFunction(formattedValue); // Set the state for the respective UDFNumber state
     setErrorField(null);
   };
-console.log("Result___",Result);
+
   const handleChange = async (index, fieldName, value,event) => {
     const list = [...inputFields];
     if (fieldName == "ast_ls2_meter_id") {
@@ -976,7 +976,7 @@ console.log("Result___",Result);
   const handleUpdateButtonClick = async (e) =>{
     e.preventDefault();
     let isValid = true;
-    console.log("selectedUom____",selectedUom);
+
     if (!selectedUom || 
       typeof selectedUom !== "object" ||
       !selectedUom.label || 

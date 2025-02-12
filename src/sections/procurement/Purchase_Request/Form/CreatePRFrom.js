@@ -1889,8 +1889,8 @@ const findCustomizerequiredLabel = (columnName) => {
     let emp_mst_login_id = localStorage.getItem("emp_mst_login_id");
     let emp_mst_empl_id = localStorage.getItem("emp_mst_empl_id");
     
-    console.log("selected_Status____",selected_Status);
-    console.log("Status____",Status);
+   // console.log("selected_Status____",selected_Status);
+   // console.log("Status____",Status);
         //Select Status
         let setStatusValue = "";
         if (selected_Status.label == "" || selected_Status.label == null) {
@@ -2311,7 +2311,7 @@ const findCustomizerequiredLabel = (columnName) => {
     
     };
 
-    console.log("json_MrUpdate_____",json_PrUpdate);
+   // console.log("json_MrUpdate_____",json_PrUpdate);
 
     for (let i = 0; i < MrMandatoryFiled.length; i++) {
       const item = MrMandatoryFiled[i];
